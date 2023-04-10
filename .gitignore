@@ -158,5 +158,6 @@ go.work
 webauthServer
 src/
 .idea/
+public_html
 tsconfig.json
 config.yaml
