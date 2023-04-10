@@ -4,6 +4,5 @@ USER nobody
 
 COPY webauthServer /webauthServer
 COPY config.yaml /config.yaml
-COPY domain.key /domain.key
-COPY domain.crt /domain.crt
+COPY domain.* /
 ENTRYPOINT [ "/webauthServer" ]

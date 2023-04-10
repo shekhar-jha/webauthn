@@ -7,7 +7,7 @@ cd "${SCRIPT_DIR}" || exit 1
 
 echo "Cleaning up..."
 rm -rf internal/server/public_html/*
-rm Docker/server
+rm Docker/webauthServer
 echo "Copying html files"
 cp -R just_html/* internal/server/public_html/
 echo "Building server...."
