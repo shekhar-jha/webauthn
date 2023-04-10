@@ -1,0 +1,20 @@
+log:
+  level: debug
+  console:
+    encoding: json
+
+session:
+  cookie_name: webauthn
+  secure: yes
+  domain: example.com
+
+listen_address: "0.0.0.0:8080"
+ssl_enabled: yes
+ssl_cert_file: domain.crt
+ssl_key_file: domain.key
+external_url: https://auth.example.com
+
+display_name: Webauthn
+conveyance_preference: indirect
+authenticator_attachment: cross-platform
+user_verification_requirement: preferred
