@@ -15,16 +15,20 @@ function ShowCapabilities() {
     let webAuthnStatus = "Not computed"
     if (window?.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === "function") {
         webAuthnStatus = "Yes"
-        window.PublicKeyCredential.isConditionalMediationAvailable().then(function (result) {
-            document.getElementById("mediation").innerHTML = result
-        }, function (error) {
-            document.getElementById("mediation").innerHTML = error
-        })
-        window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function (result) {
-            document.getElementById("userVerifyPlatformAuthn").innerHTML = result
-        }, function (error) {
-            document.getElementById("userVerifyPlatformAuthn").innerHTML = error
-        })
+        if (typeof window.PublicKeyCredential.isConditionalMediationAvailable === 'function') {
+            window.PublicKeyCredential.isConditionalMediationAvailable().then(function (result) {
+                document.getElementById("mediation").innerHTML = result
+            }, function (error) {
+                document.getElementById("mediation").innerHTML = error
+            })
+        }
+        if (typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
+            window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function (result) {
+                document.getElementById("userVerifyPlatformAuthn").innerHTML = result
+            }, function (error) {
+                document.getElementById("userVerifyPlatformAuthn").innerHTML = error
+            })
+        }
     } else {
         webAuthnStatus = "No"
     }
