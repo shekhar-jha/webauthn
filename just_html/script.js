@@ -89,7 +89,8 @@ const objectProcessingGuidance = {
         "timeout": "text-number",
         "authenticatorSelection": "object-noChange",
         "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
-        "excludeCredentials": "options-sessionMap"
+        "excludeCredentials": "options-sessionMap",
+        "attestationFormats": "options-noChange"
     },
     "extract": {
         "text": {
