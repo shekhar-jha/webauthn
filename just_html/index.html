@@ -449,15 +449,20 @@
             </td>
         </tr>
         <tr>
-            <td><label for="nav-cred-create-excludeCredentials"><a
+            <td><a
                     href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials"
-                    target="_blank">Exclude credentials </a></label></td>
+                    target="_blank">Exclude credentials </a></td>
             <td>
-                <input type="text" id="nav-cred-create-excludeCredentials" class="nav-cred-create"></input>
+                <div id="nav-cred-create-excludeCredentials-list">Generate once another sesion with credential has been
+                    registered.
+                </div>
             </td>
             <td><label for="nav-cred-create-excludeCredentials-set">Set value</label>
                 <input type="checkbox" id="nav-cred-create-excludeCredentials-set"
                        name="nav-cred-create-excludeCredentials-set" class="nav-cred-create" value="Set">
+                <input type="button" id="nav-cred-create-excludeCredentials-generate"
+                       name="nav-cred-create-excludeCredentials-generate" class="nav-cred-create" value="Generate"
+                       onclick="GenerateExcludedCredential(sessions, 'nav-cred-create-excludeCredentials-list')">
             </td>
             <td>
                 <h4>Validation</h4>

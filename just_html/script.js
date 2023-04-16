@@ -88,7 +88,8 @@ const objectProcessingGuidance = {
         "pubKeyCredParams": "options-stoj",
         "timeout": "text-number",
         "authenticatorSelection": "object-noChange",
-        "authenticatorSelection.requireResidentKey": "options-bool-oneValue"
+        "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
+        "excludeCredentials": "options-sessionMap"
     },
     "extract": {
         "text": {
@@ -140,35 +141,35 @@ const objectProcessingGuidance = {
     },
     "transform": {
         "noChange": {
-            "get": (input) => {
+            "get": (input, prefix, attributeName) => {
                 return input
             },
-            "set": (input) => {
+            "set": (input, prefix, attributeName) => {
                 return input
             }
         },
         "number": {
-            "get": (input) => {
+            "get": (input, prefix, attributeName) => {
                 return Number(input)
             },
-            "set": (input) => {
+            "set": (input, prefix, attributeName) => {
                 return input
             }
         },
         "ArrayBuffer": {
-            "get": (input) => {
+            "get": (input, prefix, attributeName) => {
                 let encodedValue = textEncoder.encode(input)
                 log("buffer value" + encodedValue)
                 return encodedValue
             },
-            "set": (input) => {
+            "set": (input, prefix, attributeName) => {
                 let decodedValue = textDecoder.decode(input)
                 log("decoded value" + decodedValue)
                 return decodedValue
             }
         },
         "stoj": {
-            "get": (input) => {
+            "get": (input, prefix, attributeName) => {
                 if (Array.isArray(input)) {
                     return input.reduce((collectValues, item, currentIndex, items) => {
                         collectValues.push(JSON.parse(item))
@@ -176,11 +177,11 @@ const objectProcessingGuidance = {
                     }, [])
                 } else {
                     let parsedValue = JSON.parse(input)
-                    console.log("String to JSON Parsed" + parsedValue)
+                    log("String to JSON Parsed" + parsedValue)
                     return parsedValue
                 }
             },
-            "set": (input) => {
+            "set": (input, prefix, attributeName) => {
                 if (Array.isArray(input)) {
                     return input.reduce((collectValues, item, currentIndex, items) => {
                         collectValues.push(JSON.stringify(item))
@@ -188,13 +189,13 @@ const objectProcessingGuidance = {
                     }, [])
                 } else {
                     let stringedValue = JSON.stringify(input)
-                    console.log("String to JSON Parsed" + stringedValue)
+                    log("String to JSON Parsed" + stringedValue)
                     return stringedValue
                 }
             }
         },
         "bool": {
-            "get": (input) => {
+            "get": (input, prefix, attributeName) => {
                 if (Array.isArray(input)) {
                     return input.reduce((collectValues, inputValue, currentIndex, items) => {
                         collectValues.push((inputValue?.toLowerCase?.() === 'true'))
@@ -202,18 +203,55 @@ const objectProcessingGuidance = {
                     }, [])
                 } else {
                     let parsedValue = (input?.toLowerCase?.() === 'true')
-                    console.log("Bool parse result" + parsedValue)
+                    log("Bool parse result" + parsedValue)
                     return parsedValue
                 }
             },
-            "set": (input) => {
+            "set": (input, prefix, attributeName) => {
+                //TODO:
+            }
+        },
+        "sessionMap": {
+            "get": (input, prefix, attributeName) => {
+                let noTransformationPerformed = true
+                let transformationMapAttributeName = prefix + "-" + attributeName
+                let transformationMap = new Map()
+                if (currentSession.hasOwnProperty(transformationMapAttributeName)) {
+                    transformationMap = currentSession[transformationMapAttributeName]
+                    noTransformationPerformed = false
+                } else {
+                    log('Failed to locate property ' + transformationMapAttributeName + " in current session " + currentSession)
+                }
+                if (Array.isArray(input)) {
+                    return input.reduce((collectValues, inputValue, currentIndex, items) => {
+                        if (noTransformationPerformed) {
+                            collectValues.push(inputValue)
+                        } else if (transformationMap.has(inputValue)) {
+                            collectValues.push(transformationMap.get(inputValue))
+                        } else if (transformationMap.has("DEFAULT-VALUE")) { //BAD Idea
+                            collectValues.push(transformationMap.get("DEFAULT-VALUE"))
+                        } else {
+                            log("Failed to locate transformation detail for " + inputValue + ". Skipping the value", 'warn')
+                        }
+                        return collectValues
+                    }, [])
+                } else {
+                    let returnValue = input
+                    if (!noTransformationPerformed) {
+                        returnValue = transformationMap.get(input)
+                    }
+                    log("Mapped value" + returnValue)
+                    return returnValue
+                }
+            },
+            "set": (input, prefix, attributeName) => {
                 //TODO:
             }
         }
     },
     "reduce": {
         "oneValue": {
-            "get": (input) => {
+            "get": (input, prefix, attributeName) => {
                 if (Array.isArray(input)) {
                     if (input.length >= 1) {
                         return input[0]
@@ -224,7 +262,7 @@ const objectProcessingGuidance = {
                     return input
                 }
             },
-            "set": (input) => {
+            "set": (input, prefix, attributeName) => {
                 return [input]
             }
         }
@@ -275,9 +313,9 @@ function GenerateObject(prefix = "nav-creds-create",) {
                         let extractedValue = objectProcessingGuidance.extract[typeValues[0]].get(prefix, attributeName)
                         let reducedValue = extractedValue
                         if (typeValues.length === 3) {
-                            reducedValue = objectProcessingGuidance.reduce[typeValues[2]].get(extractedValue)
+                            reducedValue = objectProcessingGuidance.reduce[typeValues[2]].get(extractedValue, prefix, attributeName)
                         }
-                        let attrVal = objectProcessingGuidance.transform[typeValues[1]].get(reducedValue)
+                        let attrVal = objectProcessingGuidance.transform[typeValues[1]].get(reducedValue, prefix, attributeName)
                         log("Attribute value" + attrVal)
                         setVal(attributeName, attrVal, generatedObject, ".")
                         break
