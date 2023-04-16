@@ -21,6 +21,8 @@ function ShowCapabilities() {
             }, function (error) {
                 document.getElementById("mediation").innerHTML = error
             })
+        } else {
+            document.getElementById("mediation").innerHTML = "function isConditionalMediationAvailable is not supported."
         }
         if (typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
             window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function (result) {
@@ -28,6 +30,8 @@ function ShowCapabilities() {
             }, function (error) {
                 document.getElementById("userVerifyPlatformAuthn").innerHTML = error
             })
+        } else {
+            document.getElementById("userVerifyPlatformAuthn").innerHTML = "function isConditionalMediationAvailable is not supported."
         }
     } else {
         webAuthnStatus = "No"
