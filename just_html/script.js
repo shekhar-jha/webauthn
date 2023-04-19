@@ -40,14 +40,27 @@ function ShowCapabilities() {
     document.getElementById("externalURL").value = GetConfiguration("externalURL")
 }
 
-function ShowTab(element_id, select_prefix, tab_prefix) {
-    let tabs = document.getElementsByClassName("nav-creds")
+function ShowTab(element_id, select_prefix, tab_prefix, class_name = "nav-creds") {
+    let tabs = document.getElementsByClassName(class_name)
     for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
         tabs[tabIndex].style.display = "none"
     }
     let selectId = document.getElementById(element_id).value
     let selectedTab = selectId.replace(select_prefix, tab_prefix)
     document.getElementById(selectedTab).style.display = "block"
+}
+
+function ShowSection(sectionClass, sectionId, linkId) {
+    let tabs = document.getElementsByClassName(sectionClass)
+    for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
+        tabs[tabIndex].style.display = "none"
+    }
+    let tabLinks = document.getElementsByClassName('tablinks')
+    for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
+        tabLinks[tabIndex].classList.remove('active')
+    }
+    document.getElementById(sectionId).style.display = "block"
+    document.getElementById(linkId).classList.add('active')
 }
 
 let sessions = new Map()

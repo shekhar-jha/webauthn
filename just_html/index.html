@@ -1,6 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
     <script src="fido.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/u2f-api@latest/bundle.js"></script>
@@ -99,6 +100,8 @@
     <tr>
         <td>
             <label for="sessions-new-desc">New Session Description</label><BR>
+        </td>
+        <td>
             <input type="text" name="sessions-new-desc" id="sessions-new-desc" value=""
                    placeholder="sample desc for new session"/>
         </td>
@@ -116,7 +119,8 @@
 </table>
 
 <H2>navigator.credentials</H2>
-<select name="operationName" id="operationName" onchange="ShowTab('operationName','credential-','nav-cred-')">
+<label for="operationName">Operation</label><select name="operationName" id="operationName"
+                                                    onchange="ShowTab('operationName','credential-','nav-cred-')">
     <option value="credential-create">Create</option>
     <option value="credential-get">Get</option>
     <option value="credential-store">Store</option>
@@ -124,688 +128,745 @@
 </select>
 <div id="nav-cred-create" class="nav-creds">
     <H3>Create</H3>
-    <p>
-        <input type="button" name="nav-cred-create-generateObject" value="Generate Create Credential Option"
-               onclick="currentSession['nav-cred-create-options'] = GenerateObject('nav-cred-create');">
-    </p>
-    <p>
-        <input type="button" name="nav-cred-create-createCredential" value="Create Credential"
-               onclick="CredentialCreate(currentSession)">
+    <div class="tab">
+        <button id='nav-cred-createSectionLink-logging' class="tablinks"
+                onclick="ShowSection('nav-cred-createSections','nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')">
+            Logging
+        </button>
+        <button id='nav-cred-createSectionLink-credOpts' class="tablinks active"
+                onclick="ShowSection('nav-cred-createSections','nav-cred-createSection-credOpts', 'nav-cred-createSectionLink-credOpts')">
+            Credential
+            Options
+        </button>
+        <button id='nav-cred-createSectionLink-genCreds' class="tablinks"
+                onclick="ShowSection('nav-cred-createSections','nav-cred-createSection-genCreds', 'nav-cred-createSectionLink-genCreds')">
+            Credential
+        </button>
+    </div>
+    <div id="nav-cred-createSection-logging" class="nav-cred-createSections tabcontent" style="display: none">
+        <p>
+            <input type="button" value="Clear" onclick="clearLog('nav-cred-create-logging')"/>
+        </p>
+        <div id="nav-cred-create-logging"></div>
+    </div>
+    <div id="nav-cred-createSection-credOpts" class="nav-cred-createSections tabcontent" style="display: block">
+        <p>
+            <input type="button" name="nav-cred-create-generateObject" value="Generate Create Credential Option"
+                   onclick="currentSession['nav-cred-create-options'] = GenerateObject('nav-cred-create');ShowSection('nav-cred-createSections','nav-cred-createSection-genCreds')">
+        </p>
+        <table class="simpleTable">
+            <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+                <th>Action</th>
+                <th>Validations & Guidance</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="2">
+                    <a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialrpentity" target="_blank">
+                        Relying party
+                    </a></td>
+                <td><label for="nav-cred-create-rp-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-rp-set"
+                           name="nav-cred-create-rp-set" checked class="nav-cred-create"
+                           value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialrpentity"
+                               target="_blank">
+                            PublicKeyCredentialRpEntity</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-rp.id">
+                    <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialrpentity-id"
+                       target="_blank">Relying Party ID (domain name e.g. www.acme.org, acme.org)</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-create-rp.id" class="nav-cred-create"></input>
+                </td>
+                <td>
+                    <label for="nav-cred-create-rp.id-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-rp.id-set" name="nav-cred-create-rp.id-set" checked
+                           class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#rp-id"
+                               target="_blank">Valid Domain string</a><BR>
+                            Default: origin's <a
+                                    hef="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain">effective
+                                domain</a><BR>
+                            Allowed: Suffix of origin (e.g. origin a1.a2.acme.com, then a2.acme.com & acme.com are
+                            allowed)<BR>
 
-    </p>
-    <p>
-    <div id="nav-cred-create-logging"></div>
-    </p>
-    <table class="simpleTable">
-        <thead>
-        <tr>
-            <th>Attribute</th>
-            <th>Value</th>
-            <th>Action</th>
-            <th>Validations & Guidance</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td colspan="2">
-                <a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialrpentity" target="_blank">
-                    Relying party
-                </a></td>
-            <td><label for="nav-cred-create-rp-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-rp-set"
-                       name="nav-cred-create-rp-set" checked class="nav-cred-create"
-                       value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Required</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialrpentity" target="_blank">
-                        PublicKeyCredentialRpEntity</a></li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-rp.id">
-                <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialrpentity-id"
-                   target="_blank">Relying Party ID (domain name e.g. www.acme.org, acme.org)</a></label>
-            </td>
-            <td>
-                <input type="text" id="nav-cred-create-rp.id" class="nav-cred-create"></input>
-            </td>
-            <td>
-                <label for="nav-cred-create-rp.id-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-rp.id-set" name="nav-cred-create-rp.id-set" checked
-                       class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>DOMString</li>
-                    <li><a href="https://w3c.github.io/webauthn/#rp-id"
-                           target="_blank">Valid Domain string</a><BR>
-                        Default: origin's <a
-                                hef="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain">effective
-                            domain</a><BR>
-                        Allowed: Suffix of origin (e.g. origin a1.a2.acme.com, then a2.acme.com & acme.com are
-                        allowed)<BR>
+                        </li>
+                        <li>Does not contain scheme or port. Scheme should be https & port is unrestricted
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-rp.name">
+                    <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
+                       target="_blank">Relying Party Name (human palatable name e.g. ACME Corp)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-rp.name" class="nav-cred-create"></input>
+                </td>
+                <td>
+                    <label for="nav-cred-create-rp.name-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-rp.name-set" name="nav-cred-create-rp.name-set" checked
+                           class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li>Formatting: <a href="https://www.rfc-editor.org/rfc/rfc8266#section-2.3"
+                                           target="_blank">RFC8266</a>: trim
+                            space, compact multi-space,NFKC Normalize, non-empty
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-strings-langdir" target="_blank">Language &
+                            directional encoding</a>: Tag Language(U+E0001),
+                            direction(L-R:U+200E,R-L:U+200F,Cancel:U+E007F)
+                        </li>
+                        <li>May be <a href="https://w3c.github.io/webauthn/#sctn-strings-truncation" target="_blank">truncated</a>
+                            to 64 bytes by authenticators
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-user"
+                       target="_blank">User</a>
+                </td>
+                <td><label for="nav-cred-create-user-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-user-set" name="nav-cred-create-user-set" checked
+                           class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialuserentity"
+                               target="_blank">
+                            PublicKeyCredentialUserEntity</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-user.id"><a
+                        href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialuserentity" target="_blank">User
+                    ID</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-create-user.id" class="nav-cred-create"></input>
+                </td>
+                <td>
+                    <label for="nav-cred-create-user.id-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-user.id-set" name="nav-cred-create-user.id-set" checked
+                           class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>BufferSource</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-user"
+                               target="_blank">User.ID + RP.ID combination</a> must be unique in authenticator (or it
+                            may
+                            override previous
+                            discoverable credential)
+                        </li>
+                        <li>Max size:64</li>
+                        <li>No PII data</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-user.name">
+                    <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
+                       target="_blank">User Name</a></label>
+                    (may be chosen by user to differentiate with similar display name)
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-create-user.name" class="nav-cred-create"></input>
+                </td>
+                <td>
+                    <label for="nav-cred-create-user.name-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-user.name-set" name="nav-cred-create-user.name-set"
+                           checked class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li>Formatting: <a href="https://www.rfc-editor.org/rfc/rfc8265#section-3.4.3"
+                                           target="_blank">RFC 8265</a> (UsernameCasePreserved): NFC Normalize, Bidi
+                            Rule,
+                            non-empty
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-strings-langdir" target="_blank">Language &
+                            directional encoding</a>: Tag Language(U+E0001),
+                            direction(L-R:U+200E,R-L:U+200F,Cancel:U+E007F)
+                        </li>
+                        <li>May be <a href="https://w3c.github.io/webauthn/#sctn-strings-truncation" target="_blank">truncated</a>
+                            to 64 bytes by authenticators
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-user.displayName">
+                    <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname"
+                       target="_blank">User Display Name</a></label>
+                    (User must choose it)
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-create-user.displayName" class="nav-cred-create"></input>
+                </td>
+                <td>
+                    <label for="nav-cred-create-user.displayName-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-user.displayName-set" class="nav-cred-create"
+                           name="nav-cred-create-user.displayName-set" checked value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li>Formatting: <a href="https://www.rfc-editor.org/rfc/rfc8266#section-2.3"
+                                           target="_blank">RFC8266</a>: trim
+                            space, compact multi-space,NFKC Normalize, non-empty
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-strings-langdir" target="_blank">Language &
+                            directional encoding</a>: Tag Language(U+E0001),
+                            direction(L-R:U+200E,R-L:U+200F,Cancel:U+E007F)
+                        </li>
+                        <li>May be <a href="https://w3c.github.io/webauthn/#sctn-strings-truncation" target="_blank">truncated</a>
+                            to 64 bytes by authenticators
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">Other attributes</td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-challenge"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-challenge"
+                        target="_blank">Challenge</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-challenge" class="nav-cred-create"></input>
+                </td>
+                <td>
+                    <label for="nav-cred-create-challenge-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-challenge-set" name="nav-cred-create-challenge-set"
+                           checked class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>BufferSource</li>
+                        <li>Generated on Server; stored for validation of response</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dom-collectedclientdata-challenge" target="_blank">Base64
+                            encoded</a></li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-cryptographic-challenges" target="_blank">Randomized</a>
+                            with enough entropy to make guessing infeasible
+                        </li>
+                        <li>Min size: 16 bytes</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-pubkeycredparams"
+                        target="_blank">Public Key credential parameters</a>
+                </td>
+                <td>
+                    <label for="nav-cred-create-pubKeyCredParams-options-ed25519">Ed25519</label>
+                    <input type="checkbox" id="nav-cred-create-pubKeyCredParams-options-ed25519"
+                           class="nav-cred-create nav-cred-create-pubKeyCredParams-options"
+                           name="nav-cred-create-pubKeyCredParams-options-ed25519"
+                           checked value='{"type":"public-key", "alg": -8}'>
+                    <label for="nav-cred-create-pubKeyCredParams-options-es256">ES256</label>
+                    <input type="checkbox" id="nav-cred-create-pubKeyCredParams-options-es256"
+                           class="nav-cred-create nav-cred-create-pubKeyCredParams-options"
+                           name="nav-cred-create-pubKeyCredParams-options-es256"
+                           checked value='{"type":"public-key", "alg": -7}'>
+                    <label for="nav-cred-create-pubKeyCredParams-options-rs256">RS256 (?)</label>
+                    <input type="checkbox" id="nav-cred-create-pubKeyCredParams-options-rs256"
+                           class="nav-cred-create nav-cred-create-pubKeyCredParams-options"
+                           name="nav-cred-create-pubKeyCredParams-options-rs256"
+                           checked value='{"type":"public-key", "alg": -257}'>
+                    <BR>
+                    TODO: Add all the allowed values from the IANA registry
+                </td>
+                <td><label for="nav-cred-create-pubKeyCredParams-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-pubKeyCredParams-set"
+                           name="nav-cred-create-pubKeyCredParams-set" class="nav-cred-create" checked value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialparameters"
+                               target="_blank">PublicKeyCredentialParameters</a>
+                            {type (DOMString/Required):<a
+                                    href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialtype"
+                                    target="_blank">'public-key'</a>,
+                            alg (long/Required): <a
+                                    href="https://w3c.github.io/webauthn/#typedefdef-cosealgorithmidentifier"
+                                    target="_blank">COSEAlgorithmIdentifier</a>}
+                        </li>
+                        <li><a href="https://www.iana.org/assignments/cose/cose.xhtml#algorithms" target="_blank">IANA
+                            COSE
+                            Algorithms Registry</a></li>
+                        <li>Additional guarantees for
+                            <a href="https://w3c.github.io/webauthn/#typedefdef-cosealgorithmidentifier"
+                               target="_blank">credential
+                                public key</a>
+                            (e.g. not use compressed point form for ES*) in alignment with <a
+                                    href="https://www.rfc-editor.org/rfc/rfc9053#section-2.1"
+                                    target="_blank">RFC9053</a>
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li><a href="https://en.wikipedia.org/wiki/WebAuthn#Reception" target="_blank">Support for RSA
+                            discouraged</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-timeout"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-timeout"
+                        target="_blank">Timeout </a>(millis)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-timeout" class="nav-cred-create"></input>
+                </td>
+                <td><label for="nav-cred-create-timeout-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-timeout-set" name="nav-cred-create-timeout-set"
+                           class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>unsigned long</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Treated as <a
+                                href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-timeout"
+                                target="_blank">hint</a>
+                            & MAY be overridden by client (browser)
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials"
+                        target="_blank">Exclude credentials </a></td>
+                <td>
+                    <div id="nav-cred-create-excludeCredentials-list">Generate once another sesion with credential has
+                        been
+                        registered.
+                    </div>
+                </td>
+                <td><label for="nav-cred-create-excludeCredentials-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-excludeCredentials-set"
+                           name="nav-cred-create-excludeCredentials-set" class="nav-cred-create" value="Set">
+                    <input type="button" id="nav-cred-create-excludeCredentials-generate"
+                           name="nav-cred-create-excludeCredentials-generate" class="nav-cred-create" value="Generate"
+                           onclick="GenerateExcludedCredential(sessions, 'nav-cred-create-excludeCredentials-list')">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>Array of <a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialdescriptor"
+                                        target="_blank">PublicKeyCredentialDescriptor</a> that are existing credential
+                            mapped to user
+                            {
+                            type (DOMString/Required): <a
+                                    href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialtype">'public-key'</a>,
+                            id (BufferSource/Required): Credential ID (<a
+                                    href="https://w3c.github.io/webauthn/#dom-publickeycredential-rawid"
+                                    target="_blank">rawID</a>
+                            of PublicKeyCredential),
+                            transports ([]DOMString/Optional): Applicable <a
+                                    href="https://w3c.github.io/webauthn/#enumdef-authenticatortransport">AuthenticatorTransport</a>
+                            (usb/nfc/ble/hybrid/internal)
+                            }
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>New credential not created on authenticator for giver user.id + rp.id if given credential(s)
+                            <a
+                                    href="https://w3c.github.io/webauthn/#bound-credential" target="_blank">already
+                                exists</a>
+                            on the authenticator.
+                            Guide user to use a diff authenticator or error if that fails.
+                        </li>
+                        <li>Need to provide credential raw id (is that a security/privacy issue?)TODO: Need analysis
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-authenticatorselection"
+                        target="_blank">Authenticator Selection</a></td>
+                <td><label for="nav-cred-create-authenticatorSelection-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-authenticatorSelection-set"
+                           name="nav-cred-create-authenticatorSelection-set" class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria"
+                               target="_blank"> AuthenticatorSelectionCriteria</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-authenticatorSelection.authenticatorAttachment"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-authenticatorselection"
+                        target="_blank">Authenticator attachment </a></label></td>
+                <td>
+                    <select name="nav-cred-create-authenticatorSelection.authenticatorAttachment"
+                            id="nav-cred-create-authenticatorSelection.authenticatorAttachment" class="nav-cred-create">
+                        <option value="platform">Platform</option>
+                        <option value="cross-platform">Cross Platform</option>
+                        <option value="invalidVal" selected>Not selected</option>
+                    </select>
+                </td>
+                <td><label for="nav-cred-create-authenticatorSelection.authenticatorAttachment-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-authenticatorSelection.authenticatorAttachment-set"
+                           name="nav-cred-create-authenticatorSelection.authenticatorAttachment-set"
+                           class="nav-cred-create" value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enum-attachment" target="_blank">Allowed values</a>:
+                            'platform'/'cross-platform'
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-authenticator-attachment-modality">'platform'(not
+                            removable from device)/'cross-platform' (removable)</a></li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-authenticator-attachment-modality"
+                               target="_blank">Some</a> platform authenticators can be roaming (e.g. TPM on mobile
+                            available through bluetooth)
+                        </li>
+                        <li>TODO: There is no specific guidance on passkeys in this context</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-authenticatorSelection.residentKey"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-residentkey"
+                        target="_blank">Resident key (Discoverable?) </a></label></td>
+                <td>
+                    <select name="nav-cred-create-authenticatorSelection.residentKey"
+                            id="nav-cred-create-authenticatorSelection.residentKey" class="nav-cred-create">
+                        <option value="invalidVal" selected>Not selected</option>
+                        <option value="discouraged">Discouraged (Server side)</option>
+                        <option value="preferred">Preferred (Discoverable)</option>
+                        <option value="required">Required (Discoverable)</option>
+                    </select>
+                </td>
+                <td><label for="nav-cred-create-authenticatorSelection.residentKey-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-authenticatorSelection.residentKey-set"
+                           class="nav-cred-create" name="nav-cred-create-authenticatorSelection.residentKey-set"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-residentkeyrequirement" target="_blank">Allowed
+                            values</a>:
+                            'discouraged'/'preferred'/'required'
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#server-side-credential"
+                               target="_blank">server side credential</a></li>
+                        <li>Preferred supersedes userVerification setting</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dom-residentkeyrequirement-discouraged">Server side
+                            credential</a>: there is no way for RP to know if credential is server side or not & so does
+                            not
+                            know if
+                            creating a second cred with same handle will evict the first (TODO: does this mean that
+                            excluded
+                            cred must be provided explicitly)
+                        </li>
+                        <li>Client side discoverable credential can be validated using <a
+                                href="https://w3c.github.io/webauthn/#dom-credentialpropertiesoutput-rk">CredentialPropertiesOutput.rk</a>
+                            extension.
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-authenticatorSelection.requireResidentKey"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-requireresidentkey"
+                        target="_blank">Require resident key</a></label></td>
+                <td>
+                    <label for="nav-cred-create-authenticatorSelection.requireResidentKey">Resident key
+                        required?</label>
+                    <input type="checkbox" name="nav-cred-create-authenticatorSelection.requireResidentKey"
+                           class="nav-cred-create nav-cred-create-authenticatorSelection.requireResidentKey-options"
+                           id="nav-cred-create-authenticatorSelection.requireResidentKey" value="true">
+                </td>
+                <td><label for="nav-cred-create-authenticatorSelection.requireResidentKey-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-authenticatorSelection.requireResidentKey-set"
+                           name="nav-cred-create-authenticatorSelection.requireResidentKey-set"
+                           class="nav-cred-create"
+                           value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>boolean</li>
+                        <li>Default value: false</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>
+                            <a href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-requireresidentkey"
+                               target="_blank">requireResidentKey</a> must be set to true if residentKey is set to
+                            required
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-authenticatorSelection.userVerification"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-userverification"
+                        target="_blank">User verification</a></label></td>
+                <td>
+                    <select name="nav-cred-create-authenticatorSelection.userVerification"
+                            id="nav-cred-create-authenticatorSelection.userVerification" class="nav-cred-create">
+                        <option value="invalidVal">Not selected</option>
+                        <option value="discouraged">Discouraged (no user verification)</option>
+                        <option value="preferred" selected>Preferred (not fail on missing/error)</option>
+                        <option value="required">Required (fail if missing/error)</option>
+                    </select>
+                </td>
+                <td><label for="nav-cred-create-authenticatorSelection.userVerification-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-authenticatorSelection.userVerification-set"
+                           name="nav-cred-create-authenticatorSelection.userVerification-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-userverificationrequirement"
+                               target="_blank">Allowed
+                            values</a>: required/"preferred"/"discouraged"
+                        </li>
+                        <li>Default value: preferred</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>How to handle error condition for preferred?</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-create-attestation"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestation"
+                        target="_blank">Attestation</a></label></td>
+                <td>
+                    <select name="nav-cred-create-attestation"
+                            id="nav-cred-create-attestation" class="nav-cred-create">
+                        <option value="invalidVal">Not selected</option>
+                        <option value="none" selected>None (no attestation needed)</option>
+                        <option value="indirect">Indirect (client/browser may change it)</option>
+                        <option value="direct">Direct (as provided by authenticator)</option>
+                        <option value="enterprise">Enterprise (may contain unique identifier)</option>
+                    </select>
+                </td>
+                <td><label for="nav-cred-create-attestation-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-attestation-set"
+                           name="nav-cred-create-attestation-set" class="nav-cred-create"
+                           value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference"
+                               target="_blank">Allowed values</a>: "none"/"indirect"/"direct"/"enterprise"
+                        </li>
+                        <li>Default value: none</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Attestation conveyance definition is cyclic in the specification</li>
+                        <li>Values
+                            <ol>
+                                <li><b>none</b>: RP not interested due to
+                                    <ol>
+                                        <li>avoid user consent</li>
+                                        <li>save round trip to attestation CA or Anon CA</li>
+                                    </ol>
+                                    If authenticator generates self-attestation, it is passed through by
+                                    client. All other attestations are <a
+                                            href="https://w3c.github.io/webauthn/#dom-attestationconveyancepreference-none"
+                                            target="_blank">replaced</a> with none by client.
+                                </li>
+                                <li><b>indirect</b>: client (e.g. browser) decided which attestation statement is
+                                    provided.
+                                    Client may replace authenticator attestation with anonymous attestation (for
+                                    privacy).
+                                    No guarantee of receiving verifiable attestation (may receive self-attestation).
+                                </li>
+                                <li><b>direct</b>: receive exactly what was generated by authenticator. ??what if there
+                                    is
+                                    nothing generated??
+                                </li>
+                                <li><b>enterprise</b>: attestation may include uniquely identifying information.
+                                    Typically,
+                                    explicitly configured in client/user agent for specific RP (Relying Party) ID
+                                    (domain).
+                                    Client/user agent should not change the value.
+                                </li>
+                            </ol>
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-attestation-types" target="_blank"> Types of
+                            Attestation</a>:
+                            <ol>
+                                <li><b>Basic/Batch</b> - Authenticator of same model share same attestation key pair
+                                </li>
+                                <li><b>Self</b> - uses credential private key to create attestation signature</li>
+                                <li><b>Attestation CA (AttCA)</b> - Endorsement key stored in TPM used to communicate
+                                    with
+                                    Attestation/Privacy CA
+                                    and get Attestation Identity Key (AIK) Certificate signed. AIK can be generated for
+                                    each
+                                    credential and shared
+                                    as attestation cert with RP. Most recent cert is called "Active"
+                                </li>
+                                <li><b>Anonymization CA (AnonCA)</b> - dynamically generated per-credential certificate
+                                </li>
+                            </ol>
+                        </li>
+                        <li>All attestations are distinguishable only with <a
+                                href="https://w3c.github.io/webauthn/#anonymization-ca" target="_blank">externally
+                            provided
+                            knowledge</a> (???) regarding content of att cert.
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats"
+                       target="_blank">Preferred Attestation Formats</a></td>
+                <td>
+                    <label for="nav-cred-create-attestationFormats-options-packed">Packed</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-packed"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-packed"
+                           checked value='packed'>
+                    <label for="nav-cred-create-attestationFormats-options-tpm">TPM</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-tpm"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-tpm"
+                           checked value='tpm'>
+                    <label for="nav-cred-create-attestationFormats-options-android_key">Android key</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-android_key"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-android_key"
+                           checked value='android-key'>
+                    <label for="nav-cred-create-attestationFormats-options-android_safetynet">Android Safetynet
+                        API</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-android_safetynet"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-android_safetynet"
+                           checked value='android-safetynet'>
+                    <label for="nav-cred-create-attestationFormats-options-fido_u2f">FIDO U2F</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-fido_u2f"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-fido_u2f"
+                           checked value='fido-u2f'>
+                    <label for="nav-cred-create-attestationFormats-options-apple">Apple</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-apple"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-apple"
+                           checked value='apple'>
+                    <label for="nav-cred-create-attestationFormats-options-none">None</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-options-none"
+                           class="nav-cred-create nav-cred-create-attestationFormats-options"
+                           name="nav-cred-create-attestationFormats-options-none"
+                           value='none'>
+                </td>
+                <td><label for="nav-cred-create-attestationFormats-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-attestationFormats-set"
+                           name="nav-cred-create-attestationFormats-set" class="nav-cred-create"
+                           value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>[]DOMString</li>
+                        <li>Allowed values
+                            <a href="https://www.iana.org/assignments/webauthn/webauthn.xhtml" target="_blank">IANA
+                                WebAuthn
+                                Registry</a></li>
+                        <li>Default value: []</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Order value from most preferable to least preferable (Not supported)</li>
+                        <li>Parameter is advisory and authenticator may use format not specified.</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td>attr</td>
+                <td>val</td>
+                <td>action</td>
+                <td>val&guide</td>
+            </tr>
 
-                    </li>
-                    <li>Does not contain scheme or port. Scheme should be https & port is unrestricted
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-rp.name">
-                <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
-                   target="_blank">Relying Party Name (human palatable name e.g. ACME Corp)</a></label></td>
-            <td>
-                <input type="text" id="nav-cred-create-rp.name" class="nav-cred-create"></input>
-            </td>
-            <td>
-                <label for="nav-cred-create-rp.name-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-rp.name-set" name="nav-cred-create-rp.name-set" checked
-                       class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Required</li>
-                    <li>DOMString</li>
-                    <li>Formatting: <a href="https://www.rfc-editor.org/rfc/rfc8266#section-2.3"
-                                       target="_blank">RFC8266</a>: trim
-                        space, compact multi-space,NFKC Normalize, non-empty
-                    </li>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-strings-langdir" target="_blank">Language &
-                        directional encoding</a>: Tag Language(U+E0001), direction(L-R:U+200E,R-L:U+200F,Cancel:U+E007F)
-                    </li>
-                    <li>May be <a href="https://w3c.github.io/webauthn/#sctn-strings-truncation" target="_blank">truncated</a>
-                        to 64 bytes by authenticators
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-user" target="_blank">User</a>
-            </td>
-            <td><label for="nav-cred-create-user-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-user-set" name="nav-cred-create-user-set" checked
-                       class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Required</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialuserentity" target="_blank">
-                        PublicKeyCredentialUserEntity</a></li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-user.id"><a
-                    href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialuserentity" target="_blank">User
-                ID</a></label>
-            </td>
-            <td>
-                <input type="text" id="nav-cred-create-user.id" class="nav-cred-create"></input>
-            </td>
-            <td>
-                <label for="nav-cred-create-user.id-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-user.id-set" name="nav-cred-create-user.id-set" checked
-                       class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Required</li>
-                    <li>BufferSource</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-user"
-                           target="_blank">User.ID + RP.ID combination</a> must be unique in authenticator (or it may
-                        override previous
-                        discoverable credential)
-                    </li>
-                    <li>Max size:64</li>
-                    <li>No PII data</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-user.name">
-                <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
-                   target="_blank">User Name</a></label>
-                (may be chosen by user to differentiate with similar display name)
-            </td>
-            <td>
-                <input type="text" id="nav-cred-create-user.name" class="nav-cred-create"></input>
-            </td>
-            <td>
-                <label for="nav-cred-create-user.name-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-user.name-set" name="nav-cred-create-user.name-set"
-                       checked class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Required</li>
-                    <li>DOMString</li>
-                    <li>Formatting: <a href="https://www.rfc-editor.org/rfc/rfc8265#section-3.4.3"
-                                       target="_blank">RFC 8265</a> (UsernameCasePreserved): NFC Normalize, Bidi Rule,
-                        non-empty
-                    </li>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-strings-langdir" target="_blank">Language &
-                        directional encoding</a>: Tag Language(U+E0001), direction(L-R:U+200E,R-L:U+200F,Cancel:U+E007F)
-                    </li>
-                    <li>May be <a href="https://w3c.github.io/webauthn/#sctn-strings-truncation" target="_blank">truncated</a>
-                        to 64 bytes by authenticators
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-user.displayName">
-                <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname"
-                   target="_blank">User Display Name</a></label>
-                (User must choose it)
-            </td>
-            <td>
-                <input type="text" id="nav-cred-create-user.displayName" class="nav-cred-create"></input>
-            </td>
-            <td>
-                <label for="nav-cred-create-user.displayName-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-user.displayName-set" class="nav-cred-create"
-                       name="nav-cred-create-user.displayName-set" checked value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Required</li>
-                    <li>DOMString</li>
-                    <li>Formatting: <a href="https://www.rfc-editor.org/rfc/rfc8266#section-2.3"
-                                       target="_blank">RFC8266</a>: trim
-                        space, compact multi-space,NFKC Normalize, non-empty
-                    </li>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-strings-langdir" target="_blank">Language &
-                        directional encoding</a>: Tag Language(U+E0001), direction(L-R:U+200E,R-L:U+200F,Cancel:U+E007F)
-                    </li>
-                    <li>May be <a href="https://w3c.github.io/webauthn/#sctn-strings-truncation" target="_blank">truncated</a>
-                        to 64 bytes by authenticators
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="4">Other attributes</td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-challenge"><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-challenge"
-                    target="_blank">Challenge</a></label></td>
-            <td>
-                <input type="text" id="nav-cred-create-challenge" class="nav-cred-create"></input>
-            </td>
-            <td>
-                <label for="nav-cred-create-challenge-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-challenge-set" name="nav-cred-create-challenge-set"
-                       checked class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Required</li>
-                    <li>BufferSource</li>
-                    <li>Generated on Server; stored for validation of response</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dom-collectedclientdata-challenge" target="_blank">Base64
-                        encoded</a></li>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-cryptographic-challenges" target="_blank">Randomized</a>
-                        with enough entropy to make guessing infeasible
-                    </li>
-                    <li>Min size: 16 bytes</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-pubkeycredparams"
-                    target="_blank">Public Key credential parameters</a>
-            </td>
-            <td>
-                <label for="nav-cred-create-pubKeyCredParams-options-ed25519">Ed25519</label>
-                <input type="checkbox" id="nav-cred-create-pubKeyCredParams-options-ed25519"
-                       class="nav-cred-create nav-cred-create-pubKeyCredParams-options"
-                       name="nav-cred-create-pubKeyCredParams-options-ed25519"
-                       checked value='{"type":"public-key", "alg": -8}'>
-                <label for="nav-cred-create-pubKeyCredParams-options-es256">ES256</label>
-                <input type="checkbox" id="nav-cred-create-pubKeyCredParams-options-es256"
-                       class="nav-cred-create nav-cred-create-pubKeyCredParams-options"
-                       name="nav-cred-create-pubKeyCredParams-options-es256"
-                       checked value='{"type":"public-key", "alg": -7}'>
-                <label for="nav-cred-create-pubKeyCredParams-options-rs256">RS256 (?)</label>
-                <input type="checkbox" id="nav-cred-create-pubKeyCredParams-options-rs256"
-                       class="nav-cred-create nav-cred-create-pubKeyCredParams-options"
-                       name="nav-cred-create-pubKeyCredParams-options-rs256"
-                       checked value='{"type":"public-key", "alg": -257}'>
-                <BR>
-                TODO: Add all the allowed values from the IANA registry
-            </td>
-            <td><label for="nav-cred-create-pubKeyCredParams-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-pubKeyCredParams-set"
-                       name="nav-cred-create-pubKeyCredParams-set" class="nav-cred-create" checked value="Set">
-            </td>
-            <td>
-                <h4>Validations</h4>
-                <ol>
-                    <li>Required</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialparameters" target="_blank">PublicKeyCredentialParameters</a>
-                        {type (DOMString/Required):<a
-                                href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialtype" target="_blank">'public-key'</a>,
-                        alg (long/Required): <a
-                                href="https://w3c.github.io/webauthn/#typedefdef-cosealgorithmidentifier"
-                                target="_blank">COSEAlgorithmIdentifier</a>}
-                    </li>
-                    <li><a href="https://www.iana.org/assignments/cose/cose.xhtml#algorithms" target="_blank">IANA COSE
-                        Algorithms Registry</a></li>
-                    <li>Additional guarantees for
-                        <a href="https://w3c.github.io/webauthn/#typedefdef-cosealgorithmidentifier" target="_blank">credential
-                            public key</a>
-                        (e.g. not use compressed point form for ES*) in alignment with <a
-                                href="https://www.rfc-editor.org/rfc/rfc9053#section-2.1" target="_blank">RFC9053</a>
-                    </li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li><a href="https://en.wikipedia.org/wiki/WebAuthn#Reception" target="_blank">Support for RSA
-                        discouraged</a></li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-timeout"><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-timeout"
-                    target="_blank">Timeout </a>(millis)</label></td>
-            <td>
-                <input type="text" id="nav-cred-create-timeout" class="nav-cred-create"></input>
-            </td>
-            <td><label for="nav-cred-create-timeout-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-timeout-set" name="nav-cred-create-timeout-set"
-                       class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>unsigned long</li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li>Treated as <a
-                            href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-timeout"
-                            target="_blank">hint</a>
-                        & MAY be overridden by client (browser)
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials"
-                    target="_blank">Exclude credentials </a></td>
-            <td>
-                <div id="nav-cred-create-excludeCredentials-list">Generate once another sesion with credential has been
-                    registered.
-                </div>
-            </td>
-            <td><label for="nav-cred-create-excludeCredentials-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-excludeCredentials-set"
-                       name="nav-cred-create-excludeCredentials-set" class="nav-cred-create" value="Set">
-                <input type="button" id="nav-cred-create-excludeCredentials-generate"
-                       name="nav-cred-create-excludeCredentials-generate" class="nav-cred-create" value="Generate"
-                       onclick="GenerateExcludedCredential(sessions, 'nav-cred-create-excludeCredentials-list')">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>Array of <a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialdescriptor"
-                                    target="_blank">PublicKeyCredentialDescriptor</a> that are existing credential
-                        mapped to user
-                        {
-                        type (DOMString/Required): <a
-                                href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialtype">'public-key'</a>,
-                        id (BufferSource/Required): Credential ID (<a
-                                href="https://w3c.github.io/webauthn/#dom-publickeycredential-rawid" target="_blank">rawID</a>
-                        of PublicKeyCredential),
-                        transports ([]DOMString/Optional): Applicable <a
-                                href="https://w3c.github.io/webauthn/#enumdef-authenticatortransport">AuthenticatorTransport</a>
-                        (usb/nfc/ble/hybrid/internal)
-                        }
-                    </li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li>New credential not created on authenticator for giver user.id + rp.id if given credential(s) <a
-                            href="https://w3c.github.io/webauthn/#bound-credential" target="_blank">already exists</a>
-                        on the authenticator.
-                        Guide user to use a diff authenticator or error if that fails.
-                    </li>
-                    <li>Need to provide credential raw id (is that a security/privacy issue?)TODO: Need analysis</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2"><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-authenticatorselection"
-                    target="_blank">Authenticator Selection</a></td>
-            <td><label for="nav-cred-create-authenticatorSelection-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-authenticatorSelection-set"
-                       name="nav-cred-create-authenticatorSelection-set" class="nav-cred-create" value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria"
-                           target="_blank"> AuthenticatorSelectionCriteria</a></li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-authenticatorSelection.authenticatorAttachment"><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-authenticatorselection"
-                    target="_blank">Authenticator attachment </a></label></td>
-            <td>
-                <select name="nav-cred-create-authenticatorSelection.authenticatorAttachment"
-                        id="nav-cred-create-authenticatorSelection.authenticatorAttachment" class="nav-cred-create">
-                    <option value="platform">Platform</option>
-                    <option value="cross-platform">Cross Platform</option>
-                    <option value="invalidVal" selected>Not selected</option>
-                </select>
-            </td>
-            <td><label for="nav-cred-create-authenticatorSelection.authenticatorAttachment-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-authenticatorSelection.authenticatorAttachment-set"
-                       name="nav-cred-create-authenticatorSelection.authenticatorAttachment-set"
-                       class="nav-cred-create" value="Set"></td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>DOMString</li>
-                    <li><a href="https://w3c.github.io/webauthn/#enum-attachment" target="_blank">Allowed values</a>:
-                        'platform'/'cross-platform'
-                    </li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-authenticator-attachment-modality">'platform'(not
-                        removable from device)/'cross-platform' (removable)</a></li>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-authenticator-attachment-modality"
-                           target="_blank">Some</a> platform authenticators can be roaming (e.g. TPM on mobile
-                        available through bluetooth)
-                    </li>
-                    <li>TODO: There is no specific guidance on passkeys in this context</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-authenticatorSelection.residentKey"><a
-                    href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-residentkey"
-                    target="_blank">Resident key (Discoverable?) </a></label></td>
-            <td>
-                <select name="nav-cred-create-authenticatorSelection.residentKey"
-                        id="nav-cred-create-authenticatorSelection.residentKey" class="nav-cred-create">
-                    <option value="invalidVal" selected>Not selected</option>
-                    <option value="discouraged">Discouraged (Server side)</option>
-                    <option value="preferred">Preferred (Discoverable)</option>
-                    <option value="required">Required (Discoverable)</option>
-                </select>
-            </td>
-            <td><label for="nav-cred-create-authenticatorSelection.residentKey-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-authenticatorSelection.residentKey-set"
-                       class="nav-cred-create" name="nav-cred-create-authenticatorSelection.residentKey-set"
-                       value="Set"></td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>DOMString</li>
-                    <li><a href="https://w3c.github.io/webauthn/#enumdef-residentkeyrequirement" target="_blank">Allowed
-                        values</a>:
-                        'discouraged'/'preferred'/'required'
-                    </li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li><a href="https://w3c.github.io/webauthn/#server-side-credential"
-                           target="_blank">server side credential</a></li>
-                    <li>Preferred supersedes userVerification setting</li>
-                    <li><a href="https://w3c.github.io/webauthn/#dom-residentkeyrequirement-discouraged">Server side
-                        credential</a>: there is no way for RP to know if credential is server side or not & so does not
-                        know if
-                        creating a second cred with same handle will evict the first (TODO: does this mean that excluded
-                        cred must be provided explicitly)
-                    </li>
-                    <li>Client side discoverable credential can be validated using <a
-                            href="https://w3c.github.io/webauthn/#dom-credentialpropertiesoutput-rk">CredentialPropertiesOutput.rk</a>
-                        extension.
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-authenticatorSelection.requireResidentKey"><a
-                    href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-requireresidentkey"
-                    target="_blank">Require resident key</a></label></td>
-            <td>
-                <label for="nav-cred-create-authenticatorSelection.requireResidentKey">Resident key required?</label>
-                <input type="checkbox" name="nav-cred-create-authenticatorSelection.requireResidentKey"
-                       class="nav-cred-create nav-cred-create-authenticatorSelection.requireResidentKey-options"
-                       id="nav-cred-create-authenticatorSelection.requireResidentKey" value="true">
-            </td>
-            <td><label for="nav-cred-create-authenticatorSelection.requireResidentKey-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-authenticatorSelection.requireResidentKey-set"
-                       name="nav-cred-create-authenticatorSelection.requireResidentKey-set"
-                       class="nav-cred-create"
-                       value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>boolean</li>
-                    <li>Default value: false</li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li><a href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-requireresidentkey"
-                           target="_blank">requireResidentKey</a> must be set to true if residentKey is set to required
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-authenticatorSelection.userVerification"><a
-                    href="https://w3c.github.io/webauthn/#dom-authenticatorselectioncriteria-userverification"
-                    target="_blank">User verification</a></label></td>
-            <td>
-                <select name="nav-cred-create-authenticatorSelection.userVerification"
-                        id="nav-cred-create-authenticatorSelection.userVerification" class="nav-cred-create">
-                    <option value="invalidVal">Not selected</option>
-                    <option value="discouraged">Discouraged (no user verification)</option>
-                    <option value="preferred" selected>Preferred (not fail on missing/error)</option>
-                    <option value="required">Required (fail if missing/error)</option>
-                </select>
-            </td>
-            <td><label for="nav-cred-create-authenticatorSelection.userVerification-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-authenticatorSelection.userVerification-set"
-                       name="nav-cred-create-authenticatorSelection.userVerification-set" class="nav-cred-create"
-                       value="Set"></td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>DOMString</li>
-                    <li><a href="https://w3c.github.io/webauthn/#enumdef-userverificationrequirement" target="_blank">Allowed
-                        values</a>: required/"preferred"/"discouraged"
-                    </li>
-                    <li>Default value: preferred</li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li>How to handle error condition for preferred?</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="nav-cred-create-attestation"><a
-                    href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestation"
-                    target="_blank">Attestation</a></label></td>
-            <td>
-                <select name="nav-cred-create-attestation"
-                        id="nav-cred-create-attestation" class="nav-cred-create">
-                    <option value="invalidVal">Not selected</option>
-                    <option value="none" selected>None (no attestation needed)</option>
-                    <option value="indirect">Indirect (client/browser may change it)</option>
-                    <option value="direct">Direct (as provided by authenticator)</option>
-                    <option value="enterprise">Enterprise (may contain unique identifier)</option>
-                </select>
-            </td>
-            <td><label for="nav-cred-create-attestation-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-attestation-set"
-                       name="nav-cred-create-attestation-set" class="nav-cred-create"
-                       value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>DOMString</li>
-                    <li><a href="https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference"
-                           target="_blank">Allowed values</a>: "none"/"indirect"/"direct"/"enterprise"
-                    </li>
-                    <li>Default value: none</li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li>Attestation conveyance definition is cyclic in the specification</li>
-                    <li>Values
-                        <ol>
-                            <li><b>none</b>: RP not interested due to
-                                <ol>
-                                    <li>avoid user consent</li>
-                                    <li>save round trip to attestation CA or Anon CA</li>
-                                </ol>
-                                If authenticator generates self-attestation, it is passed through by
-                                client. All other attestations are <a
-                                        href="https://w3c.github.io/webauthn/#dom-attestationconveyancepreference-none"
-                                        target="_blank">replaced</a> with none by client.
-                            </li>
-                            <li><b>indirect</b>: client (e.g. browser) decided which attestation statement is provided.
-                                Client may replace authenticator attestation with anonymous attestation (for privacy).
-                                No guarantee of receiving verifiable attestation (may receive self-attestation).
-                            </li>
-                            <li><b>direct</b>: receive exactly what was generated by authenticator. ??what if there is
-                                nothing generated??
-                            </li>
-                            <li><b>enterprise</b>: attestation may include uniquely identifying information. Typically,
-                                explicitly configured in client/user agent for specific RP (Relying Party) ID (domain).
-                                Client/user agent should not change the value.
-                            </li>
-                        </ol>
-                    </li>
-                    <li><a href="https://w3c.github.io/webauthn/#sctn-attestation-types" target="_blank"> Types of
-                        Attestation</a>:
-                        <ol>
-                            <li><b>Basic/Batch</b> - Authenticator of same model share same attestation key pair</li>
-                            <li><b>Self</b> - uses credential private key to create attestation signature</li>
-                            <li><b>Attestation CA (AttCA)</b> - Endorsement key stored in TPM used to communicate with
-                                Attestation/Privacy CA
-                                and get Attestation Identity Key (AIK) Certificate signed. AIK can be generated for each
-                                credential and shared
-                                as attestation cert with RP. Most recent cert is called "Active"
-                            </li>
-                            <li><b>Anonymization CA (AnonCA)</b> - dynamically generated per-credential certificate</li>
-                        </ol>
-                    </li>
-                    <li>All attestations are distinguishable only with <a
-                            href="https://w3c.github.io/webauthn/#anonymization-ca" target="_blank">externally provided
-                        knowledge</a> (???) regarding content of att cert.
-                    </li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats"
-                   target="_blank">Preferred Attestation Formats</a></td>
-            <td>
-                <label for="nav-cred-create-attestationFormats-options-packed">Packed</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-packed"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-packed"
-                       checked value='packed'>
-                <label for="nav-cred-create-attestationFormats-options-tpm">TPM</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-tpm"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-tpm"
-                       checked value='tpm'>
-                <label for="nav-cred-create-attestationFormats-options-android_key">Android key</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-android_key"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-android_key"
-                       checked value='android-key'>
-                <label for="nav-cred-create-attestationFormats-options-android_safetynet">Android Safetynet API</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-android_safetynet"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-android_safetynet"
-                       checked value='android-safetynet'>
-                <label for="nav-cred-create-attestationFormats-options-fido_u2f">FIDO U2F</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-fido_u2f"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-fido_u2f"
-                       checked value='fido-u2f'>
-                <label for="nav-cred-create-attestationFormats-options-apple">Apple</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-apple"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-apple"
-                       checked value='apple'>
-                <label for="nav-cred-create-attestationFormats-options-none">None</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-options-none"
-                       class="nav-cred-create nav-cred-create-attestationFormats-options"
-                       name="nav-cred-create-attestationFormats-options-none"
-                       value='none'>
-            </td>
-            <td><label for="nav-cred-create-attestationFormats-set">Set value</label>
-                <input type="checkbox" id="nav-cred-create-attestationFormats-set"
-                       name="nav-cred-create-attestationFormats-set" class="nav-cred-create"
-                       value="Set">
-            </td>
-            <td>
-                <h4>Validation</h4>
-                <ol>
-                    <li>Optional</li>
-                    <li>[]DOMString</li>
-                    <li>Allowed values
-                        <a href="https://www.iana.org/assignments/webauthn/webauthn.xhtml" target="_blank">IANA WebAuthn
-                            Registry</a></li>
-                    <li>Default value: []</li>
-                </ol>
-                <h4>Guidance</h4>
-                <ol>
-                    <li>Order value from most preferable to least preferable (Not supported)</li>
-                    <li>Parameter is advisory and authenticator may use format not specified.</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td>attr</td>
-            <td>val</td>
-            <td>action</td>
-            <td>val&guide</td>
-        </tr>
-
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+    <div id="nav-cred-createSection-genCreds" class="nav-cred-createSections tabcontent" style="display: none">
+        <p>
+            <input type="button" name="nav-cred-create-createCredential" value="Create Credential"
+                   onclick="CredentialCreate(currentSession);">
+        </p>
+    </div>
 </div>
 <div id="nav-cred-get" class="nav-creds">
     Get
