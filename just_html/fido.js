@@ -1,4 +1,3 @@
-
 function CredentialCreate(session) {
     log("Creating credential", 'info', 'nav-cred-create-logging')
     navigator.credentials.create({publicKey: session['nav-cred-create-options']})
@@ -56,4 +55,34 @@ let DefaultCredOptions = {
         }
 
     ]
+}
+
+let TransformationDefinition = {
+    "nav-cred-create": {
+        "availableKeys": ["attestation", "attestationFormats", "authenticatorSelection.authenticatorAttachment",
+            "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.residentKey",
+            "challenge", "pubKeyCredParams", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
+        "default": "text-noChange",
+        "rp": "object-noChange",
+        "user": "object-noChange",
+        "user.id": "text-ArrayBuffer",
+        "challenge": "text-ArrayBuffer",
+        "pubKeyCredParams": "options-sessionMap/alg",
+        "timeout": "text-number",
+        "authenticatorSelection": "object-noChange",
+        "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
+        "excludeCredentials": "options-sessionMap",
+        "attestationFormats": "options-noChange"
+    },
+    "nav-cred-obj": {
+        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
+            "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
+            "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
+        "default": "text-noChange",
+        "rawId": "text-ArrayBuffer",
+        "response.clientDataJSON": "text-ArrayBuffer",
+        "response.attestationObject": "text-ArrayBuffer",
+        "response.getAuthenticatorData": "text-ArrayBuffer",
+        "response.getPublicKey": "text-ArrayBuffer",
+    },
 }

@@ -149,33 +149,6 @@ function selectSession() {
 const textEncoder = new TextEncoder()
 const textDecoder = new TextDecoder()
 const objectProcessingGuidance = {
-    "nav-cred-create": {
-        "availableKeys": ["attestation", "attestationFormats", "authenticatorSelection.authenticatorAttachment",
-            "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.residentKey",
-            "challenge", "pubKeyCredParams", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
-        "default": "text-noChange",
-        "rp": "object-noChange",
-        "user": "object-noChange",
-        "user.id": "text-ArrayBuffer",
-        "challenge": "text-ArrayBuffer",
-        "pubKeyCredParams": "options-sessionMap/alg",
-        "timeout": "text-number",
-        "authenticatorSelection": "object-noChange",
-        "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
-        "excludeCredentials": "options-sessionMap",
-        "attestationFormats": "options-noChange"
-    },
-    "nav-cred-obj": {
-        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
-            "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
-            "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
-        "default": "text-noChange",
-        "rawId": "text-ArrayBuffer",
-        "response.clientDataJSON": "text-ArrayBuffer",
-        "response.attestationObject": "text-ArrayBuffer",
-        "response.getAuthenticatorData": "text-ArrayBuffer",
-        "response.getPublicKey": "text-ArrayBuffer",
-    },
     "extract": {
         "text": {
             "get": (prefix, attributeName) => {
@@ -435,9 +408,9 @@ function GenerateObject(prefix = "nav-creds-create",) {
             }, true)
             log("Attribute to be set " + setAttribute, 'debug')
             if (setAttribute) {
-                let attrType = objectProcessingGuidance[prefix].default
-                if (objectProcessingGuidance[prefix].hasOwnProperty(attributeName)) {
-                    attrType = objectProcessingGuidance[prefix][attributeName]
+                let attrType = TransformationDefinition[prefix].default
+                if (TransformationDefinition[prefix].hasOwnProperty(attributeName)) {
+                    attrType = TransformationDefinition[prefix][attributeName]
                 }
                 log("Attribute of type " + attrType)
                 switch (attrType) {
@@ -472,7 +445,7 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
     }
     let elements = document.getElementsByClassName(prefix)
     log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'info')
-    let keyNames = objectProcessingGuidance[base_prefix].availableKeys
+    let keyNames = TransformationDefinition[base_prefix].availableKeys
     keyNames.forEach((keyName, index, arrayValue) => {
         let applicableValue = resolve(keyName, objectValue)
         let applyValue = false
@@ -510,9 +483,9 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
                 break;
         }
         if (applyValue) {
-            let attrType = objectProcessingGuidance[base_prefix].default
-            if (objectProcessingGuidance[base_prefix].hasOwnProperty(keyName)) {
-                attrType = objectProcessingGuidance[prefix][keyName]
+            let attrType = TransformationDefinition[base_prefix].default
+            if (TransformationDefinition[base_prefix].hasOwnProperty(keyName)) {
+                attrType = TransformationDefinition[prefix][keyName]
             }
             log("Attribute of type " + attrType)
             switch (attrType) {
