@@ -50,22 +50,70 @@ function ShowTab(element_id, select_prefix, tab_prefix, class_name = "nav-creds"
     document.getElementById(selectedTab).style.display = "block"
 }
 
-function ShowSection(sectionClass, sectionId, linkId) {
+function ShowSection(sectionClass, linkClass, sectionId, linkId, useClassToDisplaySection = false, linkType = 'link', sectionType = 'div') {
     let tabs = document.getElementsByClassName(sectionClass)
     for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
         tabs[tabIndex].style.display = "none"
     }
-    let tabLinks = document.getElementsByClassName('tablinks')
-    for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
+    let linkObject = document.getElementById(linkId)
+    let displayValue = "block"
+    let setDisplayValue = false
+    switch (linkType) {
+        case "link":
+            setDisplayValue = true
+            break;
+        case 'checkbox':
+            if (linkObject.checked) {
+                setDisplayValue = true
+            } else {
+                setDisplayValue = false
+            }
+            break;
+        default:
+            setDisplayValue = false;
+            break;
+    }
+    switch (sectionType) {
+        case "div":
+            displayValue = "block"
+            break
+        case "table":
+            displayValue = ""
+            break
+        default:
+            displayValue = "block"
+            break
+    }
+    if (setDisplayValue) {
+        if (!useClassToDisplaySection) {
+            document.getElementById(sectionId).style.display = displayValue
+        } else {
+            let sections = document.getElementsByClassName(sectionId)
+            for (let tabIndex = 0; tabIndex < sections.length; tabIndex++) {
+                sections[tabIndex].style.display = displayValue
+            }
+        }
+    }
+    let tabLinks = document.getElementsByClassName(linkClass)
+    for (let tabIndex = 0; tabIndex < tabLinks.length; tabIndex++) {
         tabLinks[tabIndex].classList.remove('active')
     }
-    document.getElementById(sectionId).style.display = "block"
     document.getElementById(linkId).classList.add('active')
 }
 
+const publicKeyCredentialDetails = {
+    "-7": {"type": "public-key", "alg": -7},
+    "-257": {"type": "public-key", "alg": -257},
+    "-8": {"type": "public-key", "alg": -8},
+}
+const publicKeyCredentialMapper = new Map()
+Object.keys(publicKeyCredentialDetails).forEach((key) => {
+    publicKeyCredentialMapper.set(key, publicKeyCredentialDetails[key])
+})
+
 let sessions = new Map()
 let currentSession = {
-    "nav-cred-create": {}
+    "nav-cred-create-pubKeyCredParams": publicKeyCredentialMapper
 }
 let sessionID = 1
 
@@ -75,7 +123,8 @@ function createSession() {
         return
     }
     let newSession = {
-        sessionId: "InvalidSessionID"
+        sessionId: "InvalidSessionID",
+        "nav-cred-create-pubKeyCredParams": publicKeyCredentialMapper
     }
     newSession.sessionId = sessionDesc
     sessions.set(newSession.sessionId, newSession)
@@ -101,17 +150,31 @@ const textEncoder = new TextEncoder()
 const textDecoder = new TextDecoder()
 const objectProcessingGuidance = {
     "nav-cred-create": {
+        "availableKeys": ["attestation", "attestationFormats", "authenticatorSelection.authenticatorAttachment",
+            "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.residentKey",
+            "challenge", "pubKeyCredParams", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
         "default": "text-noChange",
         "rp": "object-noChange",
         "user": "object-noChange",
         "user.id": "text-ArrayBuffer",
         "challenge": "text-ArrayBuffer",
-        "pubKeyCredParams": "options-stoj",
+        "pubKeyCredParams": "options-sessionMap/alg",
         "timeout": "text-number",
         "authenticatorSelection": "object-noChange",
         "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
         "excludeCredentials": "options-sessionMap",
         "attestationFormats": "options-noChange"
+    },
+    "nav-cred-obj": {
+        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
+            "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
+            "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
+        "default": "text-noChange",
+        "rawId": "text-ArrayBuffer",
+        "response.clientDataJSON": "text-ArrayBuffer",
+        "response.attestationObject": "text-ArrayBuffer",
+        "response.getAuthenticatorData": "text-ArrayBuffer",
+        "response.getPublicKey": "text-ArrayBuffer",
     },
     "extract": {
         "text": {
@@ -157,24 +220,42 @@ const objectProcessingGuidance = {
                 return []
             },
             "set": (prefix, attributeName, attributeValue) => {
-                //TODO:
+                let applicableValues = attributeValue
+                if (!Array.isArray(attributeValue)) {
+                    applicableValues = [attributeValue]
+                }
+                let dataElements = document.getElementsByClassName(prefix + "-" + attributeName + "-options")
+                for (let dECounter = 0; dECounter < dataElements.length; dECounter++) {
+                    dataElements[dECounter].checked = false
+                }
+                applicableValues.forEach((applicableValue, index, appArray) => {
+                    if (dataElements.length > 0) {
+                        for (let dECounter = 0; dECounter < dataElements.length; dECounter++) {
+                            if (String(applicableValue) === dataElements[dECounter].value) {
+                                dataElements[dECounter].checked = true
+                            }
+                        }
+                    } else {
+                        log(prefix + "-" + attributeName + " does not have any options to set value")
+                    }
+                })
             }
         }
     },
     "transform": {
         "noChange": {
-            "get": (input, prefix, attributeName) => {
+            "get": (input, prefix, attributeName, transformers) => {
                 return input
             },
-            "set": (input, prefix, attributeName) => {
+            "set": (input, prefix, attributeName, transformers) => {
                 return input
             }
         },
         "number": {
-            "get": (input, prefix, attributeName) => {
+            "get": (input, prefix, attributeName, transformers) => {
                 return Number(input)
             },
-            "set": (input, prefix, attributeName) => {
+            "set": (input, prefix, attributeName, transformers) => {
                 return input
             }
         },
@@ -184,14 +265,14 @@ const objectProcessingGuidance = {
                 log("buffer value" + encodedValue)
                 return encodedValue
             },
-            "set": (input, prefix, attributeName) => {
+            "set": (input, prefix, attributeName, transformers) => {
                 let decodedValue = textDecoder.decode(input)
                 log("decoded value" + decodedValue)
                 return decodedValue
             }
         },
         "stoj": {
-            "get": (input, prefix, attributeName) => {
+            "get": (input, prefix, attributeName, transformers) => {
                 if (Array.isArray(input)) {
                     return input.reduce((collectValues, item, currentIndex, items) => {
                         collectValues.push(JSON.parse(item))
@@ -203,7 +284,7 @@ const objectProcessingGuidance = {
                     return parsedValue
                 }
             },
-            "set": (input, prefix, attributeName) => {
+            "set": (input, prefix, attributeName, transformers) => {
                 if (Array.isArray(input)) {
                     return input.reduce((collectValues, item, currentIndex, items) => {
                         collectValues.push(JSON.stringify(item))
@@ -217,7 +298,7 @@ const objectProcessingGuidance = {
             }
         },
         "bool": {
-            "get": (input, prefix, attributeName) => {
+            "get": (input, prefix, attributeName, transformers) => {
                 if (Array.isArray(input)) {
                     return input.reduce((collectValues, inputValue, currentIndex, items) => {
                         collectValues.push((inputValue?.toLowerCase?.() === 'true'))
@@ -229,12 +310,12 @@ const objectProcessingGuidance = {
                     return parsedValue
                 }
             },
-            "set": (input, prefix, attributeName) => {
+            "set": (input, prefix, attributeName, transformers) => {
                 //TODO:
             }
         },
         "sessionMap": {
-            "get": (input, prefix, attributeName) => {
+            "get": (input, prefix, attributeName, transformers) => {
                 let noTransformationPerformed = true
                 let transformationMapAttributeName = prefix + "-" + attributeName
                 let transformationMap = new Map()
@@ -266,8 +347,41 @@ const objectProcessingGuidance = {
                     return returnValue
                 }
             },
-            "set": (input, prefix, attributeName) => {
-                //TODO:
+            "set": (input, prefix, attributeName, transformers) => {
+                let noTransformationPerformed = true
+                let transformationMapAttributeName = prefix + "-" + attributeName + "-reverse"
+                let transformationMap = new Map()
+                if (currentSession.hasOwnProperty(transformationMapAttributeName)) {
+                    transformationMap = currentSession[transformationMapAttributeName]
+                    noTransformationPerformed = false
+                } else {
+                    log('Failed to locate property ' + transformationMapAttributeName + " in current session " + currentSession)
+                }
+                if (Array.isArray(input)) {
+                    return input.reduce((collectValues, inputValue, currentIndex, items) => {
+                        let applicationInputValue = inputValue
+                        if (transformers.length > 1) {
+                            applicationInputValue = resolve(transformers[1], inputValue)
+                        }
+                        if (noTransformationPerformed) {
+                            collectValues.push(applicationInputValue)
+                        } else if (transformationMap.has(applicationInputValue)) {
+                            collectValues.push(transformationMap.get(applicationInputValue))
+                        } else if (transformationMap.has("DEFAULT-VALUE")) { //BAD Idea
+                            collectValues.push(transformationMap.get("DEFAULT-VALUE"))
+                        } else {
+                            log("Failed to locate transformation detail for " + applicationInputValue + ". Skipping the value", 'warn')
+                        }
+                        return collectValues
+                    }, [])
+                } else {
+                    let returnValue = input
+                    if (!noTransformationPerformed) {
+                        returnValue = transformationMap.get(input)
+                    }
+                    log("Mapped value" + returnValue)
+                    return returnValue
+                }
             }
         }
     },
@@ -337,7 +451,9 @@ function GenerateObject(prefix = "nav-creds-create",) {
                         if (typeValues.length === 3) {
                             reducedValue = objectProcessingGuidance.reduce[typeValues[2]].get(extractedValue, prefix, attributeName)
                         }
-                        let attrVal = objectProcessingGuidance.transform[typeValues[1]].get(reducedValue, prefix, attributeName)
+                        let applicableTransformationType = typeValues[1]
+                        let transformTypes = applicableTransformationType.split("/")
+                        let attrVal = objectProcessingGuidance.transform[transformTypes[0]].get(reducedValue, prefix, attributeName, transformTypes)
                         log("Attribute value" + attrVal)
                         setVal(attributeName, attrVal, generatedObject, ".")
                         break
@@ -347,6 +463,79 @@ function GenerateObject(prefix = "nav-creds-create",) {
     }
     log("Generated object for " + prefix + " as " + JSON.stringify(generatedObject), 'info')
     return generatedObject
+}
+
+
+function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
+    if (base_prefix === "") {
+        base_prefix = prefix
+    }
+    let elements = document.getElementsByClassName(prefix)
+    log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'info')
+    let keyNames = objectProcessingGuidance[base_prefix].availableKeys
+    keyNames.forEach((keyName, index, arrayValue) => {
+        let applicableValue = resolve(keyName, objectValue)
+        let applyValue = false
+        switch (typeof applicableValue) {
+            case "object":
+                if (ArrayBuffer.isView(applicableValue) || applicableValue.toString() === '[object ArrayBuffer]' || Array.isArray(applicableValue)) {
+                    applyValue = true
+                } else {
+                    log("Did not expect an object value for key " + keyName + ". Skipping key with value " + JSON.stringify(applicableValue))
+                    applyValue = false // since we can not consume it.
+                }
+                break;
+            case "function":
+                let applicableObject = objectValue
+                let keyitems = keyName.split(".")
+                if (keyitems.length > 1) {
+                    let prefixKeys = keyitems.slice(0, keyitems.length - 1).join(".")
+                    applicableObject = resolve(prefixKeys, objectValue)
+                }
+                log("Invoking function " + keyName + " with no parameter")
+                try {
+                    applicableValue = applicableValue.call(applicableObject)
+                    applyValue = true
+                } catch (error) {
+                    log("Error while invoking function " + keyName + ". Error: " + error.message + "(" + error.name + ")", 'error')
+                    log(error.stack, 'debug')
+                }
+                break;
+            case "undefined":
+                log("Skipping key " + keyName + " since it is undefined value")
+                applyValue = false
+                break;
+            default:
+                applyValue = true
+                break;
+        }
+        if (applyValue) {
+            let attrType = objectProcessingGuidance[base_prefix].default
+            if (objectProcessingGuidance[base_prefix].hasOwnProperty(keyName)) {
+                attrType = objectProcessingGuidance[prefix][keyName]
+            }
+            log("Attribute of type " + attrType)
+            switch (attrType) {
+                case "skip":
+                    log("Skipping attribute value setting")
+                    break
+                default:
+                    let typeValues = attrType.split("-")
+                    let applicableTransformationType = typeValues[1]
+                    let transformTypes = applicableTransformationType.split("/")
+                    let transformedValue = objectProcessingGuidance.transform[transformTypes[0]].set(applicableValue, prefix, keyName, transformTypes)
+                    let expandedValue = transformedValue
+                    if (typeValues.length === 3) {
+                        expandedValue = objectProcessingGuidance.reduce[typeValues[2]].set(transformedValue, prefix, keyName)
+                    }
+                    objectProcessingGuidance.extract[typeValues[0]].set(prefix, keyName, expandedValue)
+                    break
+            }
+        } else {
+            log("Skipping attribute " + keyName)
+        }
+    })
+    log("Set object for " + prefix, 'info')
 }
 
 function GetURL(suffix, callback, operation = "GET", body = "", debugLocation = "common-debug") {
@@ -423,23 +612,24 @@ function log(content, level = "debug", debugLocation = "common-debug") {
         lineCounter = logLineCounterMap.get(applicableDebugLocation)
     }
     logLineCounterMap.set(applicableDebugLocation, lineCounter + 1)
+    let levelChecked = document.getElementById("log-" + level + "-set").checked
 
     let finalContent = debugElement.innerHTML
     switch (level) {
         case 'debug':
-            finalContent = finalContent + "<p class='log-debug'>" + lineCounter + ": " + content + "</p>"
+            finalContent = finalContent + "<p class='log-debug' style='display: " + (levelChecked ? "block" : "none") + "'>" + lineCounter + ": " + content + "</p>"
             break
         case 'info':
-            finalContent = finalContent + "<p class='log-info' style='color:green; font-weight: bold'>" + lineCounter + ": " + content + "</p>"
+            finalContent = finalContent + "<p class='log-info' style='color:green; font-weight: bold; display: " + (levelChecked ? "block" : "none") + "'>" + lineCounter + ": " + content + "</p>"
             break
         case 'warn':
-            finalContent = finalContent + "<p class='log-warn' style='color:red;'>" + lineCounter + ": " + content + "</p>"
+            finalContent = finalContent + "<p class='log-warn' style='color:red; display: " + (levelChecked ? "block" : "none") + "'>" + lineCounter + ": " + content + "</p>"
             break
         case 'error':
-            finalContent = finalContent + "<p class='log-error' style='color:red; font-weight: bold'>" + lineCounter + ": " + content + "</p>"
+            finalContent = finalContent + "<p class='log-error' style='color:red; font-weight: bold; display: " + (levelChecked ? "block" : "none") + "'>" + lineCounter + ": " + content + "</p>"
             break
         default:
-            finalContent = finalContent + "<p class='log-debug'>" + lineCounter + ": " + content + "</p>"
+            finalContent = finalContent + "<p class='log-debug' style='display: " + (levelChecked ? "block" : "none") + "'>" + lineCounter + ": " + content + "</p>"
             break
     }
     debugElement.innerHTML = finalContent
@@ -454,7 +644,6 @@ function ShowHideLog(logLevel) {
         } else {
             logElements[elementCounter].style.display = "none"
         }
-
     }
 }
 

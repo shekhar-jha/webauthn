@@ -1,3 +1,4 @@
+
 function CredentialCreate(session) {
     log("Creating credential", 'info', 'nav-cred-create-logging')
     navigator.credentials.create({publicKey: session['nav-cred-create-options']})
@@ -32,4 +33,27 @@ function GenerateExcludedCredential(allSessions, divNameToProcess) {
         }
     })
     log("Generated the excluded credentials", 'debug', 'nav-cred-create-logging')
+}
+
+let DefaultCredOptions = {
+    "rp": {
+        "name": "ACME",
+    },
+    "user": {
+        "displayName": "testUserDisplayName",
+        "id": new TextEncoder().encode("testUserID"),
+        "name": "testUserName"
+    },
+    "challenge": new TextEncoder().encode("dsnkdksnsdkjndskjdnskn8e49898e9w89ewyhchchwchwe8che8cwc"),
+    "pubKeyCredParams": [
+        {
+            "alg": -7,
+            "type": "public-key"
+        },
+        {
+            "alg": -257,
+            "type": "public-key"
+        }
+
+    ]
 }
