@@ -111,8 +111,11 @@ Object.keys(publicKeyCredentialDetails).forEach((key) => {
     publicKeyCredentialMapper.set(key, publicKeyCredentialDetails[key])
 })
 
+let DefaultInvalidUser = "InvalidUser"
 let sessions = new Map()
 let currentSession = {
+    sessionId: "InvalidSessionID",
+    sessionUser: DefaultInvalidUser,
     "nav-cred-create-pubKeyCredParams": publicKeyCredentialMapper
 }
 let sessionID = 1
@@ -120,13 +123,22 @@ let sessionID = 1
 function createSession() {
     let sessionDesc = "" + document.getElementById("sessions-new-desc").value
     if (sessionDesc === "" || sessions.has(sessionDesc)) {
+        log("Missing session description. Nothing to do", 'error')
         return
     }
+    let sessionUser = "" + document.getElementById("sessions-new-user").value
+    if (sessionUser === "" || sessions.has(sessionUser)) {
+        log("Missing session user. Nothing to do", 'error')
+        return
+    }
+
     let newSession = {
         sessionId: "InvalidSessionID",
+        sessionUser: DefaultInvalidUser,
         "nav-cred-create-pubKeyCredParams": publicKeyCredentialMapper
     }
     newSession.sessionId = sessionDesc
+    newSession.sessionUser = sessionUser
     sessions.set(newSession.sessionId, newSession)
     let sessionsElement = document.createElement("option")
     sessionsElement.value = newSession.sessionId
@@ -137,12 +149,31 @@ function createSession() {
     selectSession()
 }
 
+let sessionEventListeners = [
+    (currSession) => {
+        log("Changing Session to " + currSession.sessionId, "info")
+    },
+    (currSession) => {
+        EstablishServerSession(currSession)
+    },
+]
+
 function selectSession() {
     let sessionDesc = document.getElementById("sessions").value
     if (sessions.has(sessionDesc)) {
         let sessObj = sessions.get(sessionDesc)
         currentSession = sessObj
         log("Selected session" + sessionDesc, 'info')
+        sessionEventListeners.forEach((sessionEventListener, index, allListeners) => {
+            if (sessionEventListener) {
+                try {
+                    sessionEventListener(currentSession)
+                } catch (error) {
+                    log("Failed to execute event listener at index " + index +
+                        "Error: " + error.message + "(" + error.name + ")", "error")
+                }
+            }
+        })
     }
 }
 
@@ -447,76 +478,81 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
     log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'info')
     let keyNames = TransformationDefinition[base_prefix].availableKeys
     keyNames.forEach((keyName, index, arrayValue) => {
-        let applicableValue = resolve(keyName, objectValue)
-        let applyValue = false
-        switch (typeof applicableValue) {
-            case "object":
-                if (ArrayBuffer.isView(applicableValue) || applicableValue.toString() === '[object ArrayBuffer]' || Array.isArray(applicableValue)) {
-                    applyValue = true
-                } else {
-                    log("Did not expect an object value for key " + keyName + ". Skipping key with value " + JSON.stringify(applicableValue))
-                    applyValue = false // since we can not consume it.
-                }
-                break;
-            case "function":
-                let applicableObject = objectValue
-                let keyitems = keyName.split(".")
-                if (keyitems.length > 1) {
-                    let prefixKeys = keyitems.slice(0, keyitems.length - 1).join(".")
-                    applicableObject = resolve(prefixKeys, objectValue)
-                }
-                log("Invoking function " + keyName + " with no parameter")
-                try {
-                    applicableValue = applicableValue.call(applicableObject)
-                    applyValue = true
-                } catch (error) {
-                    log("Error while invoking function " + keyName + ". Error: " + error.message + "(" + error.name + ")", 'error')
-                    log(error.stack, 'debug')
-                }
-                break;
-            case "undefined":
-                log("Skipping key " + keyName + " since it is undefined value")
-                applyValue = false
-                break;
-            default:
-                applyValue = true
-                break;
-        }
-        if (applyValue) {
-            let attrType = TransformationDefinition[base_prefix].default
-            if (TransformationDefinition[base_prefix].hasOwnProperty(keyName)) {
-                attrType = TransformationDefinition[prefix][keyName]
-            }
-            log("Attribute of type " + attrType)
-            switch (attrType) {
-                case "skip":
-                    log("Skipping attribute value setting")
-                    break
-                default:
-                    let typeValues = attrType.split("-")
-                    let applicableTransformationType = typeValues[1]
-                    let transformTypes = applicableTransformationType.split("/")
-                    let transformedValue = objectProcessingGuidance.transform[transformTypes[0]].set(applicableValue, prefix, keyName, transformTypes)
-                    let expandedValue = transformedValue
-                    if (typeValues.length === 3) {
-                        expandedValue = objectProcessingGuidance.reduce[typeValues[2]].set(transformedValue, prefix, keyName)
+        try {
+            let applicableValue = resolve(keyName, objectValue)
+            let applyValue = false
+            switch (typeof applicableValue) {
+                case "object":
+                    if (ArrayBuffer.isView(applicableValue) || applicableValue.toString() === '[object ArrayBuffer]' || Array.isArray(applicableValue)) {
+                        applyValue = true
+                    } else {
+                        log("Did not expect an object value for key " + keyName + ". Skipping key with value " + JSON.stringify(applicableValue))
+                        applyValue = false // since we can not consume it.
                     }
-                    objectProcessingGuidance.extract[typeValues[0]].set(prefix, keyName, expandedValue)
-                    break
+                    break;
+                case "function":
+                    let applicableObject = objectValue
+                    let keyitems = keyName.split(".")
+                    if (keyitems.length > 1) {
+                        let prefixKeys = keyitems.slice(0, keyitems.length - 1).join(".")
+                        applicableObject = resolve(prefixKeys, objectValue)
+                    }
+                    log("Invoking function " + keyName + " with no parameter")
+                    try {
+                        applicableValue = applicableValue.call(applicableObject)
+                        applyValue = true
+                    } catch (error) {
+                        log("Error while invoking function " + keyName + ". Error: " + error.message + "(" + error.name + ")", 'error')
+                        log(error.stack, 'debug')
+                    }
+                    break;
+                case "undefined":
+                    log("Skipping key " + keyName + " since it is undefined value")
+                    applyValue = false
+                    break;
+                default:
+                    applyValue = true
+                    break;
             }
-        } else {
-            log("Skipping attribute " + keyName)
+            if (applyValue) {
+                let attrType = TransformationDefinition[base_prefix].default
+                if (TransformationDefinition[base_prefix].hasOwnProperty(keyName)) {
+                    attrType = TransformationDefinition[prefix][keyName]
+                }
+                log("Attribute of type " + attrType)
+                switch (attrType) {
+                    case "skip":
+                        log("Skipping attribute value setting")
+                        break
+                    default:
+                        let typeValues = attrType.split("-")
+                        let applicableTransformationType = typeValues[1]
+                        let transformTypes = applicableTransformationType.split("/")
+                        let transformedValue = objectProcessingGuidance.transform[transformTypes[0]].set(applicableValue, prefix, keyName, transformTypes)
+                        let expandedValue = transformedValue
+                        if (typeValues.length === 3) {
+                            expandedValue = objectProcessingGuidance.reduce[typeValues[2]].set(transformedValue, prefix, keyName)
+                        }
+                        objectProcessingGuidance.extract[typeValues[0]].set(prefix, keyName, expandedValue)
+                        break
+                }
+            } else {
+                log("Skipping attribute " + keyName)
+            }
+        } catch (error) {
+            log("Failed to set attribute " + keyName + " due to error " + error.message + "(" + error.name + ")", 'error')
+            log(error.stack, 'debug')
         }
     })
     log("Set object for " + prefix, 'info')
 }
 
-function GetURL(suffix, callback, operation = "GET", body = "", debugLocation = "common-debug") {
+function GetURL(requestDetails, callback, session = currentSession, debugLocation = "common-debug") {
     let extURL = document.getElementById("externalURL").value
     let debugElement = document.getElementById(debugLocation)
     let xhr = new XMLHttpRequest();
     const logLocation = debugLocation
-    xhr.open(operation, extURL + "/" + suffix, true);
+    xhr.open(requestDetails.Method, extURL + requestDetails.URL, true);
     xhr.responseType = 'json';
     xhr.onerror = (event) => {
         log("Error: " + event.type, 'error', logLocation)
@@ -537,8 +573,8 @@ function GetURL(suffix, callback, operation = "GET", body = "", debugLocation = 
             callback(status);
         }
     }
-    if (body !== "") {
-        xhr.send(body)
+    if (requestDetails.Body && typeof requestDetails.Body === 'function') {
+        xhr.send(requestDetails.Body(session))
     } else {
         xhr.send()
     }
@@ -649,4 +685,11 @@ function setVal(path, value, obj = self, separator = '.') {
         }, obj
     )
     return obj
+}
+
+function B64Encode(aBuffer) {
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(aBuffer)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
 }

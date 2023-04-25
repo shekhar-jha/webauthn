@@ -34,6 +34,51 @@ function GenerateExcludedCredential(allSessions, divNameToProcess) {
     log("Generated the excluded credentials", 'debug', 'nav-cred-create-logging')
 }
 
+function EstablishServerSession(currSession) {
+    log("Logging in to server", "info")
+    GetURL(API_ENDPOINTS.login, () => {
+        log("Login to server complete")
+    }, currSession)
+    log("Logged in to server", "info")
+}
+
+sessionEventListeners.push((currSession) => {
+    if (currSession['nav-cred-create-options']) {
+        SetObject(currSession['nav-cred-create-options'], "nav-cred-create", "nav-cred-create")
+    } else {
+        SetObject(EmptyCredOptions, "nav-cred-create", "nav-cred-create")
+    }
+    if (currSession['nav-cred-create-credential']) {
+        SetObject(currSession['nav-cred-create-credential'], "nav-cred-obj", "nav-cred-obj")
+    } else {
+        SetObject(EmptyPublicKeyCredential, "nav-cred-obj", "nav-cred-obj")
+    }
+})
+
+let EmptyCredOptions = {
+    "rp": {
+        "id": "",
+        "name": "",
+    },
+    "user": {
+        "displayName": "",
+        "id": new TextEncoder().encode(""),
+        "name": ""
+    },
+    "challenge": new TextEncoder().encode(""),
+    "pubKeyCredParams": [
+        publicKeyCredentialDetails["-7"], publicKeyCredentialDetails["-8"], publicKeyCredentialDetails["-257"]
+    ],
+    "timeout": "",
+    "authenticatorSelection": {
+        "authenticatorAttachment": "invalidVal",
+        "residentKey": "invalidVal",
+        "requireResidentKey": false,
+        "userVerification": "preferred",
+    },
+    "attestation": "invalidVal",
+}
+
 let DefaultCredOptions = {
     "rp": {
         "name": "ACME",
@@ -57,11 +102,26 @@ let DefaultCredOptions = {
     ]
 }
 
+let EmptyPublicKeyCredential = {
+    authenticatorAttachment: "",
+    id: "",
+    rawId: new TextEncoder().encode(""),
+    toJSON: "",
+    response: {
+        attestationObject: new TextEncoder().encode(""),
+        clientDataJSON: new TextEncoder().encode(""),
+        getAuthenticatorData: new TextEncoder().encode(""),
+        getPublicKey: new TextEncoder().encode(""),
+        getPublicKeyAlgorithm: "",
+        getTransports: ""
+    }
+}
+
 let TransformationDefinition = {
     "nav-cred-create": {
         "availableKeys": ["attestation", "attestationFormats", "authenticatorSelection.authenticatorAttachment",
-            "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.residentKey",
-            "challenge", "pubKeyCredParams", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
+            "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.requireResidentKey",
+            "challenge", "pubKeyCredParams", "timeout", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
         "default": "text-noChange",
         "rp": "object-noChange",
         "user": "object-noChange",
@@ -85,4 +145,64 @@ let TransformationDefinition = {
         "response.getAuthenticatorData": "text-ArrayBuffer",
         "response.getPublicKey": "text-ArrayBuffer",
     },
+}
+
+let API_ENDPOINTS = {
+    getDebug: {
+        Method: "GET",
+        URL: "/debug",
+    },
+    getInfo: {
+        Method: "GET",
+        URL: "/api/info",
+    },
+    login: {
+        Method: "POST",
+        URL: "/api/login",
+        Body: (session) => {
+            return JSON.stringify({
+                username: session.sessionUser
+            })
+        }
+    },
+    logout: {
+        Method: "GET",
+        URL: "/api/logout",
+    },
+    getRegisterRequest: {
+        Method: "GET",
+        URL: "/api/webauthn/attestation"
+    },
+    register: {
+        Method: "POST",
+        URL: "/api/webauthn/attestation",
+        Body: (session) => {
+            let inputKeyCredential = session['nav-cred-create-credential']
+            return JSON.stringify({
+                type: inputKeyCredential.type,
+                id: inputKeyCredential.id,
+                authenticatorAttachment: inputKeyCredential.authenticatorAttachment,
+                rawId: B64Encode(inputKeyCredential.rawId),
+                clientExtensionResults: inputKeyCredential.getClientExtensionResults(),
+                response: {
+                    attestationObject: B64Encode(inputKeyCredential.response.attestationObject),
+                    clientDataJSON: B64Encode(inputKeyCredential.response.clientDataJSON),
+                    transports: inputKeyCredential.response.getTransports(),
+                    publicKeyAlgorithm: inputKeyCredential.response.getPublicKeyAlgorithm(),
+                    publicKey: B64Encode(inputKeyCredential.response.getPublicKey()),
+                }
+            })
+        }
+    },
+    getAuthRequest: {
+        Method: "GET",
+        URL: "/api/webauthn/assertion"
+    },
+    authenticate: {
+        Method: "POST",
+        URL: "/api/webauthn/assertion",
+        Body: (session) => {
+            return ""
+        }
+    }
 }

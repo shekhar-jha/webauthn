@@ -105,12 +105,21 @@
             <input type="text" name="sessions-new-desc" id="sessions-new-desc" value=""
                    placeholder="sample desc for new session"/>
         </td>
-        <td><input type="button" value="Create new session" onclick="createSession()"/></td>
+        <td rowspan="2"><input type="button" value="Create new session" onclick="createSession()"/></td>
+    </tr>
+    <tr>
+        <td>
+            <label for="sessions-new-user">Session user</label><BR>
+        </td>
+        <td>
+            <input type="text" name="sessions-new-user" id="sessions-new-user" value=""
+                   placeholder="testUser1"/>
+        </td>
     </tr>
     <tr>
         <td><label for="sessions">Current Sessions</label></td>
         <td>
-            <select name="sessions" id="sessions" onchange="selectSession()">
+            <select name="sessions" id="sessions" onchange="selectSession();">
                 <option value="session-invalid">No sessions defined</option>
             </select>
         </td>
