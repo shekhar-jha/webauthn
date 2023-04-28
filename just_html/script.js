@@ -154,7 +154,7 @@ let sessionEventListeners = [
         log("Changing Session to " + currSession.sessionId, "info")
     },
     (currSession) => {
-        EstablishServerSession(currSession)
+        GetURL(API_ENDPOINTS.login, currSession)
     },
 ]
 
@@ -471,6 +471,10 @@ function GenerateObject(prefix = "nav-creds-create",) {
 
 
 function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
+    if (!objectValue) {
+        log("Failed to set object for prefix " + prefix, 'error')
+        return
+    }
     if (base_prefix === "") {
         base_prefix = prefix
     }
@@ -547,7 +551,7 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
     log("Set object for " + prefix, 'info')
 }
 
-function GetURL(requestDetails, callback, session = currentSession, debugLocation = "common-debug") {
+function GetURL(requestDetails, session = currentSession, debugLocation = "common-debug") {
     let extURL = document.getElementById("externalURL").value
     let debugElement = document.getElementById(debugLocation)
     let xhr = new XMLHttpRequest();
@@ -566,11 +570,10 @@ function GetURL(requestDetails, callback, session = currentSession, debugLocatio
     xhr.onload = () => {
         let status = xhr.status;
         if (status === 200) {
-            log("Response:" + xhr.response, 'info', logLocation)
-            callback(null, xhr.response);
+            requestDetails.Callback(status, xhr.response, session, debugLocation);
         } else {
             log("Status:" + status, 'error', logLocation)
-            callback(status);
+            requestDetails.Callback(status, null, session, debugLocation);
         }
     }
     if (requestDetails.Body && typeof requestDetails.Body === 'function') {
@@ -692,4 +695,45 @@ function B64Encode(aBuffer) {
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=/g, "");
+}
+
+function B64Decode(b64Input) {
+    const byteCharacters = atob(b64Input);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return byteArray
+}
+
+function Base64Encoder(elementId) {
+    const textElement = document.getElementById(elementId)
+    const stateElement = document.getElementById(elementId + "-B64Encoded")
+    if (textElement && stateElement) {
+        const isChecked = stateElement.checked
+        const inputValue = textElement.value
+        let outputValue = inputValue
+        if (!isChecked) {
+            outputValue = B64Encode(textEncoder.encode(inputValue))
+        } else {
+            outputValue = textDecoder.decode(B64Decode(inputValue))
+        }
+        textElement.value = outputValue
+        stateElement.checked = !isChecked
+        Base64EncoderFlip(elementId)
+    }
+}
+
+function Base64EncoderFlip(elementId) {
+    const buttonElement = document.getElementById(elementId + "-Base64")
+    const stateElement = document.getElementById(elementId + "-B64Encoded")
+    if (buttonElement && stateElement) {
+        const isChecked = stateElement.checked
+        if (!isChecked) {
+            buttonElement.value = "Base64 Encode"
+        } else {
+            buttonElement.value = "Base64 Decode"
+        }
+    }
 }

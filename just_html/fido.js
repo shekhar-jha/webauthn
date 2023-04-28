@@ -5,7 +5,8 @@ function CredentialCreate(session) {
             log("Created credential successfully. ", 'info', 'nav-cred-create-logging')
             session['nav-cred-create-credential'] = newCredentialInfo
         }).catch(function (err) {
-        log("Failed to create credential. Error: " + JSON.stringify(err), 'error', 'nav-cred-create-logging')
+        log("Failed to create credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-create-logging')
+        log("Stack: " + err.stack, 'debug', 'nav-cred-create-logging')
         session['nav-cred-create-error'] = err
     });
     log("Started credential creation", 'info', 'nav-cred-create-logging')
@@ -34,12 +35,22 @@ function GenerateExcludedCredential(allSessions, divNameToProcess) {
     log("Generated the excluded credentials", 'debug', 'nav-cred-create-logging')
 }
 
-function EstablishServerSession(currSession) {
-    log("Logging in to server", "info")
-    GetURL(API_ENDPOINTS.login, () => {
-        log("Login to server complete")
-    }, currSession)
-    log("Logged in to server", "info")
+function CreateCredentialResponse(session) {
+    let inputKeyCredential = session['nav-cred-create-credential']
+    return JSON.stringify({
+        type: inputKeyCredential.type,
+        id: inputKeyCredential.id,
+        authenticatorAttachment: inputKeyCredential.authenticatorAttachment,
+        rawId: B64Encode(inputKeyCredential.rawId),
+        clientExtensionResults: inputKeyCredential.getClientExtensionResults(),
+        response: {
+            attestationObject: B64Encode(inputKeyCredential.response.attestationObject),
+            clientDataJSON: B64Encode(inputKeyCredential.response.clientDataJSON),
+            transports: inputKeyCredential.response.getTransports(),
+            publicKeyAlgorithm: inputKeyCredential.response.getPublicKeyAlgorithm(),
+            publicKey: B64Encode(inputKeyCredential.response.getPublicKey()),
+        }
+    })
 }
 
 sessionEventListeners.push((currSession) => {
@@ -54,6 +65,18 @@ sessionEventListeners.push((currSession) => {
         SetObject(EmptyPublicKeyCredential, "nav-cred-obj", "nav-cred-obj")
     }
 })
+
+let CredentailOptionList = {
+    Empty: (currSession) => {
+        return EmptyCredOptions
+    },
+    Default: (currSession) => {
+        return DefaultCredOptions
+    },
+    ServerSide: (currSession) => {
+        GetURL(API_ENDPOINTS.getRegisterRequest, currentSession, 'nav-cred-create-logging')
+    }
+}
 
 let EmptyCredOptions = {
     "rp": {
@@ -145,16 +168,56 @@ let TransformationDefinition = {
         "response.getAuthenticatorData": "text-ArrayBuffer",
         "response.getPublicKey": "text-ArrayBuffer",
     },
+    "nav-cred-obj-parse": {
+        "availableKeys": ["Response.CollectedClientData.type", "Response.CollectedClientData.challenge",
+            "Response.CollectedClientData.origin", "Response.CollectedClientData.topOrigin",
+            "Response.CollectedClientData.crossOrigin", "Response.AttestationObject.fmt",
+            "Response.AttestationObject.AuthData.rpid", "Response.AttestationObject.AuthData.flags",
+            "Response.AttestationObject.AuthData.sign_count", "Response.AttestationObject.AuthData.att_data.aaguid",
+            "Response.AttestationObject.AuthData.att_data.credential_id", "Response.AttestationObject.AuthData.att_data.public_key",
+            "Response.AttestationObject.AuthData.att_data.public_key"],
+        "default": "text-noChange",
+
+    }
 }
 
 let API_ENDPOINTS = {
     getDebug: {
         Method: "GET",
         URL: "/debug",
+        Callback: (status, response, currSession, debugLocation) => {
+            log("Executing callback", "info", debugLocation)
+            if (status === 200 && response === "Hello") {
+                log("Successfully invoked debug", "info", debugLocation)
+            } else {
+                log("Debug invocation failed with status " + status + " and response " + response, "info", debugLocation)
+            }
+            log("Executed callback", "info", debugLocation)
+        }
     },
     getInfo: {
         Method: "GET",
         URL: "/api/info",
+        Callback: (status, response, currSession, debugLocation) => {
+            log("Executing callback for /api/info", "info", debugLocation)
+            try {
+                if (status === 200) {
+                    if (response.status === "OK") {
+                        if (currSession.sessionUser === response.data.username) {
+                            log("Current session name matches server session i.e. " + currSession.sessionUser, "info", debugLocation)
+                        } else {
+                            log("Session user name " + currSession.sessionUser + " does not match " + response.data.username, "error", debugLocation)
+                        }
+                    }
+                } else {
+                    log("Debug invocation failed with status " + status + " and response " + response, "info", debugLocation)
+                }
+                log("Executed callback for /api/info", "info", debugLocation)
+            } catch (error) {
+                log("Failed to execute callback for /api/info with error " + error.message + "(" + error.name + ")", "error", debugLocation)
+                log("Stack " + error.stack, "debug", debugLocation)
+            }
+        },
     },
     login: {
         Method: "POST",
@@ -163,7 +226,14 @@ let API_ENDPOINTS = {
             return JSON.stringify({
                 username: session.sessionUser
             })
-        }
+        },
+        Callback: (status, response, currSession, debugLocation) => {
+            if (status === 200 && response.status === "OK") {
+                log("Successfully login to server", "info", debugLocation)
+            } else {
+                log("Login to server failed " + status + " response " + response?.status, "error", debugLocation)
+            }
+        },
     },
     logout: {
         Method: "GET",
@@ -177,22 +247,15 @@ let API_ENDPOINTS = {
         Method: "POST",
         URL: "/api/webauthn/attestation",
         Body: (session) => {
-            let inputKeyCredential = session['nav-cred-create-credential']
-            return JSON.stringify({
-                type: inputKeyCredential.type,
-                id: inputKeyCredential.id,
-                authenticatorAttachment: inputKeyCredential.authenticatorAttachment,
-                rawId: B64Encode(inputKeyCredential.rawId),
-                clientExtensionResults: inputKeyCredential.getClientExtensionResults(),
-                response: {
-                    attestationObject: B64Encode(inputKeyCredential.response.attestationObject),
-                    clientDataJSON: B64Encode(inputKeyCredential.response.clientDataJSON),
-                    transports: inputKeyCredential.response.getTransports(),
-                    publicKeyAlgorithm: inputKeyCredential.response.getPublicKeyAlgorithm(),
-                    publicKey: B64Encode(inputKeyCredential.response.getPublicKey()),
-                }
-            })
-        }
+            return CreateCredentialResponse(session)
+        },
+        Callback: (status, response, currSession, debugLocation) => {
+            if (status === 200 && response.status === "OK") {
+                log("Successfully registered to server", "info", debugLocation)
+            } else {
+                log("Failed to registered to server " + status + " response " + response?.status, "error", debugLocation)
+            }
+        },
     },
     getAuthRequest: {
         Method: "GET",
@@ -203,6 +266,21 @@ let API_ENDPOINTS = {
         URL: "/api/webauthn/assertion",
         Body: (session) => {
             return ""
+        }
+    },
+    parseCredential: {
+        Method: "POST",
+        URL: "/api/webauthn/credential/parse",
+        Body: (session) => {
+            return CreateCredentialResponse(session)
+        },
+        Callback: (status, response, currSession, debugLocation) => {
+            if (status === 200 && response.status === "OK") {
+                log("Successfully parsed credential creation response on server", "info", debugLocation)
+                currSession['nav-cred-create-credential-parsed'] = response.data
+            } else {
+                log("Failed to parsed credential creation response on server " + status + " response " + response?.status, "error", debugLocation)
+            }
         }
     }
 }

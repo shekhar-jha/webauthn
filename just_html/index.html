@@ -159,41 +159,59 @@
         <div id="nav-cred-create-logging"></div>
     </div>
     <div id="nav-cred-createSection-credOpts" class="nav-cred-createSections tabcontent" style="display: block">
-        <p>
-            <input type="button" name="nav-cred-create-generateObject" value="Generate Create Credential Option"
-                   onclick="currentSession['nav-cred-create-options'] = GenerateObject('nav-cred-create');ShowSection('nav-cred-createSections','tablinks', 'nav-cred-createSection-genCreds', 'nav-cred-createSectionLink-genCreds')">
-        </p>
-        <p>
-            <input type="button" name="nav-cred-create-fillOptions" value="Load default Create Credential Option"
-                   onclick="SetObject(DefaultCredOptions, 'nav-cred-create','nav-cred-create');">
-        </p>
-        <p>
-            Show/Hide section: <label for="nav-cred-createOptionBox-rp">Relying Party</label>
-            <input type="checkbox" id="nav-cred-createOptionBox-rp" name="nav-cred-createOptions-rp"
-                   class="nav-cred-createOptionBox" checked
-                   onchange="ShowSection('nav-cred-createOptions-rp','nav-cred-createOptionBox', 'nav-cred-createOptions-rp', 'nav-cred-createOptionBox-rp', true, 'checkbox', 'table')">
-            <label for="nav-cred-createOptionBox-user">User</label>
-            <input type="checkbox" id="nav-cred-createOptionBox-user" name="nav-cred-createOptions-user"
-                   class="nav-cred-createOptionBox" checked
-                   onchange="ShowSection('nav-cred-createOptions-user','nav-cred-createOptionBox', 'nav-cred-createOptions-user', 'nav-cred-createOptionBox-user', true, 'checkbox', 'table')">
-            <label for="nav-cred-createOptionBox-others">Other attributes</label>
-            <input type="checkbox" id="nav-cred-createOptionBox-others" name="nav-cred-createOptions-others"
-                   class="nav-cred-createOptionBox" checked
-                   onchange="ShowSection('nav-cred-createOptions-others','nav-cred-createOptionBox', 'nav-cred-createOptions-others', 'nav-cred-createOptionBox-others', true, 'checkbox', 'table')">
-            <label for="nav-cred-createOptionBox-exclude">Credential Exclusion</label>
-            <input type="checkbox" id="nav-cred-createOptionBox-exclude" name="nav-cred-createOptions-exclude"
-                   class="nav-cred-createOptionBox" checked
-                   onchange="ShowSection('nav-cred-createOptions-exclude','nav-cred-createOptionBox', 'nav-cred-createOptions-exclude', 'nav-cred-createOptionBox-exclude', true, 'checkbox', 'table')">
-            <label for="nav-cred-createOptionBox-authSec">Auth. Selector</label>
-            <input type="checkbox" id="nav-cred-createOptionBox-authSec" name="nav-cred-createOptions-authSec"
-                   class="nav-cred-createOptionBox" checked
-                   onchange="ShowSection('nav-cred-createOptions-authSec','nav-cred-createOptionBox', 'nav-cred-createOptions-authSec', 'nav-cred-createOptionBox-authSec', true, 'checkbox', 'table')">
+        <table class="emptyTable">
+            <tr>
+                <td><label for="nav-cred-create-fillOptions-Values">
+                    <input type="button"
+                           name="nav-cred-create-fillOptions"
+                           value="Load Credential Option"
+                           onclick="SetObject(DefaultCredOptions, 'nav-cred-create','nav-cred-create');"></label>
+                </td>
+                <td><select name="nav-cred-create-fillOptions-Values"
+                            id="nav-cred-create-fillOptions-Values">
+                    <option value="Empty" selected>Empty</option>
+                    <option value="Default">Default</option>
+                    <option value="ServerSide">From server</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="button" name="nav-cred-create-generateObject"
+                                       value="Generate Create Credential Option"
+                                       onclick="currentSession['nav-cred-create-options'] = GenerateObject('nav-cred-create');ShowSection('nav-cred-createSections','tablinks', 'nav-cred-createSection-genCreds', 'nav-cred-createSectionLink-genCreds')">
+                </td>
+            </tr>
+            <tr>
+                <td>Show/Hide section</td>
+                <td>
+                    <label for="nav-cred-createOptionBox-rp">Relying Party</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-rp" name="nav-cred-createOptions-rp"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-rp','nav-cred-createOptionBox', 'nav-cred-createOptions-rp', 'nav-cred-createOptionBox-rp', true, 'checkbox', 'table')">
+                    <label for="nav-cred-createOptionBox-user">User</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-user" name="nav-cred-createOptions-user"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-user','nav-cred-createOptionBox', 'nav-cred-createOptions-user', 'nav-cred-createOptionBox-user', true, 'checkbox', 'table')">
+                    <label for="nav-cred-createOptionBox-others">Other attributes</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-others" name="nav-cred-createOptions-others"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-others','nav-cred-createOptionBox', 'nav-cred-createOptions-others', 'nav-cred-createOptionBox-others', true, 'checkbox', 'table')">
+                    <label for="nav-cred-createOptionBox-exclude">Credential Exclusion</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-exclude" name="nav-cred-createOptions-exclude"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-exclude','nav-cred-createOptionBox', 'nav-cred-createOptions-exclude', 'nav-cred-createOptionBox-exclude', true, 'checkbox', 'table')">
+                    <label for="nav-cred-createOptionBox-authSec">Auth. Selector</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-authSec" name="nav-cred-createOptions-authSec"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-authSec','nav-cred-createOptionBox', 'nav-cred-createOptions-authSec', 'nav-cred-createOptionBox-authSec', true, 'checkbox', 'table')">
 
-            <label for="nav-cred-createOptionBox-attSec">Attestations</label>
-            <input type="checkbox" id="nav-cred-createOptionBox-attSec" name="nav-cred-createOptions-attSec"
-                   class="nav-cred-createOptionBox" checked
-                   onchange="ShowSection('nav-cred-createOptions-attSec','nav-cred-createOptionBox', 'nav-cred-createOptions-attSec', 'nav-cred-createOptionBox-attSec', true, 'checkbox', 'table')">
-        </p>
+                    <label for="nav-cred-createOptionBox-attSec">Attestations</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-attSec" name="nav-cred-createOptions-attSec"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-attSec','nav-cred-createOptionBox', 'nav-cred-createOptions-attSec', 'nav-cred-createOptionBox-attSec', true, 'checkbox', 'table')">
+                </td>
+            </tr>
+        </table>
         <table class="simpleTable">
             <thead>
             <tr>
@@ -906,11 +924,13 @@
                    onclick="CredentialCreate(currentSession);"/>
             <input type="button" name="nav-cred-create-setCredential" value="Set Credential"
                    onclick="SetObject(currentSession['nav-cred-create-credential'], 'nav-cred-obj','nav-cred-obj')"/>
+            <input type="button" name="nav-cred-create-ParseCredential" value="Parse Credential"
+                   onclick="GetURL(API_ENDPOINTS.parseCredential, currentSession,'nav-cred-create-logging');SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse','nav-cred-obj-parse')">
         </p>
         <table class="simpleTable">
             <thead>
             <tr>
-                <th>Attribute</th>
+                <th colspan="2">Attribute</th>
                 <th>Value</th>
                 <th>Action</th>
                 <th>Validations & Guidance</th>
@@ -918,17 +938,13 @@
             </thead>
             <tbody>
             <tr>
-                <td><label for="nav-cred-obj-authenticatorAttachment"><a
+                <td colspan="2"><label for="nav-cred-obj-authenticatorAttachment"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredential-authenticatorattachment"
                         target="_blank">Authenticator attachment type</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-authenticatorAttachment" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-authenticatorAttachment-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-obj-authenticatorAttachment-set"
-                           name="nav-cred-obj-authenticatorAttachment-set"
-                           class="nav-cred-obj" value="Set">
-                </td>
+                <td></td>
                 <td>
                     <h4>Validation</h4>
                     <ol>
@@ -944,16 +960,19 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-rawId"><a
+                <td colspan="2"><label for="nav-cred-obj-rawId"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredential-rawid"
                         target="_blank">Raw ID</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-rawId" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-rawId-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-obj-rawId-set"
-                           name="nav-cred-obj-rawId-set"
-                           class="nav-cred-obj" value="Set">
+                <td><label for="nav-cred-obj-rawId-B64Encoded">
+                    <input type="button" id="nav-cred-obj-rawId-Base64" name="nav-cred-obj-rawId-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-rawId');"></label>
+                    <input type="checkbox" id="nav-cred-obj-rawId-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-rawId');"></input>
+
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -964,17 +983,13 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-toJSON"><a
+                <td colspan="2"><label for="nav-cred-obj-toJSON"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredential-tojson"
                         target="_blank">JSON Representation</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-toJSON" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-toJSON-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-obj-toJSON-set"
-                           name="nav-cred-obj-toJSON-set"
-                           class="nav-cred-obj" value="Set">
-                </td>
+                <td></td>
                 <td>
                     <h4>Validation</h4>
                     <ol>
@@ -985,17 +1000,13 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-id"><a
+                <td colspan="2"><label for="nav-cred-obj-id"><a
                         href="https://w3c.github.io/webappsec-credential-management/#dom-credential-id"
                         target="_blank">ID</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-id" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-id-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-obj-id-set"
-                           name="nav-cred-obj-id-set"
-                           class="nav-cred-obj" value="Set">
-                </td>
+                <td></td>
                 <td>
                     <h4>Validation</h4>
                     <ol>
@@ -1006,9 +1017,8 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="3"><a
-                        href="https://w3c.github.io/webauthn/#dom-publickeycredential-response"
-                        target="_blank">Response</a></label></td>
+                <td colspan="4"><a href="https://w3c.github.io/webauthn/#dom-publickeycredential-response"
+                                   target="_blank">Response</a></td>
                 <td>
                     <h4>Validation</h4>
                     <ol>
@@ -1021,44 +1031,119 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-response.clientDataJSON"><a
+                <td colspan="2"><label for="nav-cred-obj-response.clientDataJSON"><a
                         href="https://w3c.github.io/webauthn/#dom-authenticatorresponse-clientdatajson"
                         target="_blank">clientDataJSON</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-response.clientDataJSON" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-response.clientDataJSON-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-obj-response.clientDataJSON-set"
-                           name="nav-cred-obj-response.clientDataJSON-set"
-                           class="nav-cred-obj" value="Set">
-                </td>
+                <td></td>
                 <td>
                     <h4>Validation</h4>
                     <ol>
                         <li>Required</li>
                         <li>ArrayBuffer</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dictdef-collectedclientdata" target="_blank">Collected
+                            Client Data format</a></li>
                     </ol>
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-response.attestationObject"><a
-                        href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-attestationobject"
-                        target="_blank">Attestation Object</a></label></td>
+                <td rowspan="5"></td>
+                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.type"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-type" target="_blank">
+                    Type</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.attestationObject" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.type"
+                           class="nav-cred-obj-parse"></input>
                 </td>
-                <td>
-                </td>
-                <td>
-                    <h4>Validation</h4>
+                <td></td>
+                <td><h4>Validations</h4>
                     <ol>
                         <li>Required</li>
-                        <li>ArrayBuffer</li>
+                        <li>DOMString</li>
+                        <li>Values: 'webauthn.create'/'webauthn.get'</li>
                     </ol>
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-response.getTransports"><a
+                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.challenge"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-challenge" target="_blank">
+                    Challenge</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.challenge"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.challenge">
+                    <input type="button" id="nav-cred-obj-parse-Response.CollectedClientData.challenge-Base64"
+                           name="nav-cred-obj-parse-Response.CollectedClientData.challenge-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-parse-Response.CollectedClientData.challenge');"></label>
+                    <input type="checkbox" id="nav-cred-obj-parse-Response.CollectedClientData.challenge-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.CollectedClientData.challenge');">
+                </td>
+                <td><h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li>Values: 'webauthn.create'/'webauthn.get'</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.origin"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-origin" target="_blank">Origin</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.origin"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li><a href="https://www.rfc-editor.org/rfc/rfc6454" target="_blank">RFC6454</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.topOrigin"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-toporigin" target="_blank">Top
+                    level Origin</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.topOrigin"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://www.rfc-editor.org/rfc/rfc6454" target="_blank">RFC6454</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.crossOrigin"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-crossorigin" target="_blank">Cross
+                    Origin?</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.crossOrigin"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>Boolean</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-response.getTransports"><a
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-gettransports"
                         target="_blank">Transports</a></label></td>
                 <td>
@@ -1077,13 +1162,18 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-response.getAuthenticatorData"><a
+                <td colspan="2"><label for="nav-cred-obj-response.getAuthenticatorData"><a
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getauthenticatordata"
                         target="_blank">Authenticator Data</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-response.getAuthenticatorData" class="nav-cred-obj"></input>
                 </td>
-                <td>
+                <td><label for="nav-cred-obj-response.getAuthenticatorData-B64Encoded">
+                    <input type="button" id="nav-cred-obj-response.getAuthenticatorData-Base64"
+                           name="nav-cred-obj-response.getAuthenticatorData-Base64"
+                           value="Base64 Encode" onclick="Base64Encoder('nav-cred-obj-response.getAuthenticatorData');"></label>
+                    <input type="checkbox" id="nav-cred-obj-response.getAuthenticatorData-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-response.getAuthenticatorData');">
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1094,13 +1184,19 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-response.getPublicKey"><a
+                <td colspan="2"><label for="nav-cred-obj-response.getPublicKey"><a
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getpublickey"
                         target="_blank">Public Key</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-response.getPublicKey" class="nav-cred-obj"></input>
                 </td>
-                <td>
+                <td><label for="nav-cred-obj-response.getPublicKey-B64Encoded">
+                    <input type="button" id="nav-cred-obj-response.getPublicKey-Base64"
+                           name="nav-cred-obj-response.getPublicKey-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-response.getPublicKey');"></label>
+                    <input type="checkbox" id="nav-cred-obj-response.getPublicKey-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-response.getPublicKey');"></input>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1113,7 +1209,7 @@
                 </td>
             </tr>
             <tr>
-                <td><label for="nav-cred-obj-response.getPublicKeyAlgorithm"><a
+                <td colspan="2"><label for="nav-cred-obj-response.getPublicKeyAlgorithm"><a
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getpublickeyalgorithm"
                         target="_blank">Public Key algorithm</a></label></td>
                 <td>
@@ -1131,7 +1227,306 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="2"><label for="nav-cred-obj-response.attestationObject"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-attestationobject"
+                        target="_blank">Attestation Object</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-response.attestationObject" class="nav-cred-obj"></input>
+                </td>
+                <td><label for="nav-cred-obj-response.attestationObject-B64Encoded">
+                    <input type="button" id="nav-cred-obj-response.attestationObject-Base64"
+                           name="nav-cred-obj-response.attestationObject-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-response.attestationObject');"></label>
+                    <input type="checkbox" id="nav-cred-obj-response.attestationObject-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-response.attestationObject');">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>ArrayBuffer</li>
+                        <li><a href="https://w3c.github.io/webauthn/#attestation-object">CBOR Format</a></li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-attestation" target="_blank">Contains</a>
+                            format, attestation statement (based on format) & Authenticator data
+                        </li>
+                        <li>Signed by <a href="https://w3c.github.io/webauthn/#attestation-key-pair" target="_blank">
+                            Attestation</a>key pair
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.fmt"><a
+                        href="https://w3c.github.io/webauthn/#sctn-attstn-fmt-ids"
+                        target="_blank">Format</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.fmt"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>String</li>
+                        <li>Required</li>
+                        <li><a href="https://www.iana.org/assignments/webauthn/webauthn.xhtml" target="_blank">Allowed
+                            values</a> (Defined by <a href="https://www.rfc-editor.org/rfc/rfc8809.html"
+                                                      target="_blank">RFC8809</a>): 'packed'/'tpm'/'android-key'/...
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Specifies the format of attestation statement</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5"><a
+                        href="https://w3c.github.io/webauthn/#authenticator-data"
+                        target="_blank">Authenticator Data</a> TODO: figure out att stmt and add
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="4"></td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid"><a
+                        href="https://w3c.github.io/webauthn/#authdata-rpidhash"
+                        target="_blank">RP ID Hash</a></label></td>
+                <td><input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-B64Encoded">
+                    <input type="button" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Base64"
+                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid');"></label>
+                    <input type="checkbox" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid');">
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>length 32 bytes</li>
+                        <li>SHA256 hash of RP ID</li>
+                        <li>TODO: Add validation against given value in option & client JSON</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags"><a
+                        href="https://w3c.github.io/webauthn/#authdata-flags" target="_blank">Flags</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags"
+                           class="nav-cred-obj-parse"></input>
+                    <table class="emptyTable">
+                        <thead>
+                        <tr>
+                            <th>Bit</th>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td><a href="https://w3c.github.io/webauthn/#concept-user-present" target="_blank">User
+                                Present[0-absent]</a></td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-0"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Reserved for future use</td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-1"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><a href="https://w3c.github.io/webauthn/#concept-user-verified" target="_blank">User
+                                Verified</a> (1-verified)
+                            </td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-2"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><a href="https://w3c.github.io/webauthn/#backup-eligibility" target="_blank">Backup
+                                Eligible</a> (0-single/1-multi-device)
+                            </td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-3"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><a href="https://w3c.github.io/webauthn/#backup-state" target="_blank">Backup state</a>
+                                (1-backed up/0-not backed up)
+                            </td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-4"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Reserved for future use</a></td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-5"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><a href="https://w3c.github.io/webauthn/#attested-credential-data" target="_blank">Attested
+                                credential data included?</a></td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-6"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><a href="https://w3c.github.io/webauthn/#authdata-extensions" target="_blank">Extension
+                                included?</a></td>
+                            <td>
+                                <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-7"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td><input type="button" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-Parse"
+                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-Parse"
+                           value="Parse flag"
+                           onclick="ParseAttObjectAuthDataFlag('nav-cred-obj-parse-Response.AttestationObject.AuthData.flags');">
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Length: 1 byte</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.sign_count"><a
+                        href="https://w3c.github.io/webauthn/#signature-counter" target="_blank">Sign count</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.sign_count"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>32-bit unsigned big-endian integer</li>
+                        <li>Length: 4 bytes</li>
+                    </ol>
+                    <h4><a href="https://w3c.github.io/webauthn/#signature-counter" target="_blank">Guidance</a></h4>
+                    <ol>
+                        <li>Incremented for each successful authentication</li>
+                        <li>Authenticator should implement for each credential (SHOULD) or globally for
+                            authenticator(MAY)
+                        </li>
+                        <li>For each credential (SHOULD) or globally for authenticator(MAY)</li>
+                        <li>Help RP detect cloned authenticators by storing it</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="4"><a href="https://w3c.github.io/webauthn/#sctn-attested-credential-data">Attested
+                    Credential Data</a></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid"><a
+                        href="https://w3c.github.io/webauthn/#authdata-attestedcredentialdata-aaguid" target="_blank">AAGUID
+                    of authenticator</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-B64Encoded">
+                    <input type="button"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Base64"
+                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid');"></label>
+                    <input type="checkbox"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid');">
 
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Length: 16 bytes</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id"><a
+                        href="https://w3c.github.io/webauthn/#authdata-attestedcredentialdata-credentialid"
+                        target="_blank">Credential ID</a></label>
+                </td>
+                <td>
+                    <input type="text"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id"
+                           class="nav-cred-obj-parse">
+                </td>
+                <td><label
+                        for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-B64Encoded">
+                    <input type="button"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Base64"
+                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id');"></label>
+                    <input type="checkbox"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id');">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://w3c.github.io/webauthn/#credential-id">Credential ID format</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key"><a
+                        href="https://w3c.github.io/webauthn/#authdata-attestedcredentialdata-credentialpublickey"
+                        target="_blank">Credential Public key</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key"
+                           class="nav-cred-obj-parse"></input>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-B64Encoded">
+                    <input type="button"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Base64"
+                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Base64"
+                           value="Base64 Encode"
+                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key');"></label>
+                    <input type="checkbox"
+                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-B64Encoded"
+                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key');">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://datatracker.ietf.org/doc/html/rfc9052#section-7">RFC9052</a> COSE Key
+                            format
+                        </li>
+                    </ol>
+                </td>
             </tr>
             </tbody>
         </table>

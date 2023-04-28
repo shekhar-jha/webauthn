@@ -56,6 +56,9 @@ func Run(config *configuration.Config) (err error) {
 	r.GET("/api/webauthn/attestation", middleware.Authenticated(middleware.CORS(handler.AttestationGET)))
 	r.POST("/api/webauthn/attestation", middleware.Authenticated(middleware.CORS(handler.AttestationPOST)))
 
+	r.OPTIONS("/api/webauthn/credential/parse", middleware.CORS(handler.Nil))
+	r.POST("/api/webauthn/credential/parse", middleware.CORS(handler.ParseCredentialCreationResponse))
+
 	r.OPTIONS("/api/webauthn/assertion", middleware.CORS(handler.Nil))
 	r.GET("/api/webauthn/assertion", middleware.CORS(handler.AssertionGET))
 	r.POST("/api/webauthn/assertion", middleware.CORS(handler.AssertionPOST))
