@@ -278,6 +278,7 @@ let API_ENDPOINTS = {
             if (status === 200 && response.status === "OK") {
                 log("Successfully parsed credential creation response on server", "info", debugLocation)
                 currSession['nav-cred-create-credential-parsed'] = response.data
+                SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse','nav-cred-obj-parse')
             } else {
                 log("Failed to parsed credential creation response on server " + status + " response " + response?.status, "error", debugLocation)
             }
