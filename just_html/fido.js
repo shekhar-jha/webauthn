@@ -35,6 +35,29 @@ function GenerateExcludedCredential(allSessions, divNameToProcess) {
     log("Generated the excluded credentials", 'debug', 'nav-cred-create-logging')
 }
 
+function ParseAttObjectAuthDataFlag(elementName = 'nav-cred-obj-parse-Response.AttestationObject.AuthData.flags') {
+    const elementById = document.getElementById(elementName)
+    if (elementById) {
+        const flagValue = Number(elementById.value)
+        for (let counter = 0; counter < 8; counter++) {
+            const flagElement = document.getElementById(elementName + "-" + counter)
+            if (flagElement) {
+                if (((2 ** counter) & flagValue) > 0) { //
+                    flagElement.innerHTML = "1"
+                } else {
+                    flagElement.innerHTML = "0"
+                }
+            } else {
+                log("Could not locate element for index " + counter + " of element " + elementName, 'error', 'nav-cred-create-logging')
+            }
+        }
+
+    } else {
+        log("Failed to parse auth data flag for the element " + elementName + " since it could not be located", 'error', 'nav-cred-create-logging')
+    }
+
+}
+
 function CreateCredentialResponse(session) {
     let inputKeyCredential = session['nav-cred-create-credential']
     return JSON.stringify({
@@ -278,7 +301,7 @@ let API_ENDPOINTS = {
             if (status === 200 && response.status === "OK") {
                 log("Successfully parsed credential creation response on server", "info", debugLocation)
                 currSession['nav-cred-create-credential-parsed'] = response.data
-                SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse','nav-cred-obj-parse')
+                SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse', 'nav-cred-obj-parse')
             } else {
                 log("Failed to parsed credential creation response on server " + status + " response " + response?.status, "error", debugLocation)
             }
