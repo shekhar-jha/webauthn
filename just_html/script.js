@@ -101,33 +101,30 @@ function ShowSection(sectionClass, linkClass, sectionId, linkId, useClassToDispl
     document.getElementById(linkId).classList.add('active')
 }
 
-const publicKeyCredentialDetails = {
-    "-7": {"type": "public-key", "alg": -7},
-    "-257": {"type": "public-key", "alg": -257},
-    "-8": {"type": "public-key", "alg": -8},
-}
-const publicKeyCredentialMapper = new Map()
-Object.keys(publicKeyCredentialDetails).forEach((key) => {
-    publicKeyCredentialMapper.set(key, publicKeyCredentialDetails[key])
-})
-
 let DefaultInvalidUser = "InvalidUser"
 let sessions = new Map()
 let currentSession = {
     sessionId: "InvalidSessionID",
     sessionUser: DefaultInvalidUser,
-    "nav-cred-create-pubKeyCredParams": publicKeyCredentialMapper
 }
-let sessionID = 1
 
-function createSession() {
-    let sessionDesc = "" + document.getElementById("sessions-new-desc").value
-    if (sessionDesc === "" || sessions.has(sessionDesc)) {
-        log("Missing session description. Nothing to do", 'error')
+function createSession(desc, user) {
+    let sessionDesc, sessionUser
+    if (desc) {
+        sessionDesc = desc
+    } else {
+        sessionDesc = "" + document.getElementById("sessions-new-desc").value
+    }
+    if (!sessionDesc || sessions.has(sessionDesc)) {
+        log("Missing session description or existing one. Nothing to do", 'error')
         return
     }
-    let sessionUser = "" + document.getElementById("sessions-new-user").value
-    if (sessionUser === "" || sessions.has(sessionUser)) {
+    if (user) {
+        sessionUser = user
+    } else {
+        sessionUser = "" + document.getElementById("sessions-new-user").value
+    }
+    if (!sessionUser) {
         log("Missing session user. Nothing to do", 'error')
         return
     }
@@ -135,41 +132,68 @@ function createSession() {
     let newSession = {
         sessionId: "InvalidSessionID",
         sessionUser: DefaultInvalidUser,
-        "nav-cred-create-pubKeyCredParams": publicKeyCredentialMapper
     }
     newSession.sessionId = sessionDesc
     newSession.sessionUser = sessionUser
     sessions.set(newSession.sessionId, newSession)
-    let sessionsElement = document.createElement("option")
-    sessionsElement.value = newSession.sessionId
-    sessionsElement.text = newSession.sessionId
-    sessionsElement.selected = true
-    document.getElementById("sessions").add(sessionsElement)
+    sessionEventListeners.forEach((sessionEventListener, index, allListeners) => {
+        if (sessionEventListener) {
+            try {
+                sessionEventListener(newSession, SessionEventTypes.New)
+            } catch (error) {
+                log("Failed to execute " + SessionEventTypes.New + " event listener at index " + index +
+                    "Error: " + error.message + "(" + error.name + ")", "error")
+            }
+        }
+    })
     log("Created session" + sessionDesc, 'info')
     selectSession()
 }
 
-let sessionEventListeners = [
-    (currSession) => {
-        log("Changing Session to " + currSession.sessionId, "info")
+const SessionEventTypes = {
+    New: "newSession",
+    Select: "selectSession"
+}
+
+const sessionEventListeners = [
+    (currSession, eventType) => {
+        switch (eventType) {
+            case SessionEventTypes.New:
+                log("New Session created " + currSession.sessionId, "info")
+                break;
+            case SessionEventTypes.Select:
+                log("Changing Session to " + currSession.sessionId, "info")
+                break
+        }
     },
-    (currSession) => {
-        GetURL(API_ENDPOINTS.login, currSession)
+    (currSession, eventType) => {
+        switch (eventType) {
+            case SessionEventTypes.New:
+                let sessionsElement = document.createElement("option")
+                sessionsElement.value = currSession.sessionId
+                sessionsElement.text = currSession.sessionId
+                sessionsElement.selected = true
+                document.getElementById("sessions").add(sessionsElement)
+                break
+
+            case SessionEventTypes.Select:
+                GetURL(API_ENDPOINTS.login, currSession)
+                break
+        }
     },
 ]
 
 function selectSession() {
     let sessionDesc = document.getElementById("sessions").value
     if (sessions.has(sessionDesc)) {
-        let sessObj = sessions.get(sessionDesc)
-        currentSession = sessObj
+        currentSession = sessions.get(sessionDesc)
         log("Selected session" + sessionDesc, 'info')
         sessionEventListeners.forEach((sessionEventListener, index, allListeners) => {
             if (sessionEventListener) {
                 try {
-                    sessionEventListener(currentSession)
+                    sessionEventListener(currentSession, SessionEventTypes.Select)
                 } catch (error) {
-                    log("Failed to execute event listener at index " + index +
+                    log("Failed to execute " + SessionEventTypes.Select + " event listener at index " + index +
                         "Error: " + error.message + "(" + error.name + ")", "error")
                 }
             }
@@ -178,7 +202,7 @@ function selectSession() {
 }
 
 const textEncoder = new TextEncoder()
-const textDecoder = new TextDecoder()
+const textDecoder = new TextDecoder('utf-8', {fatal: true})
 const objectProcessingGuidance = {
     "extract": {
         "text": {
@@ -265,13 +289,45 @@ const objectProcessingGuidance = {
         },
         "ArrayBuffer": {
             "get": (input, prefix, attributeName) => {
-                let encodedValue = textEncoder.encode(input)
+                let applicableSource = 'Text'
+                const formatElement = document.getElementById(prefix + "-" + attributeName + "-Transform")
+                if (formatElement) {
+                    applicableSource = formatElement.value
+                }
+                let encodedValue = Transform(input, applicableSource, 'Array', DefaultLoggingLocation)
                 log("buffer value" + encodedValue)
                 return encodedValue
             },
             "set": (input, prefix, attributeName, transformers) => {
-                let decodedValue = textDecoder.decode(input)
+                let applicableDest = 'Text'
+                const formatElement = document.getElementById(prefix + "-" + attributeName + "-Transform")
+                if (formatElement) {
+                    applicableDest = formatElement.value
+                }
+                let decodedValue = Transform(input, 'Array', applicableDest, DefaultLoggingLocation)
                 log("decoded value" + decodedValue)
+                return decodedValue
+            }
+        },
+        "base64": {
+            "get": (input, prefix, attributeName) => {
+                let applicableSource = 'Text'
+                const formatElement = document.getElementById(prefix + "-" + attributeName + "-Transform")
+                if (formatElement) {
+                    applicableSource = formatElement.value
+                }
+                let encodedValue = Transform(input, applicableSource, 'Base64', DefaultLoggingLocation)
+                log("base64 value " + encodedValue)
+                return encodedValue
+            },
+            "set": (input, prefix, attributeName, transformers) => {
+                let applicableDest = 'Text'
+                const formatElement = document.getElementById(prefix + "-" + attributeName + "-Transform")
+                if (formatElement) {
+                    applicableDest = formatElement.value
+                }
+                let decodedValue = Transform(input, 'Base64', applicableDest, DefaultLoggingLocation)
+                log("Base64 decoded value" + decodedValue)
                 return decodedValue
             }
         },
@@ -475,12 +531,9 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
         log("Failed to set object for prefix " + prefix, 'error')
         return
     }
-    if (base_prefix === "") {
-        base_prefix = prefix
-    }
     let elements = document.getElementsByClassName(prefix)
     log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'info')
-    let keyNames = TransformationDefinition[base_prefix].availableKeys
+    let keyNames = TransformationDefinition[prefix].availableKeys
     keyNames.forEach((keyName, index, arrayValue) => {
         try {
             let applicableValue = resolve(keyName, objectValue)
@@ -519,8 +572,8 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
                     break;
             }
             if (applyValue) {
-                let attrType = TransformationDefinition[base_prefix].default
-                if (TransformationDefinition[base_prefix].hasOwnProperty(keyName)) {
+                let attrType = TransformationDefinition[prefix].default
+                if (TransformationDefinition[prefix].hasOwnProperty(keyName)) {
                     attrType = TransformationDefinition[prefix][keyName]
                 }
                 log("Attribute of type " + attrType)
@@ -551,7 +604,57 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
     log("Set object for " + prefix, 'info')
 }
 
-function GetURL(requestDetails, session = currentSession, debugLocation = "common-debug") {
+function TransformSelectHandlerRegister() {
+    const elements = document.getElementsByClassName("Transformers")
+    if (elements) {
+        for (let index = 0; index < elements.length; index++) {
+            const element = elements.item(index)
+            const idValues = element.id.split("-")
+            if (idValues.length > 3 && idValues[idValues.length - 1] === 'Transform') {
+                const prefix = idValues.slice(0, idValues.length - 2).join("-")
+                const attributeName = idValues[idValues.length - 2]
+                const logLocation = LoggingPrefixMapping.hasOwnProperty(prefix) ? LoggingPrefixMapping[prefix] : DefaultLoggingLocation
+                const handler = SelectOnChangeHandler(prefix, attributeName, DefaultSelectOnChangeHandler, logLocation)
+                element.addEventListener("change", handler)
+            } else {
+                console.error("Element " + element.id + " is not in prefix-attributeName-Transform format. Will not register Transform handler")
+            }
+        }
+    }
+}
+
+const DefaultSelectOnChangeHandler = (previousValue, newValue, prefix, attributeName, logLocation) => {
+    const valueElement = document.getElementById(prefix + "-" + attributeName)
+    if (valueElement) {
+        const currentValue = valueElement.value
+        const transformedValue = Transform(currentValue, previousValue, newValue, logLocation)
+        if (transformedValue) {
+            valueElement.value = transformedValue
+        }
+    }
+}
+
+function SelectOnChangeHandler(prefix, attributeName, changeHandler = DefaultSelectOnChangeHandler, logLocation = DefaultLoggingLocation) {
+    const selectElement = document.getElementById(prefix + "-" + attributeName + "-Transform")
+    if (selectElement) {
+        let previousValue = selectElement.value
+        return () => {
+            log("Select " + prefix + "-" + attributeName + " Changed", "debug", logLocation)
+            const newValue = selectElement.value
+            if (changeHandler) {
+                log("Handling change in select for " + prefix + "-" + attributeName + " with new value " + newValue + " and old value " + previousValue, "debug", logLocation)
+                changeHandler(previousValue, newValue, prefix, attributeName, logLocation)
+            }
+            previousValue = newValue
+        }
+    } else {
+        log("No select available for " + prefix + "-" + attributeName, 'error', logLocation)
+        return () => {
+        }
+    }
+}
+
+function GetURL(requestDetails, session = currentSession, debugLocation = DefaultLoggingLocation) {
     let extURL = document.getElementById("externalURL").value
     let debugElement = document.getElementById(debugLocation)
     let xhr = new XMLHttpRequest();
@@ -607,17 +710,21 @@ function GetConfiguration(variableName, source = "body") {
     return value
 }
 
-let logLineCounterMap = new Map()
+const LoggingPrefixMapping = {}
 
-function log(content, level = "debug", debugLocation = "common-debug") {
+const logLineCounterMap = new Map()
+
+const DefaultLoggingLocation = "common-debug"
+
+function log(content, level = "debug", debugLocation = DefaultLoggingLocation) {
     let applicableDebugLocation = debugLocation
     let debugElement = document.getElementById(debugLocation)
     if (debugElement != null && debugElement.value === '') {
-        debugElement = document.getElementById("common-debug")
+        debugElement = document.getElementById(DefaultLoggingLocation)
         if (debugElement == null || debugElement.value === '') {
             return
         }
-        applicableDebugLocation = "common-debug"
+        applicableDebugLocation = DefaultLoggingLocation
     }
     let lineCounter = 1
     if (logLineCounterMap.has(applicableDebugLocation)) {
@@ -659,7 +766,7 @@ function ShowHideLog(logLevel) {
     }
 }
 
-function clearLog(debugLocation = "common-debug") {
+function clearLog(debugLocation = DefaultLoggingLocation) {
     let debugElement = document.getElementById(debugLocation)
     debugElement.innerHTML = ""
 }
@@ -690,50 +797,90 @@ function setVal(path, value, obj = self, separator = '.') {
     return obj
 }
 
-function B64Encode(aBuffer) {
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(aBuffer)))
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=/g, "");
+function EscapeBase64EncodedString(encodedString) {
+    return encodedString.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
-function B64Decode(b64Input) {
-    const byteCharacters = atob(b64Input);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    return byteArray
-}
-
-function Base64Encoder(elementId) {
-    const textElement = document.getElementById(elementId)
-    const stateElement = document.getElementById(elementId + "-B64Encoded")
-    if (textElement && stateElement) {
-        const isChecked = stateElement.checked
-        const inputValue = textElement.value
-        let outputValue = inputValue
-        if (!isChecked) {
-            outputValue = B64Encode(textEncoder.encode(inputValue))
-        } else {
-            outputValue = textDecoder.decode(B64Decode(inputValue))
+function Transform(inputValue, source, dest, logLocation = DefaultLoggingLocation) {
+    if (inputValue) {
+        let applicableInput = new Uint8Array()
+        switch (source) {
+            case 'Array':
+                applicableInput = new Uint8Array(inputValue)
+                break;
+            case 'Hex':
+                if (inputValue.length % 2 !== 0) {
+                    log("Expected Hex value length " + inputValue.length + " to be divisible by 2.", 'error', logLocation)
+                    return null
+                }
+                applicableInput = new Uint8Array(inputValue.length / 2)
+                for (let counter = 0; counter < inputValue.length / 2; counter = counter + 1) {
+                    const hexValue = inputValue.substring(counter * 2, counter * 2 + 2)
+                    applicableInput[counter] = parseInt(hexValue, 16)
+                }
+                break;
+            case 'Text':
+                applicableInput = textEncoder.encode(inputValue)
+                break;
+            case "EscapedBase64":
+                const unEscapedValue = inputValue.replace(/-/g, "+").replace(/_/g, "/");
+                const utf8DecodedUnEscapedString = atob(unEscapedValue)
+                applicableInput = new Uint8Array(utf8DecodedUnEscapedString.length)
+                for (let counter = 0; counter < utf8DecodedUnEscapedString.length; counter++) {
+                    applicableInput[counter] = utf8DecodedUnEscapedString.charCodeAt(counter)
+                }
+                break
+            case 'Base64':
+                const utf8DecodedString = atob(inputValue)
+                applicableInput = new Uint8Array(utf8DecodedString.length)
+                for (let counter = 0; counter < utf8DecodedString.length; counter++) {
+                    applicableInput[counter] = utf8DecodedString.charCodeAt(counter)
+                }
+                break
+            default:
+                log("Transformation from source " + source + " is not supported", 'error', logLocation)
+                return null
         }
-        textElement.value = outputValue
-        stateElement.checked = !isChecked
-        Base64EncoderFlip(elementId)
-    }
-}
-
-function Base64EncoderFlip(elementId) {
-    const buttonElement = document.getElementById(elementId + "-Base64")
-    const stateElement = document.getElementById(elementId + "-B64Encoded")
-    if (buttonElement && stateElement) {
-        const isChecked = stateElement.checked
-        if (!isChecked) {
-            buttonElement.value = "Base64 Encode"
-        } else {
-            buttonElement.value = "Base64 Decode"
+        let returnValue = null
+        switch (dest) {
+            case 'Array':
+                returnValue = applicableInput
+                break;
+            case 'Hex':
+                returnValue = applicableInput.reduce((generatedValue, currentValue, currentIndex, processingArray) => {
+                    const stringVal = currentValue.toString(16)
+                    if (stringVal.length === 1) {
+                        generatedValue = generatedValue + "0" + stringVal
+                    } else {
+                        generatedValue += stringVal
+                    }
+                    return generatedValue
+                }, "")
+                break;
+            case 'Text':
+                // Not using TextDecoder since we want to maintain UTF-8 encoding to handle Uint8Array transformations.
+                returnValue = textDecoder.decode(applicableInput);
+                break;
+            case "EscapedBase64":
+                const generatedBase64String = btoa(String.fromCharCode.apply(null, new Uint8Array(applicableInput)))
+                returnValue = generatedBase64String.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+                break
+            case 'Base64':
+                returnValue = btoa(String.fromCharCode.apply(null, new Uint8Array(applicableInput)))
+                break;
+            case 'UUID':
+                returnValue = Array.from(applicableInput, function (byte) {
+                    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+                }).join('').replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
+                break;
+            default:
+                log("Transformation to destination " + dest + " is not supported", 'error', logLocation)
+                return null
         }
+        log("Transformed input value " + inputValue + " to return value " + returnValue, 'debug', logLocation)
+        return returnValue
+    } else {
+        log('Nothing to transform, returning null', 'info', logLocation)
+        return null
     }
 }

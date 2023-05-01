@@ -17,7 +17,7 @@ function GenerateExcludedCredential(allSessions, divNameToProcess) {
     let divToProcess = document.getElementById(divNameToProcess)
     currentSession['nav-cred-create-excludeCredentials'] = new Map()
     divToProcess.innerHTML = ""
-    allSessions.forEach((value, key, allSessions) => {
+    allSessions.forEach((value, key) => {
         if (value.hasOwnProperty('nav-cred-create-credential')) {
             let rawId = value['nav-cred-create-credential'].rawId
             let excludeCred = {
@@ -64,32 +64,43 @@ function CreateCredentialResponse(session) {
         type: inputKeyCredential.type,
         id: inputKeyCredential.id,
         authenticatorAttachment: inputKeyCredential.authenticatorAttachment,
-        rawId: B64Encode(inputKeyCredential.rawId),
+        rawId: EscapeBase64EncodedString(Transform(inputKeyCredential.rawId, 'Array', 'Base64', LoggingPrefixMapping['nav-cred-obj'])),
         clientExtensionResults: inputKeyCredential.getClientExtensionResults(),
         response: {
-            attestationObject: B64Encode(inputKeyCredential.response.attestationObject),
-            clientDataJSON: B64Encode(inputKeyCredential.response.clientDataJSON),
+            attestationObject: EscapeBase64EncodedString(Transform(inputKeyCredential.response.attestationObject, 'Array', 'Base64', LoggingPrefixMapping['nav-cred-obj'])),
+            clientDataJSON: EscapeBase64EncodedString(Transform(inputKeyCredential.response.clientDataJSON, 'Array', 'Base64', LoggingPrefixMapping['nav-cred-obj'])),
             transports: inputKeyCredential.response.getTransports(),
             publicKeyAlgorithm: inputKeyCredential.response.getPublicKeyAlgorithm(),
-            publicKey: B64Encode(inputKeyCredential.response.getPublicKey()),
+            publicKey: EscapeBase64EncodedString(Transform(inputKeyCredential.response.getPublicKey(), 'Array', 'Base64', LoggingPrefixMapping['nav-cred-obj'])),
         }
     })
 }
 
-sessionEventListeners.push((currSession) => {
-    if (currSession['nav-cred-create-options']) {
-        SetObject(currSession['nav-cred-create-options'], "nav-cred-create", "nav-cred-create")
-    } else {
-        SetObject(EmptyCredOptions, "nav-cred-create", "nav-cred-create")
-    }
-    if (currSession['nav-cred-create-credential']) {
-        SetObject(currSession['nav-cred-create-credential'], "nav-cred-obj", "nav-cred-obj")
-    } else {
-        SetObject(EmptyPublicKeyCredential, "nav-cred-obj", "nav-cred-obj")
+const publicKeyCredentialDetails = {
+    "-7": {"type": "public-key", "alg": -7},
+    "-257": {"type": "public-key", "alg": -257},
+    "-8": {"type": "public-key", "alg": -8},
+}
+const publicKeyCredentialMapper = new Map()
+Object.keys(publicKeyCredentialDetails).forEach((key) => {
+    publicKeyCredentialMapper.set(key, publicKeyCredentialDetails[key])
+})
+
+sessionEventListeners.push((currSession, eventType) => {
+    switch (eventType) {
+        case SessionEventTypes.New:
+            currSession["nav-cred-create-pubKeyCredParams"] = publicKeyCredentialMapper
+            break
+        case SessionEventTypes.Select:
+            SetObject(currSession['nav-cred-create-options'] ? currSession['nav-cred-create-options'] : EmptyCredOptions,
+                "nav-cred-create")
+            SetObject(currSession['nav-cred-create-credential'] ? currSession['nav-cred-create-credential'] : EmptyPublicKeyCredential,
+                "nav-cred-obj")
+            break
     }
 })
 
-let CredentailOptionList = {
+let CredentialOptionList = {
     Empty: (currSession) => {
         return EmptyCredOptions
     },
@@ -125,7 +136,7 @@ let EmptyCredOptions = {
     "attestation": "invalidVal",
 }
 
-let DefaultCredOptions = {
+const DefaultCredOptions = {
     "rp": {
         "name": "ACME",
     },
@@ -148,7 +159,7 @@ let DefaultCredOptions = {
     ]
 }
 
-let EmptyPublicKeyCredential = {
+const EmptyPublicKeyCredential = {
     authenticatorAttachment: "",
     id: "",
     rawId: new TextEncoder().encode(""),
@@ -163,7 +174,7 @@ let EmptyPublicKeyCredential = {
     }
 }
 
-let TransformationDefinition = {
+const TransformationDefinition = {
     "nav-cred-create": {
         "availableKeys": ["attestation", "attestationFormats", "authenticatorSelection.authenticatorAttachment",
             "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.requireResidentKey",
@@ -200,11 +211,18 @@ let TransformationDefinition = {
             "Response.AttestationObject.AuthData.att_data.credential_id", "Response.AttestationObject.AuthData.att_data.public_key",
             "Response.AttestationObject.AuthData.att_data.public_key"],
         "default": "text-noChange",
-
+        "Response.CollectedClientData.challenge": "text-base64",
+        "Response.AttestationObject.AuthData.rpid": "text-base64",
+        "Response.AttestationObject.AuthData.att_data.credential_id": "text-base64",
+        "Response.AttestationObject.AuthData.att_data.public_key": "text-base64",
     }
 }
 
-let API_ENDPOINTS = {
+LoggingPrefixMapping["nav-cred-create"] = "nav-cred-create-logging";
+LoggingPrefixMapping["nav-cred-obj"] = "nav-cred-create-logging";
+LoggingPrefixMapping["nav-cred-obj-parse"] = "nav-cred-create-logging";
+
+const API_ENDPOINTS = {
     getDebug: {
         Method: "GET",
         URL: "/debug",
@@ -301,7 +319,8 @@ let API_ENDPOINTS = {
             if (status === 200 && response.status === "OK") {
                 log("Successfully parsed credential creation response on server", "info", debugLocation)
                 currSession['nav-cred-create-credential-parsed'] = response.data
-                SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse', 'nav-cred-obj-parse')
+                //TODO: move this to callback
+                SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse')
             } else {
                 log("Failed to parsed credential creation response on server " + status + " response " + response?.status, "error", debugLocation)
             }

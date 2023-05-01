@@ -336,6 +336,16 @@
                     <label for="nav-cred-create-user.id-set">Set value</label>
                     <input type="checkbox" id="nav-cred-create-user.id-set" name="nav-cred-create-user.id-set" checked
                            class="nav-cred-create" value="Set">
+                    <label for="nav-cred-create-user.id-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-create-user.id-Transform"
+                            id="nav-cred-create-user.id-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text" selected>Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validations</h4>
@@ -434,6 +444,16 @@
                     <label for="nav-cred-create-challenge-set">Set value</label>
                     <input type="checkbox" id="nav-cred-create-challenge-set" name="nav-cred-create-challenge-set"
                            checked class="nav-cred-create" value="Set">
+                    <label for="nav-cred-create-challenge-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-create-challenge-Transform"
+                            id="nav-cred-create-challenge-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text" selected>Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validations</h4>
@@ -966,13 +986,13 @@
                 <td>
                     <input type="text" id="nav-cred-obj-rawId" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-rawId-B64Encoded">
-                    <input type="button" id="nav-cred-obj-rawId-Base64" name="nav-cred-obj-rawId-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-rawId');"></label>
-                    <input type="checkbox" id="nav-cred-obj-rawId-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-rawId');"></input>
-
+                <td><label for="nav-cred-obj-rawId-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-rawId-Transform" id="nav-cred-obj-rawId-Transform" class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1006,7 +1026,16 @@
                 <td>
                     <input type="text" id="nav-cred-obj-id" class="nav-cred-obj"></input>
                 </td>
-                <td></td>
+                <td><label for="nav-cred-obj-id-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-id-Transform"
+                            id="nav-cred-obj-id-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="EscapedBase64" selected>Escaped Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
                 <td>
                     <h4>Validation</h4>
                     <ol>
@@ -1074,13 +1103,16 @@
                     <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.challenge"
                            class="nav-cred-obj-parse"></input>
                 </td>
-                <td><label for="nav-cred-obj-parse-Response.CollectedClientData.challenge">
-                    <input type="button" id="nav-cred-obj-parse-Response.CollectedClientData.challenge-Base64"
-                           name="nav-cred-obj-parse-Response.CollectedClientData.challenge-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-parse-Response.CollectedClientData.challenge');"></label>
-                    <input type="checkbox" id="nav-cred-obj-parse-Response.CollectedClientData.challenge-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.CollectedClientData.challenge');">
+                <td>
+                    <label for="nav-cred-obj-parse-Response.CollectedClientData.challenge-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.CollectedClientData.challenge-Transform"
+                            id="nav-cred-obj-parse-Response.CollectedClientData.challenge-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td><h4>Validations</h4>
                     <ol>
@@ -1168,12 +1200,14 @@
                 <td>
                     <input type="text" id="nav-cred-obj-response.getAuthenticatorData" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-response.getAuthenticatorData-B64Encoded">
-                    <input type="button" id="nav-cred-obj-response.getAuthenticatorData-Base64"
-                           name="nav-cred-obj-response.getAuthenticatorData-Base64"
-                           value="Base64 Encode" onclick="Base64Encoder('nav-cred-obj-response.getAuthenticatorData');"></label>
-                    <input type="checkbox" id="nav-cred-obj-response.getAuthenticatorData-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-response.getAuthenticatorData');">
+                <td><label for="nav-cred-obj-response.getAuthenticatorData-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-response.getAuthenticatorData-Transform"
+                            id="nav-cred-obj-response.getAuthenticatorData-Transform" class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1190,13 +1224,14 @@
                 <td>
                     <input type="text" id="nav-cred-obj-response.getPublicKey" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-response.getPublicKey-B64Encoded">
-                    <input type="button" id="nav-cred-obj-response.getPublicKey-Base64"
-                           name="nav-cred-obj-response.getPublicKey-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-response.getPublicKey');"></label>
-                    <input type="checkbox" id="nav-cred-obj-response.getPublicKey-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-response.getPublicKey');"></input>
+                <td><label for="nav-cred-obj-response.getPublicKey-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-response.getPublicKey-Transform"
+                            id="nav-cred-obj-response.getPublicKey-Transform" class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1233,13 +1268,14 @@
                 <td>
                     <input type="text" id="nav-cred-obj-response.attestationObject" class="nav-cred-obj"></input>
                 </td>
-                <td><label for="nav-cred-obj-response.attestationObject-B64Encoded">
-                    <input type="button" id="nav-cred-obj-response.attestationObject-Base64"
-                           name="nav-cred-obj-response.attestationObject-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-response.attestationObject');"></label>
-                    <input type="checkbox" id="nav-cred-obj-response.attestationObject-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-response.attestationObject');">
+                <td><label for="nav-cred-obj-response.attestationObject-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-response.attestationObject-Transform"
+                            id="nav-cred-obj-response.attestationObject-Transform" class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1298,13 +1334,15 @@
                 <td><input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid"
                            class="nav-cred-obj-parse"></input>
                 </td>
-                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-B64Encoded">
-                    <input type="button" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Base64"
-                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid');"></label>
-                    <input type="checkbox" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid');">
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td><h4>Validation</h4>
                     <ol>
@@ -1450,16 +1488,17 @@
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid"
                            class="nav-cred-obj-parse"></input>
                 </td>
-                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-B64Encoded">
-                    <input type="button"
-                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Base64"
-                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid');"></label>
-                    <input type="checkbox"
-                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid');">
-
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Transform">
+                    Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                        <option value="UUID">UUID</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1479,16 +1518,17 @@
                            id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id"
                            class="nav-cred-obj-parse">
                 </td>
-                <td><label
-                        for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-B64Encoded">
-                    <input type="button"
-                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Base64"
-                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id');"></label>
-                    <input type="checkbox"
-                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id');">
+                <td>
+                    <label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.credential_id-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1508,15 +1548,17 @@
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key"
                            class="nav-cred-obj-parse"></input>
                 </td>
-                <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-B64Encoded">
-                    <input type="button"
-                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Base64"
-                           name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Base64"
-                           value="Base64 Encode"
-                           onclick="Base64Encoder('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key');"></label>
-                    <input type="checkbox"
-                           id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-B64Encoded"
-                           onclick="Base64EncoderFlip('nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key');">
+                <td>
+                    <label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -1560,6 +1602,8 @@
     SetupDefaultConfiguration()
     ShowCapabilities()
     ShowTab('operationName', 'credential-', 'nav-cred-')
+    TransformSelectHandlerRegister()
+    createSession("default", "default")
 </script>
 
 </body>
