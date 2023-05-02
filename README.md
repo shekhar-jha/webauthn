@@ -12,6 +12,7 @@ to support additional scenarios identified during the d
 The following requirements are needed to build the project:
 
 - go (1.20)
+- Docker
 
 ## Steps
 
