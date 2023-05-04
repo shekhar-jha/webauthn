@@ -102,12 +102,15 @@ sessionEventListeners.push((currSession, eventType) => {
 
 let CredentialOptionList = {
     Empty: (currSession) => {
+        log("Returning empty credential options for the " + currSession)
         return EmptyCredOptions
     },
     Default: (currSession) => {
+        log("Returning default credential options for the " + currSession)
         return DefaultCredOptions
     },
     ServerSide: (currSession) => {
+        log("Returning default credential options for the " + currSession)
         GetURL(API_ENDPOINTS.getRegisterRequest, currentSession, 'nav-cred-create-logging')
     }
 }
@@ -306,6 +309,7 @@ const API_ENDPOINTS = {
         Method: "POST",
         URL: "/api/webauthn/assertion",
         Body: (session) => {
+            log("Returning empty body for session " + session)
             return ""
         }
     },

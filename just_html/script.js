@@ -12,7 +12,7 @@ function ShowCapabilities() {
             document.getElementById("HasU2F").innerHTML = "No <BR>(" + error + ")"
         }
     )
-    let webAuthnStatus = "Not computed"
+    let webAuthnStatus
     if (window?.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === "function") {
         webAuthnStatus = "Yes"
         if (typeof window.PublicKeyCredential.isConditionalMediationAvailable === 'function') {
@@ -56,18 +56,14 @@ function ShowSection(sectionClass, linkClass, sectionId, linkId, useClassToDispl
         tabs[tabIndex].style.display = "none"
     }
     let linkObject = document.getElementById(linkId)
-    let displayValue = "block"
-    let setDisplayValue = false
+    let displayValue //= "block"
+    let setDisplayValue// = false
     switch (linkType) {
         case "link":
             setDisplayValue = true
             break;
         case 'checkbox':
-            if (linkObject.checked) {
-                setDisplayValue = true
-            } else {
-                setDisplayValue = false
-            }
+            setDisplayValue = !!linkObject.checked;
             break;
         default:
             setDisplayValue = false;
@@ -136,7 +132,7 @@ function createSession(desc, user) {
     newSession.sessionId = sessionDesc
     newSession.sessionUser = sessionUser
     sessions.set(newSession.sessionId, newSession)
-    sessionEventListeners.forEach((sessionEventListener, index, allListeners) => {
+    sessionEventListeners.forEach((sessionEventListener, index) => {
         if (sessionEventListener) {
             try {
                 sessionEventListener(newSession, SessionEventTypes.New)
@@ -188,7 +184,7 @@ function selectSession() {
     if (sessions.has(sessionDesc)) {
         currentSession = sessions.get(sessionDesc)
         log("Selected session" + sessionDesc, 'info')
-        sessionEventListeners.forEach((sessionEventListener, index, allListeners) => {
+        sessionEventListeners.forEach((sessionEventListener, index) => {
             if (sessionEventListener) {
                 try {
                     sessionEventListener(currentSession, SessionEventTypes.Select)
@@ -534,7 +530,7 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
     let elements = document.getElementsByClassName(prefix)
     log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'info')
     let keyNames = TransformationDefinition[prefix].availableKeys
-    keyNames.forEach((keyName, index, arrayValue) => {
+    keyNames.forEach((keyName) => {
         try {
             let applicableValue = resolve(keyName, objectValue)
             let applyValue = false
@@ -656,7 +652,6 @@ function SelectOnChangeHandler(prefix, attributeName, changeHandler = DefaultSel
 
 function GetURL(requestDetails, session = currentSession, debugLocation = DefaultLoggingLocation) {
     let extURL = document.getElementById("externalURL").value
-    let debugElement = document.getElementById(debugLocation)
     let xhr = new XMLHttpRequest();
     const logLocation = debugLocation
     xhr.open(requestDetails.Method, extURL + requestDetails.URL, true);
@@ -693,15 +688,15 @@ function SetupDefaultConfiguration() {
 }
 
 function GetConfiguration(variableName, source = "body") {
-    let value = ""
-    if (source == "body") {
+    let value
+    if (source === "body") {
         value = document.body.getAttribute('data-' + variableName);
     } else {
         value = document.getElementById(variableName).value
     }
     if (value.startsWith("{{ .")) {
         let matched = value.match("[a-zA-Z0-9]+")
-        if (matched.length == 1) {
+        if (matched.length === 1) {
             return defaultConfiguration.get(matched[0])
         } else {
             return ""
@@ -781,7 +776,7 @@ function setVal(path, value, obj = self, separator = '.') {
     let lastItemInIndex = properties.length - 1
     properties.reduce(
         (obj, val, index) => {
-            let retval = obj[val]
+            let retval
             if (obj.hasOwnProperty(val)) {
                 retval = obj[val]
             } else if (index < lastItemInIndex) {
@@ -847,7 +842,7 @@ function Transform(inputValue, source, dest, logLocation = DefaultLoggingLocatio
                 returnValue = applicableInput
                 break;
             case 'Hex':
-                returnValue = applicableInput.reduce((generatedValue, currentValue, currentIndex, processingArray) => {
+                returnValue = applicableInput.reduce((generatedValue, currentValue) => {
                     const stringVal = currentValue.toString(16)
                     if (stringVal.length === 1) {
                         generatedValue = generatedValue + "0" + stringVal

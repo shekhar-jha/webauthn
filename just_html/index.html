@@ -1,4 +1,4 @@
-<html>
+<html lang="en-US">
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
@@ -83,11 +83,12 @@
     </thead>
     <tbody>
     <tr>
-        <td>Identity</td>
-        <td><input type="text" id="userId" name="userId" value=""></input></td>
+        <td><label for="userId">Identity</label></td>
+        <td><input type="text" id="userId" name="userId" value=""/></td>
     </tr>
-    <td>External URL</td>
-    <td><input type="text" id="externalURL" name="externalURL" value=""></input></td>
+    <tr>
+        <td><label for="externalURL">External URL</label></td>
+        <td><input type="text" id="externalURL" name="externalURL" value=""></td>
     </tr>
     </tbody>
 </table>
@@ -165,7 +166,7 @@
                     <input type="button"
                            name="nav-cred-create-fillOptions"
                            value="Load Credential Option"
-                           onclick="SetObject(DefaultCredOptions, 'nav-cred-create','nav-cred-create');"></label>
+                           onclick="SetObject(DefaultCredOptions, 'nav-cred-create');"></label>
                 </td>
                 <td><select name="nav-cred-create-fillOptions-Values"
                             id="nav-cred-create-fillOptions-Values">
@@ -248,7 +249,7 @@
                        target="_blank">Relying Party ID (domain name e.g. www.acme.org, acme.org)</a></label>
                 </td>
                 <td>
-                    <input type="text" id="nav-cred-create-rp.id" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-rp.id" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-rp.id-set">Set value</label>
@@ -263,7 +264,7 @@
                         <li><a href="https://w3c.github.io/webauthn/#rp-id"
                                target="_blank">Valid Domain string</a><BR>
                             Default: origin's <a
-                                    hef="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain">effective
+                                    href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-effective-domain">effective
                                 domain</a><BR>
                             Allowed: Suffix of origin (e.g. origin a1.a2.acme.com, then a2.acme.com & acme.com are
                             allowed)<BR>
@@ -279,7 +280,7 @@
                     <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
                        target="_blank">Relying Party Name (human palatable name e.g. ACME Corp)</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-create-rp.name" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-rp.name" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-rp.name-set">Set value</label>
@@ -330,7 +331,7 @@
                     ID</a></label>
                 </td>
                 <td>
-                    <input type="text" id="nav-cred-create-user.id" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-user.id" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-user.id-set">Set value</label>
@@ -370,7 +371,7 @@
                     (may be chosen by user to differentiate with similar display name)
                 </td>
                 <td>
-                    <input type="text" id="nav-cred-create-user.name" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-user.name" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-user.name-set">Set value</label>
@@ -404,7 +405,7 @@
                     (User must choose it)
                 </td>
                 <td>
-                    <input type="text" id="nav-cred-create-user.displayName" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-user.displayName" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-user.displayName-set">Set value</label>
@@ -438,7 +439,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-challenge"
                         target="_blank">Challenge</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-create-challenge" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-challenge" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-challenge-set">Set value</label>
@@ -535,7 +536,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-timeout"
                         target="_blank">Timeout </a>(millis)</label></td>
                 <td>
-                    <input type="text" id="nav-cred-create-timeout" class="nav-cred-create"></input>
+                    <input type="text" id="nav-cred-create-timeout" class="nav-cred-create"/>
                 </td>
                 <td><label for="nav-cred-create-timeout-set">Set value</label>
                     <input type="checkbox" id="nav-cred-create-timeout-set" name="nav-cred-create-timeout-set"
@@ -943,7 +944,7 @@
             <input type="button" name="nav-cred-create-createCredential" value="Create Credential"
                    onclick="CredentialCreate(currentSession);"/>
             <input type="button" name="nav-cred-create-setCredential" value="Set Credential"
-                   onclick="SetObject(currentSession['nav-cred-create-credential'], 'nav-cred-obj','nav-cred-obj')"/>
+                   onclick="SetObject(currentSession['nav-cred-create-credential'], 'nav-cred-obj')"/>
             <input type="button" name="nav-cred-create-ParseCredential" value="Parse Credential"
                    onclick="GetURL(API_ENDPOINTS.parseCredential, currentSession,'nav-cred-create-logging');">
         </p>
@@ -962,7 +963,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredential-authenticatorattachment"
                         target="_blank">Authenticator attachment type</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-authenticatorAttachment" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-authenticatorAttachment" class="nav-cred-obj"/>
                 </td>
                 <td></td>
                 <td>
@@ -984,7 +985,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredential-rawid"
                         target="_blank">Raw ID</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-rawId" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-rawId" class="nav-cred-obj"/>
                 </td>
                 <td><label for="nav-cred-obj-rawId-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
@@ -1007,7 +1008,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredential-tojson"
                         target="_blank">JSON Representation</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-toJSON" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-toJSON" class="nav-cred-obj"/>
                 </td>
                 <td></td>
                 <td>
@@ -1024,7 +1025,7 @@
                         href="https://w3c.github.io/webappsec-credential-management/#dom-credential-id"
                         target="_blank">ID</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-id" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-id" class="nav-cred-obj"/>
                 </td>
                 <td><label for="nav-cred-obj-id-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
@@ -1064,7 +1065,7 @@
                         href="https://w3c.github.io/webauthn/#dom-authenticatorresponse-clientdatajson"
                         target="_blank">clientDataJSON</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.clientDataJSON" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-response.clientDataJSON" class="nav-cred-obj"/>
                 </td>
                 <td></td>
                 <td>
@@ -1084,7 +1085,7 @@
                     Type</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.type"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td></td>
                 <td><h4>Validations</h4>
@@ -1101,7 +1102,7 @@
                     Challenge</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.challenge"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td>
                     <label for="nav-cred-obj-parse-Response.CollectedClientData.challenge-Transform">Format</label>
@@ -1128,7 +1129,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.origin"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td></td>
                 <td><h4>Validation</h4>
@@ -1146,7 +1147,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.topOrigin"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td></td>
                 <td><h4>Validation</h4>
@@ -1164,7 +1165,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.CollectedClientData.crossOrigin"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td></td>
                 <td><h4>Validation</h4>
@@ -1179,7 +1180,7 @@
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-gettransports"
                         target="_blank">Transports</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.getTransports" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-response.getTransports" class="nav-cred-obj"/>
                 </td>
                 <td>
                 </td>
@@ -1198,7 +1199,7 @@
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getauthenticatordata"
                         target="_blank">Authenticator Data</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.getAuthenticatorData" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-response.getAuthenticatorData" class="nav-cred-obj"/>
                 </td>
                 <td><label for="nav-cred-obj-response.getAuthenticatorData-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
@@ -1222,7 +1223,7 @@
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getpublickey"
                         target="_blank">Public Key</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.getPublicKey" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-response.getPublicKey" class="nav-cred-obj"/>
                 </td>
                 <td><label for="nav-cred-obj-response.getPublicKey-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
@@ -1248,7 +1249,7 @@
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getpublickeyalgorithm"
                         target="_blank">Public Key algorithm</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.getPublicKeyAlgorithm" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-response.getPublicKeyAlgorithm" class="nav-cred-obj"/>
                 </td>
                 <td>
                 </td>
@@ -1266,7 +1267,7 @@
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-attestationobject"
                         target="_blank">Attestation Object</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-obj-response.attestationObject" class="nav-cred-obj"></input>
+                    <input type="text" id="nav-cred-obj-response.attestationObject" class="nav-cred-obj"/>
                 </td>
                 <td><label for="nav-cred-obj-response.attestationObject-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
@@ -1302,7 +1303,7 @@
                         target="_blank">Format</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.fmt"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td></td>
                 <td><h4>Validation</h4>
@@ -1331,7 +1332,7 @@
                         href="https://w3c.github.io/webauthn/#authdata-rpidhash"
                         target="_blank">RP ID Hash</a></label></td>
                 <td><input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.rpid-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
@@ -1357,7 +1358,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td><input type="button" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-Parse"
                            name="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-Parse"
@@ -1411,7 +1412,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Bit 5: Reserved for future use</a></td>
+                <td>Bit 5: Reserved for future use</td>
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-5"></div>
                 </td>
@@ -1436,7 +1437,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.sign_count"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td></td>
                 <td>
@@ -1468,7 +1469,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.aaguid-Transform">
                     Format</label>
@@ -1526,7 +1527,7 @@
                 </td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key"
-                           class="nav-cred-obj-parse"></input>
+                           class="nav-cred-obj-parse"/>
                 </td>
                 <td>
                     <label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.att_data.public_key-Transform">
