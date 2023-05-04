@@ -212,12 +212,23 @@ const TransformationDefinition = {
             "Response.AttestationObject.AuthData.rpid", "Response.AttestationObject.AuthData.flags",
             "Response.AttestationObject.AuthData.sign_count", "Response.AttestationObject.AuthData.att_data.aaguid",
             "Response.AttestationObject.AuthData.att_data.credential_id", "Response.AttestationObject.AuthData.att_data.public_key",
-            "Response.AttestationObject.AuthData.att_data.public_key"],
+            "Response.AttestationObject.AuthData.att_data.public_key", "Response.AttestationObject.attStmt.alg",
+            "Response.AttestationObject.attStmt.sig", "Response.AttestationObject.attStmt.x5c",
+            "Response.AttestationObject.attStmt.ecdaaKeyId", "Response.AttestationObject.attStmt.ver",
+            "Response.AttestationObject.attStmt.response", "Response.AttestationObject.attStmt.certinfo",
+            "Response.AttestationObject.attStmt.pubArea"
+        ],
         "default": "text-noChange",
         "Response.CollectedClientData.challenge": "text-base64",
         "Response.AttestationObject.AuthData.rpid": "text-base64",
         "Response.AttestationObject.AuthData.att_data.credential_id": "text-base64",
         "Response.AttestationObject.AuthData.att_data.public_key": "text-base64",
+        "Response.AttestationObject.attStmt.sig": "text-base64",
+        "Response.AttestationObject.attStmt.x5c": "text-base64",
+        "Response.AttestationObject.attStmt.ecdaaKeyId": "text-base64",
+        "Response.AttestationObject.attStmt.response": "text-base64",
+        "Response.AttestationObject.attStmt.certinfo": "text-base64",
+        "Response.AttestationObject.attStmt.pubArea": "text-base64",
     }
 }
 

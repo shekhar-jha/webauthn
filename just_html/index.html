@@ -1297,7 +1297,13 @@
                 </td>
             </tr>
             <tr>
-                <td rowspan="17"></td>
+                <td rowspan="26"></td>
+                <td colspan="5"><a
+                        href="https://w3c.github.io/webauthn/#attestation-statement"
+                        target="_blank">Attestation Statement</a>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.fmt"><a
                         href="https://w3c.github.io/webauthn/#sctn-attstn-fmt-ids"
                         target="_blank">Format</a></label></td>
@@ -1318,13 +1324,251 @@
                     <h4>Guidance</h4>
                     <ol>
                         <li>Specifies the format of attestation statement</li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-packed-attestation" target="_blank">packed</a>
+                            (Basic, Self, AttCA)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-tpm-attestation" target="_blank">TPM</a>
+                            (AttCA)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-android-key-attestation" target="_blank">Android
+                            Key</a>
+                            (Basic)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-android-safetynet-attestation"
+                               target="_blank">Android SafetyNet</a>
+                            (Basic)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-fido-u2f-attestation" target="_blank">Fido
+                            U2F</a>
+                            (Basic, AttCA)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-none-attestation" target="_blank">None</a>
+                            (None)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-apple-anonymous-attestation" target="_blank">Apple
+                            Anonymous</a>
+                            (Anonymization CA)
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.alg">Algorithm to
+                    generate signature (alg)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.alg"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#typedefdef-cosealgorithmidentifier"
+                               target="_blank"> COSEAlgorithmIdentifier</a></li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android key</li>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.sig">Attestation
+                    signature (sig)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.sig"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.sig-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.sig-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.sig-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android key</li>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                        <li>U2F</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.x5c">
+                    <a href="https://w3c.github.io/webauthn/#attestation-certificate" target="_blank">X509 encoded
+                        Certificate</a> for attestation (x5c)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.x5c"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.x5c-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.x5c-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.x5c-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android key</li>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                        <li>Apple</li>
+                        <li>U2F</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.ecdaaKeyId">
+                    Key ID (ecdaaKeyId)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.ecdaaKeyId"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td><label
+                        for="nav-cred-obj-parse-Response.AttestationObject.attStmt.ecdaaKeyId-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.ecdaaKeyId-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.ecdaaKeyId-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver">
+                    Version (ver)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>String</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android safetynet</li>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.response">
+                    Response (response)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.response"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android safetynet</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.certinfo">
+                    <a href="https://www.trustedcomputinggroup.org/wp-content/uploads/TPM-Rev-2.0-Part-2-Structures-01.38.pdf"
+                       target="_blank>"> TPMS_ATTEST structure (certinfo)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.certinfo"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.certinfo-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.certinfo-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.certinfo-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.pubArea">
+                    TPMT_PUBLIC structure (pubArea)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.pubArea"
+                           class="nav-cred-obj-parse"/>
+                </td>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.pubArea-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.pubArea-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.pubArea-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>TPM</li>
                     </ol>
                 </td>
             </tr>
             <tr>
                 <td colspan="5"><a
                         href="https://w3c.github.io/webauthn/#authenticator-data"
-                        target="_blank">Authenticator Data</a> TODO: figure out att stmt and add
+                        target="_blank">Authenticator Data</a>
                 </td>
             </tr>
             <tr>
