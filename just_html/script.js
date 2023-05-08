@@ -481,8 +481,11 @@ function GenerateObject(prefix = "nav-creds-create",) {
                 applicableAttrName = applicableAttrName + "-set"
                 log("Checking for attribute " + applicableAttrName)
                 let applicableElement = document.getElementById(applicableAttrName)
-                if (applicableElement.tagName.toLowerCase() === 'input' && applicableElement.type.toLowerCase() === 'checkbox' && applicableElement.checked) {
+                if (applicableElement && applicableElement.tagName.toLowerCase() === 'input' && applicableElement.type.toLowerCase() === 'checkbox' && applicableElement.checked) {
                     log("attribute selected.")
+                    return attributeToSet
+                } else if (!applicableElement) {
+                    log("Since attribute set element is not available, defaulting to true")
                     return attributeToSet
                 } else {
                     log("attribute not selected.")

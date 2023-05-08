@@ -192,7 +192,18 @@ const TransformationDefinition = {
         "authenticatorSelection": "object-noChange",
         "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
         "excludeCredentials": "options-sessionMap",
-        "attestationFormats": "options-noChange"
+        "attestationFormats": "options-noChange",
+        "extensions": "object-noChange",
+        "extensions.credProps": "options-bool-oneValue",
+        "extensions.prf": "object-noChange",
+        "extensions.prf.eval": "object-noChange",
+        "extensions.prf.eval.first": "text-ArrayBuffer",
+        "extensions.prf.eval.second": "text-ArrayBuffer",
+        "extensions.exts": "options-bool-oneValue",
+        "extensions.uvi": "options-bool-oneValue",
+        "extensions.loc": "options-bool-oneValue",
+        "extensions.largeBlob": "object-noChange",
+
     },
     "nav-cred-obj": {
         "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",

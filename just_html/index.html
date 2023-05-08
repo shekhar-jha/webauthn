@@ -210,6 +210,10 @@
                     <input type="checkbox" id="nav-cred-createOptionBox-attSec" name="nav-cred-createOptions-attSec"
                            class="nav-cred-createOptionBox" checked
                            onchange="ShowSection('nav-cred-createOptions-attSec','nav-cred-createOptionBox', 'nav-cred-createOptions-attSec', 'nav-cred-createOptionBox-attSec', true, 'checkbox', 'table')">
+                    <label for="nav-cred-createOptionBox-ext">Extensions</label>
+                    <input type="checkbox" id="nav-cred-createOptionBox-ext" name="nav-cred-createOptions-ext"
+                           class="nav-cred-createOptionBox" checked
+                           onchange="ShowSection('nav-cred-createOptions-ext','nav-cred-createOptionBox', 'nav-cred-createOptions-ext', 'nav-cred-createOptionBox-ext', true, 'checkbox', 'table')">
                 </td>
             </tr>
         </table>
@@ -930,6 +934,309 @@
                     </ol>
                 </td>
             </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td colspan="2"><a href="https://w3c.github.io/webauthn/#sctn-extensions"
+                                   target="_blank">Extensions</a></td>
+                <td colspan="2"><h4>Validations</h4>
+                    <ol>
+                        <li>All extension support is optional</li>
+                        <li><a href="https://www.iana.org/assignments/webauthn/webauthn.xhtml#webauthn-extension-ids"
+                               target="_blank">Allowed values</a> (established by <a
+                                href="https://www.rfc-editor.org/rfc/rfc8809" target="_blank">RFC8809</a></li>
+                        <li>Extension identifier
+                            <ol>
+                                <li>Globally unique</li>
+                                <li>Max length: 32 octet</li>
+                                <li>Printable USASCII char except \(%x22) and "(%x5c)</li>
+                                <li>Version, if required, must be added to name</li>
+                            </ol>
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Types
+                            <ol>
+                                <li><a href="https://w3c.github.io/webauthn/#client-extension" target="_blank">Client
+                                </a> extension: processed by client/browser
+                                </li>
+                                <li><a href="https://w3c.github.io/webauthn/#authenticator-extension"
+                                       target="_blank">Authenticator</a> extension: passes through client and processed
+                                    by authenticator
+                                </li>
+                                <li><a href="https://w3c.github.io/webauthn/#registration-extension" target="_blank">
+                                    Registration </a>: extensions are invoked during the <a
+                                        href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create"
+                                        target="_blank">navigator.credentials.create()</a> operation
+                                </li>
+                                <li><a href="https://w3c.github.io/webauthn/#authentication-extension" target="_blank">
+                                    Authentication </a>: extensions are invoked during the <a
+                                        href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get"
+                                        target="_blank">navigator.credentials.get()</a> operation
+                                </li>
+                            </ol>
+                        </li>
+                        <li>Output may be signed (<a href="https://w3c.github.io/webauthn/#authdata-extensions"
+                                                     target="_blank">extension</a>) or unsigned (<a
+                                href="https://w3c.github.io/webauthn/#unsigned-extension-outputs" target="_blank">unsignedExtensionOutputs</a>)
+                        </li>
+                        <li></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.appidExclude"><a
+                        href="https://w3c.github.io/webauthn/#sctn-appid-exclude-extension"
+                        target="_blank">FIDO AppID Exclusion Extension (appidExclude)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-extensions.appidExclude" class="nav-cred-create"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.appidExclude-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.appidExclude-set"
+                           name="nav-cred-create-extensions.appidExclude-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li> USVString</li>
+                        <li>FIDO App ID</li>
+                        <li>Default value: preferred</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Returns 'true' if the extension was acted on otherwise false</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.credProps"><a
+                        href="https://w3c.github.io/webauthn/#credprops"
+                        target="_blank">Credential Properties (credProps)</a></label></td>
+                <td>
+                    <input type="checkbox" id="nav-cred-create-extensions.credProps"
+                           name="nav-cred-create-extensions.credProps"
+                           class="nav-cred-create  nav-cred-create-extensions.credProps-options" value="true"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.credProps-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.credProps-set"
+                           name="nav-cred-create-extensions.credProps-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Boolean</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Returns <a
+                                href="https://w3c.github.io/webauthn/#credentialpropertiesoutput-resident-key-credential-property"
+                                target="_blank">'resident key credential'</a> property as true if created credential is
+                            <a href="https://w3c.github.io/webauthn/#discoverable-credential" target="_blank">discoverable</a>
+                            otherwise it is server-side credential
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td colspan="2"><a href="https://w3c.github.io/webauthn/#prf-extension" target="_blank"> Pseudo-random
+                    function (prf)</a></td>
+                <td><label for="nav-cred-create-extensions.prf-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.prf-set"
+                           name="nav-cred-create-extensions.prf-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>This is implemented on top of <a
+                                href="https://fidoalliance.org/specs/fido-v2.1-rd-20210309/fido-client-to-authenticator-protocol-v2.1-rd-20210309.html#sctn-hmac-secret-extension"
+                                target="_blank">hmac-secret</a> extension
+                        </li>
+                        <li>Returns enabled=true, if one or two PRF are available for use to create credential. results
+                            of evaluating prf
+                        </li>
+                        <li>Override <a href="https://w3c.github.io/webauthn/#enumdef-userverificationrequirement"
+                                        target="_blank">UserVerificationRequirement</a> setting if provided.
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.prf.eval.first">PRF first</label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-extensions.prf.eval.first" class="nav-cred-create"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.prf.eval.first-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.prf.eval.first-set"
+                           name="nav-cred-create-extensions.prf.eval.first-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>BufferSource</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.prf.eval.second">PRF second</label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-extensions.prf.eval.second" class="nav-cred-create"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.prf.eval.second-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.prf.eval.second-set"
+                           name="nav-cred-create-extensions.prf.eval.second-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>BufferSource</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.exts"><a
+                        href="https://www.w3.org/TR/webauthn-1/#sctn-supported-extensions-extension" target="_blank">Supported
+                    extensions (Webauthn 1)</a></label></td>
+                <td>
+                    <input type="checkbox" id="nav-cred-create-extensions.exts"
+                           name="nav-cred-create-extensions.exts"
+                           class="nav-cred-create  nav-cred-create-extensions.exts-options" value="true"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.exts-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.exts-set"
+                           name="nav-cred-create-extensions.exts-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Boolean</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Output a list of extension identifier string</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.uvi"><a
+                        href="https://www.w3.org/TR/webauthn-1/#sctn-uvi-extension" target="_blank">User Verification
+                    Index extensions (Webauthn 1)</a></label></td>
+                <td>
+                    <input type="checkbox" id="nav-cred-create-extensions.uvi"
+                           name="nav-cred-create-extensions.uvi"
+                           class="nav-cred-create  nav-cred-create-extensions.uvi-options" value="true"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.uvi-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.uvi-set"
+                           name="nav-cred-create-extensions.uvi-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Boolean</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>The user verification index (UVI) is a value uniquely identifying a user verification data
+                            record.
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.loc"><a
+                        href="https://www.w3.org/TR/webauthn-1/#sctn-location-extension" target="_blank">Location
+                    extensions (Webauthn 1)</a></label></td>
+                <td>
+                    <input type="checkbox" id="nav-cred-create-extensions.loc"
+                           name="nav-cred-create-extensions.loc"
+                           class="nav-cred-create  nav-cred-create-extensions.loc-options" value="true"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.loc-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.loc-set"
+                           name="nav-cred-create-extensions.loc-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Boolean</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Returns <a href="https://www.w3.org/TR/geolocation/#coordinates_interface" target="_blank">Coordinate</a>
+                            of location from authenticator record.
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.uvm"><a
+                        href="https://www.w3.org/TR/webauthn-1/#sctn-uvm-extension" target="_blank">User Verification
+                    Method extensions (Webauthn 1 & 2)</a></label></td>
+                <td>
+                    <input type="checkbox" id="nav-cred-create-extensions.uvm"
+                           name="nav-cred-create-extensions.uvm"
+                           class="nav-cred-create  nav-cred-create-extensions.uvm-options" value="true"/>
+                </td>
+                <td><label for="nav-cred-create-extensions.uvm-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.uvm-set"
+                           name="nav-cred-create-extensions.uvm-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Boolean</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Returns JSON array of 3-element arrays.</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td colspan="2"><a href="https://w3c.github.io/webauthn/#sctn-large-blob-extension" target="_blank">Large
+                    Blob storage</a></td>
+                <td><label for="nav-cred-create-extensions.largeBlob-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.largeBlob-set"
+                           name="nav-cred-create-extensions.largeBlob-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Allow relying party to store data associated with credential during authentication.</li>
+                        <li>Roaming authenticator for cross-platform authenticator using FIDO-CTAP only support for
+                            discoverable credential
+                        </li>
+                        <li>authenticatorSelection.residentKey must be set to required or preferre</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.largeBlob.support"><a
+                        href="https://w3c.github.io/webauthn/#sctn-large-blob-extension" target="_blank">Large blob
+                    storage</a></label></td>
+                <td>
+                    <select name="nav-cred-create-extensions.largeBlob.support"
+                            id="nav-cred-create-extensions.largeBlob.support" class="nav-cred-create">
+                        <option value="invalidVal" selected>Not selected</option>
+                        <option value="required">Required</option>
+                        <option value="preferred">Preferred</option>
+                    </select>
+                </td>
+                <td><label for="nav-cred-create-extensions.largeBlob.support-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.largeBlob.support-set"
+                           name="nav-cred-create-extensions.largeBlob.support-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-largeblobsupport" target="_blank">LargeBlobSupport</a>
+                            (required/preferred)
+                        </li>
+                    </ol>
+                </td>
+            </tr>
             <tr>
                 <td>attr</td>
                 <td>val</td>
@@ -1221,7 +1528,7 @@
             <tr>
                 <td colspan="3"><label for="nav-cred-obj-response.getPublicKey"><a
                         href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-getpublickey"
-                        target="_blank">Public Key</a></label></td>
+                        target="_blank">Public Key //TODO: show all algos.</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-response.getPublicKey" class="nav-cred-obj"/>
                 </td>
@@ -1354,7 +1661,7 @@
             </tr>
             <tr>
                 <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.alg">Algorithm to
-                    generate signature (alg)</label></td>
+                    generate signature (alg) TODO: show all algos.</label></td>
                 <td>
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.alg"
                            class="nav-cred-obj-parse"/>
@@ -1490,10 +1797,10 @@
                     <input type="text" id="nav-cred-obj-parse-Response.AttestationObject.attStmt.response"
                            class="nav-cred-obj-parse"/>
                 </td>
-                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver-Transform">Format</label>
+                <td><label for="nav-cred-obj-parse-Response.AttestationObject.attStmt.response-Transform">Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
-                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver-Transform"
-                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.ver-Transform"
+                    <select name="nav-cred-obj-parse-Response.AttestationObject.attStmt.response-Transform"
+                            id="nav-cred-obj-parse-Response.AttestationObject.attStmt.response-Transform"
                             class="Transformers">
                         <option value="Hex" selected>Hex</option>
                         <option value="Base64">Base64</option>
