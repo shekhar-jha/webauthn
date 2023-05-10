@@ -8,8 +8,24 @@ function CredentialCreate(session) {
         log("Failed to create credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-create-logging')
         log("Stack: " + err.stack, 'debug', 'nav-cred-create-logging')
         session['nav-cred-create-error'] = err
+        ShowSection('nav-cred-createSections', 'tablinks', 'nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')
     });
     log("Started credential creation", 'info', 'nav-cred-create-logging')
+}
+
+function CredentialRequest(session) {
+    log("Requesting credential", 'info', 'nav-cred-get-logging')
+    navigator.credentials.get({publicKey: session['nav-cred-get-options']})
+        .then(function (newCredentialInfo) {
+            log("Requested credential successfully. ", 'info', 'nav-cred-get-logging')
+            session['nav-cred-get-credential'] = newCredentialInfo
+        }).catch(function (err) {
+        log("Failed to request credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-get-logging')
+        log("Stack: " + err.stack, 'debug', 'nav-cred-get-logging')
+        session['nav-cred-get-error'] = err
+        ShowSection('nav-cred-getSections', 'tablinks', 'nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')
+    });
+    log("Started credential request", 'info', 'nav-cred-get-logging')
 }
 
 function GenerateExcludedCredential(allSessions, divNameToProcess) {
@@ -74,6 +90,50 @@ function CreateCredentialResponse(session) {
             publicKey: EscapeBase64EncodedString(Transform(inputKeyCredential.response.getPublicKey(), 'Array', 'Base64', LoggingPrefixMapping['nav-cred-obj'])),
         }
     })
+}
+
+function CreateRequestResponse(session) {
+    const inputKeyCredential = session['nav-cred-get-credential']
+    const loggingLocation = LoggingPrefixMapping['nav-cred-req']
+    return JSON.stringify({
+        type: inputKeyCredential.type,
+        id: inputKeyCredential.id,
+        authenticatorAttachment: inputKeyCredential.authenticatorAttachment,
+        rawId: EscapeBase64EncodedString(Transform(inputKeyCredential.rawId, 'Array', 'Base64', loggingLocation)),
+        clientExtensionResults: inputKeyCredential.getClientExtensionResults(),
+        response: {
+            clientDataJSON: EscapeBase64EncodedString(Transform(inputKeyCredential.response.clientDataJSON, 'Array', 'Base64', loggingLocation)),
+            authenticatorData: EscapeBase64EncodedString(Transform(inputKeyCredential.response.authenticatorData, 'Array', 'Base64', loggingLocation)),
+            signature: EscapeBase64EncodedString(Transform(inputKeyCredential.response.signature, 'Array', 'Base64', loggingLocation)),
+            userHandle: EscapeBase64EncodedString(Transform(inputKeyCredential.response.userHandle, 'Array', 'Base64', loggingLocation)),
+        }
+    })
+}
+
+function HandleParsedCredential(credType, status, response, currSession, debugLocation) {
+    let parsedCredentialSessionKey = ''
+    let parsedCredentialSpecKey = ''
+    switch (credType) {
+        case 'create':
+            parsedCredentialSessionKey = 'nav-cred-create-credential-parsed'
+            parsedCredentialSpecKey = 'nav-cred-obj-parse'
+            break
+        case 'get':
+            parsedCredentialSessionKey = 'nav-cred-get-credential-parsed'
+            parsedCredentialSpecKey = 'nav-cred-req-parse'
+            break
+        default:
+            log("Credential type " + credType + " not support for parsing the credential", 'error', debugLocation)
+            return
+    }
+    if (status === 200 && response.status === "OK") {
+        log("Successfully parsed credential creation response on server", "info", debugLocation)
+        currSession[parsedCredentialSessionKey] = response.data
+        //TODO: move this to callback
+        SetObject(currentSession[parsedCredentialSessionKey], parsedCredentialSpecKey)
+    } else {
+        log("Failed to parsed credential response on server " + status + " response " + response?.status, "error", debugLocation)
+    }
 }
 
 const publicKeyCredentialDetails = {
@@ -205,7 +265,22 @@ const TransformationDefinition = {
         "extensions.largeBlob": "object-noChange",
 
     },
+    "nav-cred-get": {
+        "default": "text-noChange",
+        "challenge": "text-ArrayBuffer",
+    },
     "nav-cred-obj": {
+        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
+            "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
+            "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
+        "default": "text-noChange",
+        "rawId": "text-ArrayBuffer",
+        "response.clientDataJSON": "text-ArrayBuffer",
+        "response.attestationObject": "text-ArrayBuffer",
+        "response.getAuthenticatorData": "text-ArrayBuffer",
+        "response.getPublicKey": "text-ArrayBuffer",
+    },
+    "nav-cred-req": {
         "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
             "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
             "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
@@ -231,9 +306,38 @@ const TransformationDefinition = {
         ],
         "default": "text-noChange",
         "Response.CollectedClientData.challenge": "text-base64",
-        "Response.AttestationObject.AuthData.rpid": "text-base64",
+        "Response.AuthenticatorData.AuthData.rpid": "text-base64",
         "Response.AttestationObject.AuthData.att_data.credential_id": "text-base64",
         "Response.AttestationObject.AuthData.att_data.public_key": "text-base64",
+        "Response.AttestationObject.attStmt.sig": "text-base64",
+        "Response.AttestationObject.attStmt.x5c": "text-base64",
+        "Response.AttestationObject.attStmt.ecdaaKeyId": "text-base64",
+        "Response.AttestationObject.attStmt.response": "text-base64",
+        "Response.AttestationObject.attStmt.certinfo": "text-base64",
+        "Response.AttestationObject.attStmt.pubArea": "text-base64",
+    },
+    "nav-cred-req-parse": {
+        "availableKeys": [
+            "Response.Signature", "Response.UserHandle",
+            "Response.CollectedClientData.type", "Response.CollectedClientData.challenge",
+            "Response.CollectedClientData.origin", "Response.CollectedClientData.topOrigin",
+            "Response.CollectedClientData.crossOrigin",
+            "Response.AuthenticatorData.rpid", "Response.AuthenticatorData.flags",
+            "Response.AuthenticatorData.sign_count", "Response.AuthenticatorData.att_data.aaguid",
+            "Response.AuthenticatorData.att_data.credential_id", "Response.AuthenticatorData.att_data.public_key",
+            "Response.AttestationObject.fmt", "Response.AttestationObject.attStmt.alg",
+            "Response.AttestationObject.attStmt.pubArea", "Response.AttestationObject.attStmt.sig",
+            "Response.AttestationObject.attStmt.x5c", "Response.AttestationObject.attStmt.ecdaaKeyId",
+            "Response.AttestationObject.attStmt.ver", "Response.AttestationObject.attStmt.response",
+            "Response.AttestationObject.attStmt.certinfo",
+        ],
+        "default": "text-noChange",
+        "Response.Signature": "text-base64",
+        "Response.UserHandle": "text-base64",
+        "Response.CollectedClientData.challenge": "text-base64",
+        "Response.AuthenticatorData.rpid": "text-base64",
+        "Response.AuthenticatorData.att_data.credential_id": "text-base64",
+        "Response.AuthenticatorData.att_data.public_key": "text-base64",
         "Response.AttestationObject.attStmt.sig": "text-base64",
         "Response.AttestationObject.attStmt.x5c": "text-base64",
         "Response.AttestationObject.attStmt.ecdaaKeyId": "text-base64",
@@ -342,14 +446,18 @@ const API_ENDPOINTS = {
             return CreateCredentialResponse(session)
         },
         Callback: (status, response, currSession, debugLocation) => {
-            if (status === 200 && response.status === "OK") {
-                log("Successfully parsed credential creation response on server", "info", debugLocation)
-                currSession['nav-cred-create-credential-parsed'] = response.data
-                //TODO: move this to callback
-                SetObject(currentSession['nav-cred-create-credential-parsed'], 'nav-cred-obj-parse')
-            } else {
-                log("Failed to parsed credential creation response on server " + status + " response " + response?.status, "error", debugLocation)
-            }
+            HandleParsedCredential('create', status, response, currSession, debugLocation)
         }
-    }
+    },
+    parseGetCredential: {
+        Method: "POST",
+        URL: "/api/webauthn/assertion/parse",
+        Body: (session) => {
+            return CreateRequestResponse(session)
+        },
+        Callback: (status, response, currSession, debugLocation) => {
+            HandleParsedCredential('get', status, response, currSession, debugLocation)
+        }
+
+    },
 }

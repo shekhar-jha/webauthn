@@ -796,7 +796,11 @@ function setVal(path, value, obj = self, separator = '.') {
 }
 
 function EscapeBase64EncodedString(encodedString) {
-    return encodedString.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    if (encodedString) {
+        return encodedString.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    } else {
+        return ''
+    }
 }
 
 function Transform(inputValue, source, dest, logLocation = DefaultLoggingLocation) {

@@ -81,6 +81,16 @@ func ParseCredentialCreationResponse(ctx *middleware.RequestCtx) {
 	ctx.OKJSON(parsedResponse)
 }
 
+func ParseCredentialRequestResponse(ctx *middleware.RequestCtx) {
+	parsedResponse, err := protocol.ParseCredentialRequestResponseBody(bytes.NewReader(ctx.PostBody()))
+	if err != nil {
+		ctx.Log.Error("failed to parse credential request response body", model.ProtoErrToFields(err)...)
+		ctx.BadRequestJSON(model.NewErrorJSON().WithError(err).WithInfo("Bad Request."))
+		return
+	}
+	ctx.OKJSON(parsedResponse)
+}
+
 func AttestationPOST(ctx *middleware.RequestCtx) {
 	var (
 		user    *model.User

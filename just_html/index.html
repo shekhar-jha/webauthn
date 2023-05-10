@@ -137,7 +137,8 @@
     <option value="credential-prevent">Prevent silent access</option>
 </select>
 <div id="nav-cred-create" class="nav-creds">
-    <H3>Create</H3>
+    <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create"
+           target="_blank"> Create</a></H3>
     <div class="tab">
         <button id='nav-cred-createSectionLink-logging' class="tablinks"
                 onclick="ShowSection('nav-cred-createSections','tablinks','nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')">
@@ -2107,7 +2108,949 @@
     </div>
 </div>
 <div id="nav-cred-get" class="nav-creds">
-    Get
+
+    <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get" target="_blank">Get
+        Credential</a></H3>
+    <div class="tab">
+        <button id='nav-cred-getSectionLink-logging' class="tablinks"
+                onclick="ShowSection('nav-cred-getSections','tablinks','nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')">
+            Logging
+        </button>
+        <button id='nav-cred-getSectionLink-reqOpts' class="tablinks active"
+                onclick="ShowSection('nav-cred-getSections','tablinks','nav-cred-getSection-reqOpts', 'nav-cred-getSectionLink-reqOpts')">
+            Credential Request
+            Options
+        </button>
+        <button id='nav-cred-getSectionLink-reqCreds' class="tablinks"
+                onclick="ShowSection('nav-cred-getSections','tablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
+            Credential
+        </button>
+    </div>
+    <div id="nav-cred-getSection-logging" class="nav-cred-getSections tabcontent" style="display: none">
+        <p>
+            <input type="button" value="Clear" onclick="clearLog('nav-cred-get-logging')"/>
+        </p>
+        <div id="nav-cred-get-logging"></div>
+    </div>
+    <div id="nav-cred-getSection-reqOpts" class="nav-cred-getSections tabcontent" style="display: block">
+        <table class="emptyTable">
+            <tr>
+                <td colspan="2"><input type="button" name="nav-cred-get-generateObject"
+                                       value="Generate Request Credential Option"
+                                       onclick="currentSession['nav-cred-get-options'] = GenerateObject('nav-cred-get');ShowSection('nav-cred-getSections','tablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
+                </td>
+            </tr>
+        </table>
+        <table class="simpleTable">
+            <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+                <th>Action</th>
+                <th>Validations & Guidance</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="nav-cred-getOptions-others">
+                <td><label for="nav-cred-get-challenge"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-challenge"
+                        target="_blank">Challenge</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-get-challenge" class="nav-cred-get"/>
+                </td>
+                <td>
+                    <label for="nav-cred-get-challenge-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-challenge-set" name="nav-cred-get-challenge-set"
+                           checked class="nav-cred-get" value="Set">
+                    <label for="nav-cred-get-challenge-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-get-challenge-Transform"
+                            id="nav-cred-get-challenge-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text" selected>Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>BufferSource</li>
+                        <li>Generated on Server; stored for validation of response</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dom-collectedclientdata-challenge" target="_blank">Base64
+                            encoded</a></li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-cryptographic-challenges" target="_blank">Randomized</a>
+                            with enough entropy to make guessing infeasible
+                        </li>
+                        <li>Min size: 16 bytes</li>
+                    </ol>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="nav-cred-getSection-reqCreds" class="nav-cred-getSections tabcontent" style="display: none">
+        <table class="emptyTable">
+            <tr>
+                <td colspan="2"><input type="button" name="nav-cred-get-requestCredential" value="Request Credential"
+                                       onclick="CredentialRequest(currentSession);"/>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="button" name="nav-cred-get-setCredential" value="Set Credential"
+                           onclick="SetObject(currentSession['nav-cred-get-credential'], 'nav-cred-req')"/>
+                </td>
+                <td><input type="button" name="nav-cred-get-ParseCredential" value="Parse Credential"
+                           onclick="GetURL(API_ENDPOINTS.parseGetCredential, currentSession,'nav-cred-get-logging');">
+                </td>
+            </tr>
+            <tr>
+                <td>Show/Hide section</td>
+                <td>
+                    <label for="nav-cred-getCredBox-basic">Basic</label>
+                    <input type="checkbox" id="nav-cred-getCredBox-basic" name="nav-cred-getCredBox-basic"
+                           class="nav-cred-getCredBox" checked
+                           onchange="ShowSection('nav-cred-getCred-basic','nav-cred-getCredBox', 'nav-cred-getCred-basic', 'nav-cred-getCredBox-basic', true, 'checkbox', 'table')">
+                    <label for="nav-cred-getCredBox-response">Response</label>
+                    <input type="checkbox" id="nav-cred-getCredBox-response" name="nav-cred-getCredBox-response"
+                           class="nav-cred-getCredBox" checked
+                           onchange="ShowSection('nav-cred-getCred-response','nav-cred-getCredBox', 'nav-cred-getCred-response', 'nav-cred-getCredBox-response', true, 'checkbox', 'table')">
+                    <label for="nav-cred-getCredBox-clientData">Collected Client Data</label>
+                    <input type="checkbox" id="nav-cred-getCredBox-clientData" name="nav-cred-getCredBox-clientData"
+                           class="nav-cred-getCredBox" checked
+                           onchange="ShowSection('nav-cred-getCred-clientData','nav-cred-getCredBox', 'nav-cred-getCred-clientData', 'nav-cred-getCredBox-clientData', true, 'checkbox', 'table')">
+                    <label for="nav-cred-getCredBox-authData">Authenticator Data</label>
+                    <input type="checkbox" id="nav-cred-getCredBox-authData" name="nav-cred-getCredBox-authData"
+                           class="nav-cred-getCredBox" checked
+                           onchange="ShowSection('nav-cred-getCred-authData','nav-cred-getCredBox', 'nav-cred-getCred-authData', 'nav-cred-getCredBox-authData', true, 'checkbox', 'table')">
+                    <label for="nav-cred-getCredBox-att_data">Attested Credential Data</label>
+                    <input type="checkbox" id="nav-cred-getCredBox-att_data" name="nav-cred-getCredBox-att_data"
+                           class="nav-cred-getCredBox" checked
+                           onchange="ShowSection('nav-cred-getCred-att_data','nav-cred-getCredBox', 'nav-cred-getCred-att_data', 'nav-cred-getCredBox-att_data', true, 'checkbox', 'table')">
+                    <label for="nav-cred-getCredBox-attStmt">Attestation Statement</label>
+                    <input type="checkbox" id="nav-cred-getCredBox-attStmt" name="nav-cred-getCredBox-attStmt"
+                           class="nav-cred-getCredBox" checked
+                           onchange="ShowSection('nav-cred-getCred-attStmt','nav-cred-getCredBox', 'nav-cred-getCred-attStmt', 'nav-cred-getCredBox-attStmt', true, 'checkbox', 'table')">
+
+            </tr>
+        </table>
+        <table class="simpleTable">
+            <thead>
+            <tr>
+                <th colspan="3">Attribute</th>
+                <th>Value</th>
+                <th>Action</th>
+                <th>Validations & Guidance</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="nav-cred-getCred-basic">
+                <td colspan="3"><label for="nav-cred-req-authenticatorAttachment"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredential-authenticatorattachment"
+                        target="_blank">Authenticator attachment type</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-authenticatorAttachment" class="nav-cred-req"/>
+                </td>
+                <td></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-authenticatorattachment" target="_blank">Valid
+                            values</a>: platform/cross-platform
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-basic">
+                <td colspan="3"><label for="nav-cred-req-rawId"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredential-rawid"
+                        target="_blank">Raw ID</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-rawId" class="nav-cred-req"/>
+                </td>
+                <td><label for="nav-cred-req-rawId-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-rawId-Transform" id="nav-cred-req-rawId-Transform" class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-basic">
+                <td colspan="3"><label for="nav-cred-req-id"><a
+                        href="https://w3c.github.io/webappsec-credential-management/#dom-credential-id"
+                        target="_blank">ID</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-id" class="nav-cred-req"/>
+                </td>
+                <td><label for="nav-cred-req-id-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-id-Transform"
+                            id="nav-cred-req-id-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="EscapedBase64" selected>Escaped Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://webidl.spec.whatwg.org/#idl-USVString" target="_blank">USVString</a>
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response">
+                <td colspan="5"><a href="https://w3c.github.io/webauthn/#dom-publickeycredential-response"
+                                   target="_blank">Response</a></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://w3c.github.io/webauthn/#authenticatorresponse" target="_blank">AuthenticatorResponse</a>
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#authenticatorassertionresponse" target="_blank">
+                            AuthenticatorAssertionResponse</a>
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response">
+                <td colspan="3"><label for="nav-cred-req-parse-Response.Signature"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorassertionresponse-signature"
+                        target="_blank">Signature</a></label></td>
+                <td><input type="text" id="nav-cred-req-parse-Response.Signature"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.Signature-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.Signature-Transform"
+                            id="nav-cred-req-parse-Response.Signature-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>ArrayBuffer</li>
+                        <li>ReadOnly</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Signed by private key for selected credential</li>
+                        <li>SHA256 hash of authenticator data, clientDataHashRP ID</li>
+                        <li>TODO: Add validation against given value in option & client JSON</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response">
+                <td colspan="3"><label for="nav-cred-req-parse-Response.UserHandle"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorassertionresponse-userhandle"
+                        target="_blank">User handle</a></label></td>
+                <td><input type="text" id="nav-cred-req-parse-Response.UserHandle"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.UserHandle-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.UserHandle-Transform"
+                            id="nav-cred-req-parse-Response.UserHandle-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>ArrayBuffer</li>
+                        <li>ReadOnly</li>
+                        <li>Nullable</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#user-handle" target="_blank">User handle</a>
+                            returned
+                        </li>
+                        <li>SHA256 hash of authenticator data, clientDataHashRP ID</li>
+                        <li>TODO: Add validation against given value in option & client JSON</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-clientData">
+                <td colspan="3"><label for="nav-cred-req-response.clientDataJSON"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorresponse-clientdatajson"
+                        target="_blank">clientDataJSON</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-response.clientDataJSON" class="nav-cred-req"/>
+                </td>
+                <td></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>ArrayBuffer</li>
+                        <li><a href="https://w3c.github.io/webauthn/#dictdef-collectedclientdata" target="_blank">Collected
+                            Client Data format</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-clientData">
+                <td rowspan="5"></td>
+                <td colspan="2"><label for="nav-cred-req-parse-Response.CollectedClientData.type"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-type" target="_blank">
+                    Type</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.CollectedClientData.type"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li>Values: 'webauthn.create'/'webauthn.get'</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-clientData">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.CollectedClientData.challenge"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-challenge" target="_blank">
+                    Challenge</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.CollectedClientData.challenge"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td>
+                    <label for="nav-cred-req-parse-Response.CollectedClientData.challenge-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.CollectedClientData.challenge-Transform"
+                            id="nav-cred-req-parse-Response.CollectedClientData.challenge-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validations</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li>Values: 'webauthn.create'/'webauthn.get'</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-clientData">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.CollectedClientData.origin"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-origin" target="_blank">Origin</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.CollectedClientData.origin"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>DOMString</li>
+                        <li><a href="https://www.rfc-editor.org/rfc/rfc6454" target="_blank">RFC6454</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-clientData">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.CollectedClientData.topOrigin"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-toporigin" target="_blank">Top
+                    level Origin</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.CollectedClientData.topOrigin"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>DOMString</li>
+                        <li><a href="https://www.rfc-editor.org/rfc/rfc6454" target="_blank">RFC6454</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-clientData">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.CollectedClientData.crossOrigin"><a
+                        href="https://w3c.github.io/webauthn/#dom-collectedclientdata-crossorigin" target="_blank">Cross
+                    Origin?</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.CollectedClientData.crossOrigin"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>Boolean</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td colspan="6"><a
+                        href="https://w3c.github.io/webauthn/#authenticator-data"
+                        target="_blank">Authenticator Data</a>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td colspan="3"><label for="nav-cred-req-parse-Response.AuthenticatorData.rpid"><a
+                        href="https://w3c.github.io/webauthn/#authdata-rpidhash"
+                        target="_blank">RP ID Hash</a></label></td>
+                <td><input type="text" id="nav-cred-req-parse-Response.AuthenticatorData.rpid"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AuthenticatorData.rpid-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AuthenticatorData.rpid-Transform"
+                            id="nav-cred-req-parse-Response.AuthenticatorData.rpid-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>length 32 bytes</li>
+                        <li>SHA256 hash of RP ID</li>
+                        <li>TODO: Add validation against given value in option & client JSON</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td colspan="3"><label for="nav-cred-req-parse-Response.AuthenticatorData.flags"><a
+                        href="https://w3c.github.io/webauthn/#authdata-flags" target="_blank">Flags</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AuthenticatorData.flags"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><input type="button" id="nav-cred-req-parse-Response.AuthenticatorData.flags-Parse"
+                           name="nav-cred-req-parse-Response.AuthenticatorData.flags-Parse"
+                           value="Parse flag"
+                           onclick="ParseAttObjectAuthDataFlag('nav-cred-req-parse-Response.AuthenticatorData.flags');">
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>Length: 1 byte</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td rowspan="8" colspan="2"></td>
+                <td>Bit 0: <a href="https://w3c.github.io/webauthn/#concept-user-present" target="_blank">User
+                    Present[0-absent]</a></td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-0"></div>
+                </td>
+                <td rowspan="8"></td>
+                <td rowspan="8"></td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 1: Reserved for future use</td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-1"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 2: <a href="https://w3c.github.io/webauthn/#concept-user-verified" target="_blank">User
+                    Verified</a> (1-verified)
+                </td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-2"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 3: <a href="https://w3c.github.io/webauthn/#backup-eligibility" target="_blank">Backup
+                    Eligible</a> (0-single/1-multi-device)
+                </td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-3"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 4: <a href="https://w3c.github.io/webauthn/#backup-state" target="_blank">Backup state</a>
+                    (1-backed up/0-not backed up)
+                </td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-4"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 5: Reserved for future use</td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-5"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 6: <a href="https://w3c.github.io/webauthn/#attested-credential-data" target="_blank">Attested
+                    credential data included?</a></td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-6"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td>Bit 7: <a href="https://w3c.github.io/webauthn/#authdata-extensions" target="_blank">Extension
+                    included?</a></td>
+                <td>
+                    <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-7"></div>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
+                <td colspan="3"><label for="nav-cred-req-parse-Response.AuthenticatorData.sign_count"><a
+                        href="https://w3c.github.io/webauthn/#signature-counter" target="_blank">Sign count</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AuthenticatorData.sign_count"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>32-bit unsigned big-endian integer</li>
+                        <li>Length: 4 bytes</li>
+                    </ol>
+                    <h4><a href="https://w3c.github.io/webauthn/#signature-counter" target="_blank">Guidance</a></h4>
+                    <ol>
+                        <li>Incremented for each successful authentication</li>
+                        <li>Authenticator should implement for each credential (SHOULD) or globally for
+                            authenticator(MAY)
+                        </li>
+                        <li>For each credential (SHOULD) or globally for authenticator(MAY)</li>
+                        <li>Help RP detect cloned authenticators by storing it</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData nav-cred-getCred-att_data">
+                <td colspan="6"><a href="https://w3c.github.io/webauthn/#sctn-attested-credential-data">Attested
+                    Credential Data</a></td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData nav-cred-getCred-att_data">
+                <td rowspan="3"></td>
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AuthenticatorData.att_data.aaguid"><a
+                        href="https://w3c.github.io/webauthn/#authdata-attestedcredentialdata-aaguid" target="_blank">AAGUID
+                    of authenticator</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AuthenticatorData.att_data.aaguid"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AuthenticatorData.att_data.aaguid-Transform">
+                    Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AuthenticatorData.att_data.aaguid-Transform"
+                            id="nav-cred-req-parse-Response.AuthenticatorData.att_data.aaguid-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                        <option value="UUID">UUID</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Length: 16 bytes</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData nav-cred-getCred-att_data">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AuthenticatorData.att_data.credential_id"><a
+                        href="https://w3c.github.io/webauthn/#authdata-attestedcredentialdata-credentialid"
+                        target="_blank">Credential ID</a></label>
+                </td>
+                <td>
+                    <input type="text"
+                           id="nav-cred-req-parse-Response.AuthenticatorData.att_data.credential_id"
+                           class="nav-cred-req-parse">
+                </td>
+                <td>
+                    <label for="nav-cred-req-parse-Response.AuthenticatorData.att_data.credential_id-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AuthenticatorData.att_data.credential_id-Transform"
+                            id="nav-cred-req-parse-Response.AuthenticatorData.att_data.credential_id-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://w3c.github.io/webauthn/#credential-id">Credential ID format</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-authData nav-cred-getCred-att_data">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AuthenticatorData.att_data.public_key"><a
+                        href="https://w3c.github.io/webauthn/#authdata-attestedcredentialdata-credentialpublickey"
+                        target="_blank">Credential Public key</a></label>
+                </td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AuthenticatorData.att_data.public_key"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td>
+                    <label for="nav-cred-req-parse-Response.AuthenticatorData.att_data.public_key-Transform">
+                        Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AuthenticatorData.att_data.public_key-Transform"
+                            id="nav-cred-req-parse-Response.AuthenticatorData.att_data.public_key-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64" selected>Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li><a href="https://datatracker.ietf.org/doc/html/rfc9052#section-7">RFC9052</a> COSE Key
+                            format
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="3"><label for="nav-cred-req-response.attestationObject"><a
+                        href="https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-attestationobject"
+                        target="_blank">Attestation Object</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-response.attestationObject" class="nav-cred-req"/>
+                </td>
+                <td><label for="nav-cred-req-response.attestationObject-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-response.attestationObject-Transform"
+                            id="nav-cred-req-response.attestationObject-Transform" class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Required</li>
+                        <li>ArrayBuffer</li>
+                        <li><a href="https://w3c.github.io/webauthn/#attestation-object">CBOR Format</a></li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-attestation" target="_blank">Contains</a>
+                            format, attestation statement (based on format) & Authenticator data
+                        </li>
+                        <li>Signed by <a href="https://w3c.github.io/webauthn/#attestation-key-pair" target="_blank">
+                            Attestation</a>key pair
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td rowspan="10"></td>
+                <td colspan="5"><a
+                        href="https://w3c.github.io/webauthn/#attestation-statement"
+                        target="_blank">Attestation Statement</a>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.fmt"><a
+                        href="https://w3c.github.io/webauthn/#sctn-attstn-fmt-ids"
+                        target="_blank">Format</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.fmt"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>String</li>
+                        <li>Required</li>
+                        <li><a href="https://www.iana.org/assignments/webauthn/webauthn.xhtml" target="_blank">Allowed
+                            values</a> (Defined by <a href="https://www.rfc-editor.org/rfc/rfc8809.html"
+                                                      target="_blank">RFC8809</a>): 'packed'/'tpm'/'android-key'/...
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Specifies the format of attestation statement</li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-packed-attestation" target="_blank">packed</a>
+                            (Basic, Self, AttCA)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-tpm-attestation" target="_blank">TPM</a>
+                            (AttCA)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-android-key-attestation" target="_blank">Android
+                            Key</a>
+                            (Basic)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-android-safetynet-attestation"
+                               target="_blank">Android SafetyNet</a>
+                            (Basic)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-fido-u2f-attestation" target="_blank">Fido
+                            U2F</a>
+                            (Basic, AttCA)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-none-attestation" target="_blank">None</a>
+                            (None)
+                        </li>
+                        <li><a href="https://w3c.github.io/webauthn/#sctn-apple-anonymous-attestation" target="_blank">Apple
+                            Anonymous</a>
+                            (Anonymization CA)
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.alg">Algorithm to
+                    generate signature (alg) TODO: show all algos.</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.alg"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li><a href="https://w3c.github.io/webauthn/#typedefdef-cosealgorithmidentifier"
+                               target="_blank"> COSEAlgorithmIdentifier</a></li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android key</li>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.sig">Attestation
+                    signature (sig)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.sig"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.sig-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AttestationObject.attStmt.sig-Transform"
+                            id="nav-cred-req-parse-Response.AttestationObject.attStmt.sig-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android key</li>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                        <li>U2F</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.x5c">
+                    <a href="https://w3c.github.io/webauthn/#attestation-certificate" target="_blank">X509 encoded
+                        Certificate</a> for attestation (x5c)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.x5c"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.x5c-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AttestationObject.attStmt.x5c-Transform"
+                            id="nav-cred-req-parse-Response.AttestationObject.attStmt.x5c-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android key</li>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                        <li>Apple</li>
+                        <li>U2F</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.ecdaaKeyId">
+                    Key ID (ecdaaKeyId)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.ecdaaKeyId"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label
+                        for="nav-cred-req-parse-Response.AttestationObject.attStmt.ecdaaKeyId-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AttestationObject.attStmt.ecdaaKeyId-Transform"
+                            id="nav-cred-req-parse-Response.AttestationObject.attStmt.ecdaaKeyId-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Packed</li>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.ver">
+                    Version (ver)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.ver"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td></td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>String</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android safetynet</li>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.response">
+                    Response (response)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.response"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.response-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AttestationObject.attStmt.response-Transform"
+                            id="nav-cred-req-parse-Response.AttestationObject.attStmt.response-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>Android safetynet</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.certinfo">
+                    <a href="https://www.trustedcomputinggroup.org/wp-content/uploads/TPM-Rev-2.0-Part-2-Structures-01.38.pdf"
+                       target="_blank>"> TPMS_ATTEST structure (certinfo)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.certinfo"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.certinfo-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AttestationObject.attStmt.certinfo-Transform"
+                            id="nav-cred-req-parse-Response.AttestationObject.attStmt.certinfo-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.pubArea">
+                    TPMT_PUBLIC structure (pubArea)</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.pubArea"
+                           class="nav-cred-req-parse"/>
+                </td>
+                <td><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.pubArea-Transform">Format</label>
+                    <!-- Event handler added through TransformSelectHandlerRegister()-->
+                    <select name="nav-cred-req-parse-Response.AttestationObject.attStmt.pubArea-Transform"
+                            id="nav-cred-req-parse-Response.AttestationObject.attStmt.pubArea-Transform"
+                            class="Transformers">
+                        <option value="Hex" selected>Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text">Text</option>
+                    </select>
+                </td>
+                <td><h4>Validation</h4>
+                    <ol>
+                        <li>ArrayBuffer</li>
+                    </ol>
+                    <h4>Applicable for</h4>
+                    <ol>
+                        <li>TPM</li>
+                    </ol>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
 </div>
 <div id="nav-cred-store" class="nav-creds">
     Store
