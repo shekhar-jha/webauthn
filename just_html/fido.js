@@ -1,9 +1,15 @@
 function CredentialCreate(session) {
     log("Creating credential", 'info', 'nav-cred-create-logging')
+    let userId = ''
+    const userIdElement = document.getElementById('nav-cred-create-user.id')
+    if (userIdElement && 'value' in userIdElement) {
+        userId = userIdElement.value
+    }
     navigator.credentials.create({publicKey: session['nav-cred-create-options']})
         .then(function (newCredentialInfo) {
             log("Created credential successfully. ", 'info', 'nav-cred-create-logging')
             session['nav-cred-create-credential'] = newCredentialInfo
+            SaveCredential(userId, newCredentialInfo)
         }).catch(function (err) {
         log("Failed to create credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-create-logging')
         log("Stack: " + err.stack, 'debug', 'nav-cred-create-logging')
@@ -17,8 +23,10 @@ function CredentialRequest(session) {
     log("Requesting credential", 'info', 'nav-cred-get-logging')
     navigator.credentials.get({publicKey: session['nav-cred-get-options']})
         .then(function (newCredentialInfo) {
-            log("Requested credential successfully. ", 'info', 'nav-cred-get-logging')
+            log("Requested credential successfully. ", 'info', LoggingPrefixMapping['nav-cred-req'])
             session['nav-cred-get-credential'] = newCredentialInfo
+            const userId = textDecoder.decode((newCredentialInfo.response.userHandle))
+            SaveCredential(userId, newCredentialInfo, LoggingPrefixMapping['nav-cred-req'])
         }).catch(function (err) {
         log("Failed to request credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-get-logging')
         log("Stack: " + err.stack, 'debug', 'nav-cred-get-logging')
@@ -28,27 +36,101 @@ function CredentialRequest(session) {
     log("Started credential request", 'info', 'nav-cred-get-logging')
 }
 
-function GenerateExcludedCredential(allSessions, divNameToProcess) {
-    log("Generating the excluded credentials", "debug", 'nav-cred-create-logging')
+function GenerateExcludedCredential(allSessions, divNameToProcess, optionType = 'create') {
+    let opsAttribute = "create-excludeCredentials"
+    let debugLocation = 'nav-cred-create-logging'
+    let classSuffix = 'create'
+    switch (optionType) {
+        case "create":
+            opsAttribute = "create-excludeCredentials"
+            debugLocation = 'nav-cred-create-logging'
+            classSuffix = 'create'
+            break
+        case "get":
+            opsAttribute = "get-allowCredentials"
+            debugLocation = 'nav-cred-get-logging'
+            classSuffix = 'get'
+            break
+        default:
+            log("Unsupported option type " + optionType + " provided. Can not generate the credential for " +
+                divNameToProcess, 'error', 'common-debug')
+    }
+    log("Generating the excluded credentials", "debug", debugLocation)
     let divToProcess = document.getElementById(divNameToProcess)
-    currentSession['nav-cred-create-excludeCredentials'] = new Map()
+    currentSession['nav-cred-' + opsAttribute] = new Map()
     divToProcess.innerHTML = ""
-    allSessions.forEach((value, key) => {
-        if (value.hasOwnProperty('nav-cred-create-credential')) {
-            let rawId = value['nav-cred-create-credential'].rawId
-            let excludeCred = {
-                type: 'public-key',
-                id: rawId,
-                transports: value['nav-cred-create-credential'].response.getTransports()
+    const savedCredentials = GetSavedCredentials(debugLocation)
+    for (const userId in savedCredentials) {
+        const key = userId
+        currentSession['nav-cred-' + opsAttribute].set(key, savedCredentials[userId])
+        divToProcess.innerHTML = divToProcess.innerHTML + "<label for='nav-cred-" + opsAttribute + "-options-" + key + "'>" + key +
+            "</label><input type='checkbox' id='nav-cred-" + opsAttribute + "-options-" + key + "' " +
+            "class='nav-cred-" + classSuffix + " nav-cred-" + opsAttribute + "-options' " +
+            "name='nav-cred-" + classSuffix + " nav-cred-" + opsAttribute + "-options-" + key + "' checked value='" + key + "'>"
+    }
+    log("Generated the excluded credentials", 'debug', debugLocation)
+}
+
+const SavedCredentialKeyName = 'SavedCredentials'
+
+function GetSavedCredentials(debugLocation = 'common-debug') {
+    const savedCredentials = {}
+    let storedCredentialAsString = localStorage.getItem(SavedCredentialKeyName)
+    if (storedCredentialAsString) {
+        const storedCredential = JSON.parse(storedCredentialAsString)
+        if (storedCredential && 'credentials' in storedCredential) {
+            for (const property in storedCredential.credentials) {
+                const userId = property
+                const credential = storedCredential.credentials[userId]
+                if (credential) {
+                    const updatedId = Transform(credential.id, 'Base64', 'Array', debugLocation)
+                    if (updatedId) {
+                        credential['id'] = updatedId
+                        savedCredentials[userId] = credential
+                    } else {
+                        log("Failed to transform credential id for user " + userId + "ID: " + credential.id, 'error', debugLocation)
+                    }
+                } else {
+                    log("Failed to identify credential for user " + userId, 'error', debugLocation)
+                }
             }
-            currentSession['nav-cred-create-excludeCredentials'].set(key, excludeCred)
-            divToProcess.innerHTML = divToProcess.innerHTML + "<label for='nav-cred-create-excludeCredentials-options-" + key + "'>" + key +
-                "</label><input type='checkbox' id='nav-cred-create-excludeCredentials-options-" + key + "' " +
-                "class='nav-cred-create nav-cred-create-excludeCredentials-options' " +
-                "name='nav-cred-create nav-cred-create-excludeCredentials-options-" + key + "' checked value='" + key + "'>"
+        } else {
+            log("Failed to parse stored credentials from localstorage using JSON", 'error', debugLocation)
         }
-    })
-    log("Generated the excluded credentials", 'debug', 'nav-cred-create-logging')
+    } else {
+        log("Failed to load information for " + SavedCredentialKeyName + " from localstorage", 'error', debugLocation)
+    }
+    return savedCredentials
+}
+
+function SaveCredential(userId, credential, debugLocation = 'common-debug') {
+    if (localStorage) {
+        let storedCredentials = {}
+        let storedCredentialAsString = localStorage.getItem(SavedCredentialKeyName)
+        if (storedCredentialAsString) {
+            storedCredentials = JSON.parse(storedCredentialAsString)
+        } else {
+            storedCredentials.credentials = {}
+            storedCredentials.browser = {}
+            storedCredentials.browser.appName = navigator.appName
+            storedCredentials.browser.appVersion = navigator.appVersion
+        }
+        if (credential && userId) {
+            const storeCred = {}
+            storeCred['type'] = 'public-key'
+            storeCred['id'] = Transform(credential.rawId, 'Array', 'Base64', debugLocation)
+            if (typeof credential.authenticatorAttachment === 'string') {
+                storeCred['transports'] = [credential.authenticatorAttachment]
+            } else {
+                storeCred['transports'] = [...credential.authenticatorAttachment]
+            }
+            storedCredentials.credentials[userId] = storeCred
+        }
+        const updatedStoredCredentialAsString = JSON.stringify(storedCredentials)
+        localStorage.setItem(SavedCredentialKeyName, updatedStoredCredentialAsString)
+    } else {
+        log("Localstorage is not available on this browser. Can not save credential.", 'warn')
+    }
 }
 
 function ParseAttObjectAuthDataFlag(elementName = 'nav-cred-obj-parse-Response.AttestationObject.AuthData.flags') {
@@ -266,8 +348,14 @@ const TransformationDefinition = {
 
     },
     "nav-cred-get": {
+        "availableKeys": ["challenge", "mediation", "signal", "timeout", "rpid", "allowCredentials", "userVerification",
+            "attestation", "attestationFormats"],
         "default": "text-noChange",
         "challenge": "text-ArrayBuffer",
+        "signal": "text-AbortSignal",
+        "timeout": "text-number",
+        "allowCredentials": "options-sessionMap",
+        "attestationFormats": "options-noChange"
     },
     "nav-cred-obj": {
         "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
@@ -350,6 +438,9 @@ const TransformationDefinition = {
 LoggingPrefixMapping["nav-cred-create"] = "nav-cred-create-logging";
 LoggingPrefixMapping["nav-cred-obj"] = "nav-cred-create-logging";
 LoggingPrefixMapping["nav-cred-obj-parse"] = "nav-cred-create-logging";
+LoggingPrefixMapping["nav-cred-get"] = "nav-cred-get-logging";
+LoggingPrefixMapping["nav-cred-req"] = "nav-cred-get-logging";
+LoggingPrefixMapping["nav-cred-req-parse"] = "nav-cred-get-logging";
 
 const API_ENDPOINTS = {
     getDebug: {

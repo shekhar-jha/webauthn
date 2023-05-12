@@ -305,6 +305,41 @@ const objectProcessingGuidance = {
                 return decodedValue
             }
         },
+        "AbortSignal": {
+            "get": (input, prefix, attributeName) => {
+                if (input) {
+                    let timeOutValue = 1000
+                    let reasonValue = "No reason provided"
+                    const timeoutElement = document.getElementById(prefix + "-" + attributeName + "-timeout")
+                    const reasonElement = document.getElementById(prefix + "-" + attributeName + "-reason")
+                    if (timeoutElement && 'value' in timeoutElement) {
+                        timeOutValue = Number(timeoutElement.value)
+                    }
+                    if (reasonElement && 'value' in timeoutElement) {
+                        reasonValue = reasonElement.value
+                    }
+                    switch (input.toLowerCase()) {
+                        case 'timeout':
+                            return AbortSignal.timeout(timeOutValue)
+                        case 'reason':
+                            const ctrlr = new AbortController()
+                            setTimeout(() => {
+                                ctrlr.abort(reasonValue)
+                            }, timeOutValue)
+                            return ctrlr.signal
+                        default:
+                            log("Failed to get AbortSignal for " + prefix + "-" + attributeName + " using value " + input + " since value is not in formal type.value", 'error')
+
+                    }
+                } else {
+                    log("Failed to get AbortSignal for " + prefix + "-" + attributeName + " using value " + input + " since no input was provided.", 'error')
+                }
+                return (new AbortController()).signal
+            },
+            "set": (input, prefix, attributeName, transformers) => {
+                return "notSet"
+            }
+        },
         "base64": {
             "get": (input, prefix, attributeName) => {
                 let applicableSource = 'Text'

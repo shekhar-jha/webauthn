@@ -568,7 +568,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials"
                         target="_blank">Exclude credentials </a></td>
                 <td>
-                    <div id="nav-cred-create-excludeCredentials-list">Generate once another sesion with credential has
+                    <div id="nav-cred-create-excludeCredentials-list">Generate once another session with credential has
                         been
                         registered.
                     </div>
@@ -578,7 +578,7 @@
                            name="nav-cred-create-excludeCredentials-set" class="nav-cred-create" value="Set">
                     <input type="button" id="nav-cred-create-excludeCredentials-generate"
                            name="nav-cred-create-excludeCredentials-generate" class="nav-cred-create" value="Generate"
-                           onclick="GenerateExcludedCredential(sessions, 'nav-cred-create-excludeCredentials-list')">
+                           onclick="GenerateExcludedCredential(sessions, 'nav-cred-create-excludeCredentials-list','create')">
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -2151,7 +2151,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="nav-cred-getOptions-others">
+            <tr class="nav-cred-getOptions-basic">
                 <td><label for="nav-cred-get-challenge"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-challenge"
                         target="_blank">Challenge</a></label></td>
@@ -2185,6 +2185,322 @@
                             with enough entropy to make guessing infeasible
                         </li>
                         <li>Min size: 16 bytes</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-mediation"><a
+                        href="https://w3c.github.io/webappsec-credential-management/#dom-credentialrequestoptions-mediation"
+                        target="_blank">Mediation</a></label></td>
+                <td>
+                    <select name="nav-cred-get-mediation"
+                            id="nav-cred-get-mediation" class="nav-cred-get">
+                        <option value="silent">Silent</option>
+                        <option value="optional" selected>Optional</option>
+                        <option value="conditional">Conditional</option>
+                        <option value="required">Required</option>
+                        <option value="invalidVal">Not selected</option>
+                    </select>
+                </td>
+                <td>
+                    <label for="nav-cred-get-mediation-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-mediation-set" name="nav-cred-get-mediation-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>
+                            <a href="https://w3c.github.io/webappsec-credential-management/#enumdef-credentialmediationrequirement"
+                               target="_blank">CredentialMediationRequirement</a></li>
+                        <li>silent: intended for "Keep me signed in", if user involvement needed, null is returned</li>
+                        <li>optional (default): if user input not needed, it goes ahead otherwise it initiates user
+                            input
+                        </li>
+                        <li>conditional: Discovered credential in non-modal dialog. User can click outside box or select
+                            a user. assumes <a
+                                    href="https://w3c.github.io/webappsec-credential-management/#origin-prevent-silent-access-flag"
+                                    target="_blank">prevent silent access flag</a> is true
+                        </li>
+                        <li>required: for reauthentication & user switch scenarios. Client will not hand over without
+                            user mediation
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-signal"><a
+                        href="https://w3c.github.io/webappsec-credential-management/#dom-credentialrequestoptions-signal"
+                        target="_blank">Abort signal</a></label></td>
+                <td>
+                    <table class="emptyTable">
+                        <tr>
+                            <td colspan="2"><select name="nav-cred-get-signal"
+                                                    id="nav-cred-get-signal" class="nav-cred-get">
+                                <option value="timeout">OnTimeout</option>
+                                <option value="reason" selected>Reason</option>
+                                <option value="notSet">Not selected</option>
+                            </select></td>
+                        </tr>
+                        <tr>
+                            <td><label for="nav-cred-get-signal-timeout">Timeout (ms)</label></td>
+                            <td><input type="text" id="nav-cred-get-signal-timeout" name="nav-cred-get-signal-timeout"
+                                       placeholder="Timeout in ms"/></td>
+                        </tr>
+                        <tr>
+                            <td><label for="nav-cred-get-signal-reason">Reason</label></td>
+                            <td><input type="text" id="nav-cred-get-signal-reason" name="nav-cred-get-signal-reason"
+                                       placeholder="Reason to abort"/></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <label for="nav-cred-get-signal-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-signal-set" name="nav-cred-get-signal-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>
+                            <a href="https://dom.spec.whatwg.org/#abortsignal"
+                               target="_blank">AbortSignal</a></li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-timeout"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-timeout"
+                        target="_blank">Timeout (milliseconds)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-get-timeout" name="nav-cred-get-timeout"/>
+                </td>
+                <td>
+                    <label for="nav-cred-get-timeout-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-timeout-set" name="nav-cred-get-timeout-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>unsigned long</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Value is treated as hint</li>
+                        <li>May be overridden by client</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-rp">
+                <td><label for="nav-cred-get-rpid"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid"
+                        target="_blank">Relying Party ID (domain)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-get-rpid" name="nav-cred-get-rpid"/>
+                </td>
+                <td>
+                    <label for="nav-cred-get-rpid-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-rpid-set" name="nav-cred-get-rpid-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li><a href="https://webidl.spec.whatwg.org/#idl-USVString" target="_blank">USVString</a></li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Origin of page match RP ID</li>
+                        <li>RP ID exact match ID set during credential creation</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-allowCred">
+                <td><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-allowcredentials"
+                        target="_blank">Allow credentials </a></td>
+                <td>
+                    <div id="nav-cred-get-allowCredentials-list">Generate by clicking on Generate button</div>
+                </td>
+                <td><label for="nav-cred-get-allowCredentials-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-allowCredentials-set"
+                           name="nav-cred-get-allowCredentials-set" class="nav-cred-get" value="Set">
+                    <input type="button" id="nav-cred-get-allowCredentials-generate"
+                           name="nav-cred-get-allowCredentials-generate" class="nav-cred-get" value="Generate"
+                           onclick="GenerateExcludedCredential(sessions, 'nav-cred-get-allowCredentials-list', 'get')">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>Array of <a href="https://w3c.github.io/webauthn/#dictdef-publickeycredentialdescriptor"
+                                        target="_blank">PublicKeyCredentialDescriptor</a> that are existing credential
+                            mapped to user
+                            {
+                            type (DOMString/Required): <a
+                                    href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialtype">'public-key'</a>,
+                            id (BufferSource/Required): Credential ID (<a
+                                    href="https://w3c.github.io/webauthn/#dom-publickeycredential-rawid"
+                                    target="_blank">rawID</a>
+                            of PublicKeyCredential),
+                            transports ([]DOMString/Optional): Applicable <a
+                                    href="https://w3c.github.io/webauthn/#enumdef-authenticatortransport">AuthenticatorTransport</a>
+                            (usb/nfc/ble/hybrid/internal)
+                            }
+                        </li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>If user id identified: SHOULD include all credential records (including transport where
+                            possible) in the user account
+                        </li>
+                        <li>No check for user verification is needed. Client will automatically enforce it.</li>
+                        <li>Non-empty client MUST return error if none could be used</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-attest">
+                <td><label for="nav-cred-get-userVerification"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-userverification"
+                        target="_blank">User Verification</a></label></td>
+                <td>
+                    <select name="nav-cred-get-userVerification"
+                            id="nav-cred-get-userVerification" class="nav-cred-get">
+                        <option value="required">Required</option>
+                        <option value="preferred" selected>Preferred</option>
+                        <option value="discouraged">Discouraged</option>
+                        <option value="invalidVal">InvalidValue</option>
+                    </select>
+                </td>
+                <td>
+                    <label for="nav-cred-get-userVerification-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-userVerification-set"
+                           name="nav-cred-get-userVerification-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li><a href="https://webidl.spec.whatwg.org/#idl-DOMString" target="_blank">DOMString</a></li>
+                        <li>Allowed values: <a
+                                href="https://w3c.github.io/webauthn/#enumdef-userverificationrequirement"
+                                target="_blank">UserVerificationRequirement</a> ("required", "preferred","discouraged")
+                        </li>
+                        <li>Default: 'preferred'</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Client ignore unknown value</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-attest">
+                <td><label for="nav-cred-get-attestation"><a
+                        href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-attestation"
+                        target="_blank">Attestation</a></label></td>
+                <td>
+                    <select name="nav-cred-get-attestation"
+                            id="nav-cred-get-attestation" class="nav-cred-get">
+                        <option value="direct">Direct</option>
+                        <option value="none" selected>None</option>
+                        <option value="indirect">Indirect</option>
+                        <option value="enterprise">Enterprise</option>
+                    </select>
+                </td>
+                <td>
+                    <label for="nav-cred-get-attestation-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-attestation-set"
+                           name="nav-cred-get-attestation-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li><a href="https://webidl.spec.whatwg.org/#idl-DOMString" target="_blank">DOMString</a></li>
+                        <li>Allowed values: <a
+                                href="https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference"
+                                target="_blank">AttestationConveyancePreference</a> ("none",
+                            indirect","direct","enterprise")
+                        </li>
+                        <li>Default: 'none'</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Client ignore unknown value</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-attest">
+                <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-attestationformats"
+                       target="_blank">Attestation format</a></td>
+                <td>
+                    <label for="nav-cred-get-attestationFormats-options-packed">Packed</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-packed"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-packed"
+                           checked value='packed'>
+                    <label for="nav-cred-get-attestationFormats-options-tpm">TPM</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-tpm"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-tpm"
+                           checked value='tpm'>
+                    <label for="nav-cred-get-attestationFormats-options-android_key">Android key</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-android_key"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-android_key"
+                           checked value='android-key'>
+                    <label for="nav-cred-get-attestationFormats-options-android_safetynet">Android Safetynet
+                        API</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-android_safetynet"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-android_safetynet"
+                           checked value='android-safetynet'>
+                    <label for="nav-cred-get-attestationFormats-options-fido_u2f">FIDO U2F</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-fido_u2f"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-fido_u2f"
+                           checked value='fido-u2f'>
+                    <label for="nav-cred-get-attestationFormats-options-apple">Apple</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-apple"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-apple"
+                           checked value='apple'>
+                    <label for="nav-cred-get-attestationFormats-options-none">None</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-none"
+                           class="nav-cred-get nav-cred-get-attestationFormats-options"
+                           name="nav-cred-get-attestationFormats-options-none"
+                           value='none'>
+                </td>
+                <td>
+                    <label for="nav-cred-get-attestationFormats-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-attestationFormats-set"
+                           name="nav-cred-get-attestationFormats-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li><a href="https://webidl.spec.whatwg.org/#idl-DOMString" target="_blank">DOMString</a></li>
+                        <li>Allowed values: <a
+                                href="https://www.iana.org/assignments/webauthn/webauthn.xhtml#webauthn-attestation-statement-format-ids"
+                                target="_blank">Attestation Statement Format Identifiers</a> (e.g. packed, tpm, etc) [<a
+                                href="https://www.rfc-editor.org/rfc/rfc8809" target="_blank">RFC8809</a>]
+                        </li>
+                        <li>Default: []</li>
+                    </ol>
+                    <h4>Guidance</h4>
+                    <ol>
+                        <li>Client ignore unknown value</li>
+                        <li>Advisory and may be ignored by client</li>
+                        <li>Ordered from most preferred to least preferred</li>
                     </ol>
                 </td>
             </tr>
