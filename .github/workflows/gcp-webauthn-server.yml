@@ -1,0 +1,36 @@
+# This workflow creates docker image and deploys it to GCP as cloud run
+
+name: GCP Webauthn server
+
+# trigger workflow
+on:
+  workflow_dispatch:
+    inputs:
+      Env:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+
+jobs:
+  package-docker-image:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.Env }}
+    permissions:
+      # Add "id-token" with the intended permissions.
+      id-token: write
+      contents: read
+    #outputs:
+    # webauthn_image_id: ${{ steps.
+    steps:
+      - name: Checkout code
+        id: checkout
+        uses: actions/checkout@v3
+      - name: Run makefile
+        id: make-package
+        shell: bash
+        run: |
+          echo "Running the package"
+          make --just-print package > tempscript.sh
+          chmod +x tempscript.sh
+          ./tempscript.sh
+

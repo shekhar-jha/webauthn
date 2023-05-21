@@ -31,6 +31,9 @@ CONTAINER_NAMES:=$(shell docker ps -a -q --filter "ancestor=${IMG_NAME}")
 # Image id of existing image
 EXISTING_IMAGE_ID:=$(shell docker images -q "${IMG_NAME}")
 
+SHELL:=bash
+.SHELLFLAGS = -e
+
 .DEFAULT_GOAL:=local
 
 
@@ -50,6 +53,9 @@ ${BUILD_DIR}:
 ${DOCKER_DIR}:
 	@mkdir -p "${DOCKER_DIR}"
 
+${WEB_STATIC_INTERNAL}:
+	@mkdir -p "${WEB_STATIC_INTERNAL}"
+
 .PHONY: build
 build: ${EXE_PATH}
 	@echo "*** Done build"
@@ -68,12 +74,12 @@ ${DOCKER_DIR}/${EXE_NAME}: ${EXE_PATH}
 
 .ONESHELL:
 .SHELLFLAGS = -e
-${EXE_PATH}: ${BUILD_DIR} ${ROOT_DIR}/cmd ${ROOT_DIR}/internal ${GO_FILES} ${HTML_FILES}
+${EXE_PATH}: ${BUILD_DIR} ${ROOT_DIR}/cmd ${ROOT_DIR}/internal ${GO_FILES} ${WEB_STATIC_INTERNAL} ${HTML_FILES}
 	@echo "*** Building server...."
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "${EXE_PATH}" "${ROOT_DIR}"/cmd/server
 
 .PHONY: package
-package: ${ROOT_DIR}/build/package
+package: pre-req ${ROOT_DIR}/build/package
 
 ${ROOT_DIR}/build/package: ${DOCKER_DIR} ${DOCKER_DIR}/${EXE_NAME} ${DOCKER_DIR}/config.yaml ${DOCKER_FILES}
 ifneq ($?, "")
@@ -122,7 +128,7 @@ docker-start: ${ROOT_DIR}/build/run_docker
 # Check if required executables are available
 .PHONY: check_executables
 check_executables:
-	@for exe in $(REQUIRED_EXECUTABLES); do \
+	for exe in $(REQUIRED_EXECUTABLES); do \
   		$$(command -v $$exe &>/dev/null); \
         NOT_EXIST=$$? ; \
 		if [ $$NOT_EXIST -eq 1 ]; then \
