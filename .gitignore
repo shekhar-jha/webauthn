@@ -161,3 +161,5 @@ src/
 public_html
 tsconfig.json
 config.yaml
+
+build/
