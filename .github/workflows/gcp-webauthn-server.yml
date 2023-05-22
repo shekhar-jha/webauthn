@@ -27,10 +27,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Run makefile
         id: make-package
-        shell: bash
         run: |
-          echo "Running the package"
+          sed  's/EXTERNAL_URL/${{ env.EXTERNAL_URL }}/' config.example.yaml > config.yaml
+          echo "Generating the script..."
           make --just-print package > tempscript.sh
           chmod +x tempscript.sh
+          echo "Running the script..."
           ./tempscript.sh
 

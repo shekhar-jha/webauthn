@@ -12,7 +12,7 @@ listen_address: "0.0.0.0:8080"
 ssl_enabled: "no"
 ssl_cert_file: domain.crt
 ssl_key_file: domain.key
-external_url: https://auth.example.com
+external_url: EXTERNAL_URL
 
 display_name: Webauthn
 conveyance_preference: indirect
