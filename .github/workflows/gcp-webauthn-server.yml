@@ -28,10 +28,29 @@ jobs:
       - name: Run makefile
         id: make-package
         run: |
-          sed  's/EXTERNAL_URL/${{ env.EXTERNAL_URL }}/' config.example.yaml > config.yaml
+          sed  's/EXTERNAL_URL/${{ vars.EXTERNAL_URL }}/' config.example.yaml > config.yaml
           echo "Generating the script..."
           make --just-print package > tempscript.sh
           chmod +x tempscript.sh
           echo "Running the script..."
           ./tempscript.sh
+          
+      # Configure workload identity federation
+      #- name: Authenticate to Google Cloud
+      #  id: gcp_auth
+      #  uses: 'google-github-actions/auth@v0'
+      #  with:
+      #    workload_identity_provider: ${{ secrets.GCP_Workload_IDP_Name }}
+      #    service_account: ${{ secrets.GCP_SERVICE_ACCT }}
 
+      # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+        with:
+          install_components: 'beta'
+
+      # Check the active identity of login user
+      - name: Check identity
+        id: validate
+        run: |
+          gcloud auth list
