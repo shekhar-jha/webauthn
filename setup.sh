@@ -29,6 +29,7 @@ default_values=("dev" "" "us-east1" "us-east1"
   "Custom role with permission to re-deploy cloud run service"
   "shekhar-jha" "webauthn")
 
+EXTERNAL_URL=""
 CONTINUE_ON_EXIT=${CONTINUE_ON_EXIT:-1}
 
 function usage() {
@@ -233,12 +234,12 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
     gcloud iam roles create "${RUN_SERVICE_ROLE_NAME}" --project="${PROJECT_ID}" \
       --title="${RUN_SERVICE_ROLE_TITLE}" \
       --description="${RUN_SERVICE_ROLE_DESC}" \
-      --stage="GA" --permissions="run.services.update"
+      --stage="GA" --permissions="run.services.update,run.services.get"
     HandleExit $? 25
   else
     echo "GCP: Custom role ${RUN_SERVICE_ROLE_NAME} already exists."
     gcloud iam roles update "${RUN_SERVICE_ROLE_NAME}" --project="${PROJECT_ID}" \
-      --permissions="run.services.update"
+      --permissions="run.services.update,run.services.get"
     HandleExit $? 26
   fi
 
@@ -248,6 +249,15 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
       --member="serviceAccount:${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
       --role="projects/${PROJECT_ID}/roles/${RUN_SERVICE_ROLE_NAME}"
   HandleExit $? 27
+
+  gcloud iam service-accounts add-iam-policy-binding "${RUN_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --member "serviceAccount:${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --role "roles/iam.serviceAccountUser"
+  HandleExit $? 28
+  RUN_SERVICE_URL=$(gcloud run services describe webauthn-service --format="value(status.address.url)")
+  HandleExit $? 29
+  EXTERNAL_URL=$(echo "${RUN_SERVICE_URL}"| sed 's/\//\\\//g')
+
 else
   echo "Skipping the GCP steps"
 fi
@@ -273,6 +283,10 @@ if [[ "${GH_EXECUTE}" == "yes" ]]; then
     HandleExit $? 42
   else
     echo "Environment ${ENV} already exists."
+  fi
+  if [[ "${EXTERNAL_URL}" != "" ]]; then
+    echo "Setting URL to ${EXTERNAL_URL}"
+    gh variable set "EXTERNAL_URL" --body "${EXTERNAL_URL}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   fi
   gh secret set "GCP_Workload_IDP_Name" --body "${IDP_NAME}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   gh secret set "GCP_SERVICE_ACCT" --body "${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
