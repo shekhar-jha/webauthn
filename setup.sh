@@ -181,6 +181,11 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
 
   gcloud services enable "artifactregistry.googleapis.com"
   HandleExit $? 11
+  gcloud services enable "run.googleapis.com"
+  HandleExit $? 16
+  gcloud services enable "iamcredentials.googleapis.com"
+  HandleExit $? 17
+
 
   ARTIFACT_EXIST=$(gcloud artifacts repositories list --location="${LOCATION}" --filter="name:${ARTIFACTORY_NAME}" --format="value(name)")
   if [[ "${ARTIFACT_EXIST}" == "" ]]; then
@@ -190,6 +195,14 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
   else
     echo "GCP: Artifactory ${ARTIFACTORY_NAME} already exists as ${ARTIFACT_EXIST}"
   fi
+
+  gcloud artifacts repositories add-iam-policy-binding \
+    "${ARTIFACTORY_NAME}" --location="${LOCATION}" \
+    --project="${PROJECT_ID}" \
+    --member="serviceAccount:${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.writer"
+  HandleExit $? 9
+
   make package
   DOCKER_IMAGE_EXISTS=$(docker images "${IMG_NAME}:latest" -q)
   if [[ "${DOCKER_IMAGE_EXISTS}" == "" ]]; then
@@ -225,7 +238,7 @@ if [[ "${GH_EXECUTE}" == "yes" ]]; then
     echo "${GH_LOGIN_RESP}"
   fi
 
-  IDP_NAME="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_NAME}/providers/${POOL_PROVIDER_NAME}"
+  IDP_NAME="projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_NAME}/providers/${POOL_PROVIDER_NAME}"
   gh api --method GET -H "Accept: application/vnd.github+json" "repos/${GITHUB_ORG}/${GITHUB_REPO}/environments/${ENV}"
   ENV_EXISTS=$?
   if [[ $ENV_EXISTS -ne 0 ]]; then
@@ -239,6 +252,7 @@ if [[ "${GH_EXECUTE}" == "yes" ]]; then
   gh secret set "GCP_SERVICE_ACCT" --body "${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   gh secret set "GCP_PROJECT_ID" --body "${PROJECT_ID}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   gh secret set "GCP_ARTIFACTORY_LOCATION" --body "${LOCATION}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
+  gh secret set "GCP_ARTIFACTORY_NAME" --body "${ARTIFACTORY_NAME}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   gh secret set "GCP_CLOUD_RUN_SERVICE_REGION" --body "${REGION}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   gh secret set "GCP_CLOUD_RUN_SERVICE_NAME" --body "${RUN_SERVICE_NAME}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"
   gh secret set "GCP_CLOUD_RUN_IMG_NAME" --body "${IMG_NAME}" --env "${ENV}" --repo "${GITHUB_ORG}/${GITHUB_REPO}"

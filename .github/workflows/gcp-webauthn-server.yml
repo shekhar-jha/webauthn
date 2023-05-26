@@ -56,8 +56,8 @@ jobs:
       - name: Tag and Push Container
         id: push-container
         run: |-
-          docker tag "${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest" "${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest"
-          docker push "${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest"
+          docker tag "${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest" "${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACTORY_NAME }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest"
+          docker push "${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACTORY_NAME }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest"
 
       - name: Deploy to Cloud Run
         id: deploy
