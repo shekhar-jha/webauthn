@@ -34,23 +34,37 @@ jobs:
           chmod +x tempscript.sh
           echo "Running the script..."
           ./tempscript.sh
-          
+
       # Configure workload identity federation
-      #- name: Authenticate to Google Cloud
-      #  id: gcp_auth
-      #  uses: 'google-github-actions/auth@v0'
-      #  with:
-      #    workload_identity_provider: ${{ secrets.GCP_Workload_IDP_Name }}
-      #    service_account: ${{ secrets.GCP_SERVICE_ACCT }}
-
-      # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: Authenticate to Google Cloud
+        id: gcp_auth
+        uses: 'google-github-actions/auth@v0'
         with:
-          install_components: 'beta'
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.GCP_Workload_IDP_Name }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCT }}
 
-      # Check the active identity of login user
-      - name: Check identity
-        id: validate
-        run: |
-          gcloud auth list
+      # Authenticate Docker to Google Cloud Artifact Registry
+      - name: Docker Auth
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.gcp_auth.outputs.access_token }}'
+          registry: '${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev'
+
+      - name: Tag and Push Container
+        id: push-container
+        run: |-
+          docker tag "${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest" "${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest"
+          docker push "${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}
+          region: ${{ secrets.GCP_CLOUD_RUN_SERVICE_REGION }}
+          # NOTE: If using a pre-built image, update the image name here
+          image: ${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest
+
