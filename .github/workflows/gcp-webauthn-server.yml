@@ -66,5 +66,5 @@ jobs:
           service: ${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}
           region: ${{ secrets.GCP_CLOUD_RUN_SERVICE_REGION }}
           # NOTE: If using a pre-built image, update the image name here
-          image: ${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest
+          image: ${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACTORY_NAME }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest
 

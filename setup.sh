@@ -2,28 +2,31 @@
 
 
 cli_parameters=("environment" "projectId" "region" "location"
-  "setup-gcp" "setup-github"
+  "setup-gcp" "setup-github" "push-image"
   "pool-name" "pool-desc" "pool-provider-name" "pool-provider-desc"
   "deploy-service-acct-name" "deploy-service-acct-display-name" "deploy-service-acct-desc"
   "run-service-acct-name" "run-service-acct-display-name" "run-service-acct-desc"
   "artifactory-name" "artifactory-desc" "image-name"
-  "run-service-name"
+  "run-service-name" "run-service-role-name" "run-service-role-title"
+  "run-service-role-desc"
   "github-org" "github-repo")
 env_parameters=("ENV" "PROJECT_ID" "REGION" "LOCATION"
-  "GCP_EXECUTE" "GH_EXECUTE"
+  "GCP_EXECUTE" "GH_EXECUTE" "GCP_PUSH"
   "POOL_NAME" "POOL_DESC" "POOL_PROVIDER_NAME" "POOL_PROVIDER_DESC"
   "DEPLOY_SERVICE_ACCT_NAME" "DEPLOY_SERVICE_ACCT_DISPLAY_NAME" "DEPLOY_SERVICE_ACCT_DESC"
   "RUN_SERVICE_ACCT_NAME" "RUN_SERVICE_ACCT_DISPLAY_NAME" "RUN_SERVICE_ACCT_DESC"
   "ARTIFACTORY_NAME" "ARTIFACTORY_DESC" "IMG_NAME"
-  "RUN_SERVICE_NAME"
+  "RUN_SERVICE_NAME" "RUN_SERVICE_ROLE_NAME"  "RUN_SERVICE_ROLE_TITLE"
+  "RUN_SERVICE_ROLE_DESC"
   "GITHUB_ORG" "GITHUB_REPO")
 default_values=("dev" "" "us-east1" "us-east1"
-  "yes" "yes"
+  "yes" "yes" "yes"
   "webauthn-id-pool" "Webauthn Identity pool" "webauthn-provider" "Webauthn Identity Provider"
   "webauthn-deploy-acct" "Webauthn deployment service account" "Service account for Github authentication"
   "webauthn-service-acct" "Webauthn run service account" "Service account for running webauthn cloud run service"
   "webauthn-repo" "Webauthn Docker repository" "jhash_webauthn"
-  "webauthn-service"
+  "webauthn-service" "run.updateonly" "Service run update"
+  "Custom role with permission to re-deploy cloud run service"
   "shekhar-jha" "webauthn")
 
 CONTINUE_ON_EXIT=${CONTINUE_ON_EXIT:-1}
@@ -118,7 +121,7 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
   GCP_CLOUD_LOGIN_ACCT=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
   if [[ "${GCP_CLOUD_LOGIN_ACCT}" == "" ]]; then
     echo "GCP: No authentication detected. Please login using 'gcloud auth login' to continue."
-    exit 3
+    exit 11
   else
     echo "Executing script using GCP Login >${GCP_CLOUD_LOGIN_ACCT}<"
   fi
@@ -135,7 +138,7 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
       --project="${PROJECT_ID}" \
       --location="global" \
       --display-name="${POOL_DESC}"
-    HandleExit $? 6
+    HandleExit $? 12
   else
     echo "GCP: Workload identity pool ${POOL_NAME} already exists as ${POOL_CREATED}"
   fi
@@ -150,7 +153,7 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
       --display-name="${POOL_PROVIDER_DESC}" \
       --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud,attribute.repository=assertion.repository" \
       --issuer-uri="https://token.actions.githubusercontent.com"
-    HandleExit $? 7
+    HandleExit $? 13
   else
     echo "GCP: Workload identity pool provider ${POOL_PROVIDER_NAME} for pool ${POOL_NAME} already exists as ${PROVIDER_CREATED}"
   fi
@@ -159,7 +162,7 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
   if [[ "${SVC_CREATED}" == "" ]]; then
     gcloud iam service-accounts create "${DEPLOY_SERVICE_ACCT_NAME}" \
       --display-name="${DEPLOY_SERVICE_ACCT_DISPLAY_NAME}" --description="${DEPLOY_SERVICE_ACCT_DESC}"
-    HandleExit $? 8
+    HandleExit $? 14
   else
     echo "GCP: Service account ${DEPLOY_SERVICE_ACCT_NAME} already exists as ${SVC_CREATED}"
   fi
@@ -168,30 +171,30 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
     --project="${PROJECT_ID}" \
     --role="roles/iam.workloadIdentityUser" \
     --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_NAME}/attribute.repository/${GITHUB_ORG}/${GITHUB_REPO}"
-  HandleExit $? 9
+  HandleExit $? 15
 
   RUN_SVC_CREATED=$(gcloud iam service-accounts list --filter="name:${RUN_SERVICE_ACCT_NAME} AND disabled:false" --format="value(email)")
   if [[ "${RUN_SVC_CREATED}" == "" ]]; then
     gcloud iam service-accounts create "${RUN_SERVICE_ACCT_NAME}" \
       --display-name="${RUN_SERVICE_ACCT_DISPLAY_NAME}" --description="${RUN_SERVICE_ACCT_DESC}"
-    HandleExit $? 14
+    HandleExit $? 16
   else
     echo "GCP: Service account ${RUN_SERVICE_ACCT_NAME} already exists as ${RUN_SVC_CREATED}"
   fi
 
   gcloud services enable "artifactregistry.googleapis.com"
-  HandleExit $? 11
-  gcloud services enable "run.googleapis.com"
-  HandleExit $? 16
-  gcloud services enable "iamcredentials.googleapis.com"
   HandleExit $? 17
+  gcloud services enable "run.googleapis.com"
+  HandleExit $? 18
+  gcloud services enable "iamcredentials.googleapis.com"
+  HandleExit $? 19
 
 
   ARTIFACT_EXIST=$(gcloud artifacts repositories list --location="${LOCATION}" --filter="name:${ARTIFACTORY_NAME}" --format="value(name)")
   if [[ "${ARTIFACT_EXIST}" == "" ]]; then
     gcloud artifacts repositories create "${ARTIFACTORY_NAME}" --location="${LOCATION}" --repository-format=docker \
       --description="${ARTIFACTORY_DESC}" --mode="standard-repository" --project="${PROJECT_ID}"
-    HandleExit $? 10
+    HandleExit $? 20
   else
     echo "GCP: Artifactory ${ARTIFACTORY_NAME} already exists as ${ARTIFACT_EXIST}"
   fi
@@ -201,27 +204,50 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
     --project="${PROJECT_ID}" \
     --member="serviceAccount:${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/artifactregistry.writer"
-  HandleExit $? 9
-
-  make package
-  DOCKER_IMAGE_EXISTS=$(docker images "${IMG_NAME}:latest" -q)
-  if [[ "${DOCKER_IMAGE_EXISTS}" == "" ]]; then
-    echo "Failed to create docker image. Skipping service deployment"
-  else
-    GCP_IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACTORY_NAME}/${IMG_NAME}"
-    docker tag "${IMG_NAME}:latest" "${GCP_IMAGE_NAME}:latest"
-    HandleExit $? 12
-    echo "**** If the push fails due to unauthorized access, run 'gcloud auth configure-docker' to setup docker authn helpers ****"
-    docker push "${GCP_IMAGE_NAME}"
-    HandleExit $? 13
-    gcloud run deploy "${RUN_SERVICE_NAME}" \
-      --image="${GCP_IMAGE_NAME}" \
-      --allow-unauthenticated \
-      --service-account="${RUN_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
-      --region="${REGION}" \
-      --project="${PROJECT_ID}"
-
+  HandleExit $? 21
+  if [[ "${GCP_PUSH}" == "yes" ]]; then
+    make package
+    DOCKER_IMAGE_EXISTS=$(docker images "${IMG_NAME}:latest" -q)
+    if [[ "${DOCKER_IMAGE_EXISTS}" == "" ]]; then
+      echo "Docker: Failed to create docker image. Skipping service deployment"
+    else
+      GCP_IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACTORY_NAME}/${IMG_NAME}"
+      docker tag "${IMG_NAME}:latest" "${GCP_IMAGE_NAME}:latest"
+      HandleExit $? 22
+      echo "**** If the push fails due to unauthorized access, run 'gcloud auth configure-docker' to setup docker authn helpers ****"
+      docker push "${GCP_IMAGE_NAME}"
+      HandleExit $? 23
+      gcloud run deploy "${RUN_SERVICE_NAME}" \
+        --image="${GCP_IMAGE_NAME}" \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account="${RUN_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+        --region="${REGION}" \
+        --project="${PROJECT_ID}"
+      HandleExit $? 24
+    fi
   fi
+  CUST_ROLE_EXISTS=$(gcloud iam roles describe "${RUN_SERVICE_ROLE_NAME}" --project="${PROJECT_ID}" --format="value(name)" 2>/dev/null)
+  if [[ "${CUST_ROLE_EXISTS}" == "" ]]; then
+    # Note: the permission does not restrict using role to update other services at this time
+    gcloud iam roles create "${RUN_SERVICE_ROLE_NAME}" --project="${PROJECT_ID}" \
+      --title="${RUN_SERVICE_ROLE_TITLE}" \
+      --description="${RUN_SERVICE_ROLE_DESC}" \
+      --stage="GA" --permissions="run.services.update"
+    HandleExit $? 25
+  else
+    echo "GCP: Custom role ${RUN_SERVICE_ROLE_NAME} already exists."
+    gcloud iam roles update "${RUN_SERVICE_ROLE_NAME}" --project="${PROJECT_ID}" \
+      --permissions="run.services.update"
+    HandleExit $? 26
+  fi
+
+  gcloud run services add-iam-policy-binding "${RUN_SERVICE_NAME}" \
+      --region="${REGION}" --project="${PROJECT_ID}" \
+      --platform="managed" \
+      --member="serviceAccount:${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+      --role="projects/${PROJECT_ID}/roles/${RUN_SERVICE_ROLE_NAME}"
+  HandleExit $? 27
 else
   echo "Skipping the GCP steps"
 fi
@@ -232,7 +258,7 @@ if [[ "${GH_EXECUTE}" == "yes" ]]; then
   if [[ $GH_STATUS -ne 0 ]]; then
     echo "Github: No authentication detected. Please setup token or using 'gh auth login'"
     echo "${GH_LOGIN_RESP}"
-    exit 4
+    exit 41
   else
     echo "Github login setup"
     echo "${GH_LOGIN_RESP}"
@@ -244,7 +270,7 @@ if [[ "${GH_EXECUTE}" == "yes" ]]; then
   if [[ $ENV_EXISTS -ne 0 ]]; then
     echo "Creating ${ENV}...."
     gh api --method PUT -H "Accept: application/vnd.github+json" "repos/${GITHUB_ORG}/${GITHUB_REPO}/environments/${ENV}"
-    HandleExit $? 15
+    HandleExit $? 42
   else
     echo "Environment ${ENV} already exists."
   fi
