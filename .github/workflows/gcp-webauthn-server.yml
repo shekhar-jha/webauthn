@@ -19,8 +19,6 @@ jobs:
       # Add "id-token" with the intended permissions.
       id-token: write
       contents: read
-    #outputs:
-    # webauthn_image_id: ${{ steps.
     steps:
       - name: Checkout code
         id: checkout
@@ -68,3 +66,28 @@ jobs:
           # NOTE: If using a pre-built image, update the image name here
           image: ${{ secrets.GCP_ARTIFACTORY_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACTORY_NAME }}/${{ secrets.GCP_CLOUD_RUN_IMG_NAME }}:latest
 
+  deploy-pages:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.Env }}
+    permissions:
+      # Add "id-token" with the intended permissions.
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        id: checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Package site
+        run: |-
+          mkdir -p build/site
+          cp -R just_html/* build/site
+          sed 's/{{ .ExternalURL }}/${{ vars.EXTERNAL_URL }}/g' just_html/index.html > build/site/index.html
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: "build/site"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
