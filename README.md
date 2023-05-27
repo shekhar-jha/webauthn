@@ -4,8 +4,9 @@ This is a simple HTML + javascript application to help developer understand the 
 
 Most of the go code and original structure comes from `https://github.com/go-webauthn/example` with significant
 rework to simplify web UI while bringing all the intricacies of the standard to the surface. The go code has been
-enhanced
-to support additional scenarios identified during the d
+enhanced to support additional scenarios identified during the development.
+
+This tool is now available at https://webauthn.jhash.com/ for use.
 
 ## Requirements
 
