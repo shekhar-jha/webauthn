@@ -73,6 +73,7 @@ jobs:
       # Add "id-token" with the intended permissions.
       id-token: write
       contents: read
+      pages: write
     steps:
       - name: Checkout code
         id: checkout
