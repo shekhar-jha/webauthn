@@ -84,12 +84,13 @@
     </thead>
     <tbody>
     <tr>
-        <td><label for="userId">Identity</label></td>
-        <td><input type="text" id="userId" name="userId" value=""/></td>
-    </tr>
-    <tr>
         <td><label for="externalURL">External URL</label></td>
         <td><input type="text" id="externalURL" name="externalURL" value=""></td>
+    </tr>
+    <tr>
+        <td><label for="logging-setting">Logging Enabled</label></td>
+        <td><input type="checkbox" id="logging-setting" name="logging-setting"
+               onchange="enableLog()"></td>
     </tr>
     </tbody>
 </table>

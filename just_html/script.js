@@ -749,7 +749,16 @@ const logLineCounterMap = new Map()
 
 const DefaultLoggingLocation = "common-debug"
 
+let logEnabled = false
+
+function enableLog() {
+    logEnabled = document.getElementById('logging-setting').checked
+}
+
 function log(content, level = "debug", debugLocation = DefaultLoggingLocation) {
+    if (!logEnabled && level != "error") {
+        return
+    }
     let applicableDebugLocation = debugLocation
     let debugElement = document.getElementById(debugLocation)
     if (debugElement != null && debugElement.value === '') {
