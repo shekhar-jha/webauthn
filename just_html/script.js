@@ -40,16 +40,6 @@ function ShowCapabilities() {
     document.getElementById("externalURL").value = GetConfiguration("externalURL")
 }
 
-function ShowTab(element_id, select_prefix, tab_prefix, class_name = "nav-creds") {
-    let tabs = document.getElementsByClassName(class_name)
-    for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
-        tabs[tabIndex].style.display = "none"
-    }
-    let selectId = document.getElementById(element_id).value
-    let selectedTab = selectId.replace(select_prefix, tab_prefix)
-    document.getElementById(selectedTab).style.display = "block"
-}
-
 function ShowSection(sectionClass, linkClass, sectionId, linkId, useClassToDisplaySection = false, linkType = 'link', sectionType = 'div') {
     let tabs = document.getElementsByClassName(sectionClass)
     for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
@@ -101,11 +91,10 @@ let DefaultInvalidUser = "InvalidUser"
 let sessions = new Map()
 let currentSession = {
     sessionId: "InvalidSessionID",
-    sessionUser: DefaultInvalidUser,
 }
 
-function createSession(desc, user) {
-    let sessionDesc, sessionUser
+function createSession(desc) {
+    let sessionDesc
     if (desc) {
         sessionDesc = desc
     } else {
@@ -115,22 +104,11 @@ function createSession(desc, user) {
         log("Missing session description or existing one. Nothing to do", 'error')
         return
     }
-    if (user) {
-        sessionUser = user
-    } else {
-        sessionUser = "" + document.getElementById("sessions-new-user").value
-    }
-    if (!sessionUser) {
-        log("Missing session user. Nothing to do", 'error')
-        return
-    }
 
     let newSession = {
         sessionId: "InvalidSessionID",
-        sessionUser: DefaultInvalidUser,
     }
     newSession.sessionId = sessionDesc
-    newSession.sessionUser = sessionUser
     sessions.set(newSession.sessionId, newSession)
     sessionEventListeners.forEach((sessionEventListener, index) => {
         if (sessionEventListener) {
@@ -173,7 +151,7 @@ const sessionEventListeners = [
                 break
 
             case SessionEventTypes.Select:
-                GetURL(API_ENDPOINTS.login, currSession)
+                // GetURL(API_ENDPOINTS.login, currSession)
                 break
         }
     },

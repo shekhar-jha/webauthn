@@ -456,50 +456,6 @@ const API_ENDPOINTS = {
             log("Executed callback", "info", debugLocation)
         }
     },
-    getInfo: {
-        Method: "GET",
-        URL: "/api/info",
-        Callback: (status, response, currSession, debugLocation) => {
-            log("Executing callback for /api/info", "info", debugLocation)
-            try {
-                if (status === 200) {
-                    if (response.status === "OK") {
-                        if (currSession.sessionUser === response.data.username) {
-                            log("Current session name matches server session i.e. " + currSession.sessionUser, "info", debugLocation)
-                        } else {
-                            log("Session user name " + currSession.sessionUser + " does not match " + response.data.username, "error", debugLocation)
-                        }
-                    }
-                } else {
-                    log("Debug invocation failed with status " + status + " and response " + response, "info", debugLocation)
-                }
-                log("Executed callback for /api/info", "info", debugLocation)
-            } catch (error) {
-                log("Failed to execute callback for /api/info with error " + error.message + "(" + error.name + ")", "error", debugLocation)
-                log("Stack " + error.stack, "debug", debugLocation)
-            }
-        },
-    },
-    login: {
-        Method: "POST",
-        URL: "/api/login",
-        Body: (session) => {
-            return JSON.stringify({
-                username: session.sessionUser
-            })
-        },
-        Callback: (status, response, currSession, debugLocation) => {
-            if (status === 200 && response.status === "OK") {
-                log("Successfully login to server", "info", debugLocation)
-            } else {
-                log("Login to server failed " + status + " response " + response?.status, "error", debugLocation)
-            }
-        },
-    },
-    logout: {
-        Method: "GET",
-        URL: "/api/logout",
-    },
     getRegisterRequest: {
         Method: "GET",
         URL: "/api/webauthn/attestation"
@@ -521,14 +477,6 @@ const API_ENDPOINTS = {
     getAuthRequest: {
         Method: "GET",
         URL: "/api/webauthn/assertion"
-    },
-    authenticate: {
-        Method: "POST",
-        URL: "/api/webauthn/assertion",
-        Body: (session) => {
-            log("Returning empty body for session " + session)
-            return ""
-        }
     },
     parseCredential: {
         Method: "POST",

@@ -56,7 +56,8 @@
                 border: none;
                 padding: 5px;
             }
-            .simpleTable td:last-child {
+
+            .MobileLastColumnNoShow td:last-child {
                 display: none;
             }
         }
@@ -125,7 +126,7 @@
     <tr>
         <td><label for="logging-setting">Logging Enabled</label></td>
         <td><input type="checkbox" id="logging-setting" name="logging-setting"
-               onchange="enableLog()"></td>
+                   onchange="enableLog()"></td>
     </tr>
     </tbody>
 </table>
@@ -146,15 +147,6 @@
         <td rowspan="2"><input type="button" value="Create new session" onclick="createSession()"/></td>
     </tr>
     <tr>
-        <td>
-            <label for="sessions-new-user">Session user</label><BR>
-        </td>
-        <td>
-            <input type="text" name="sessions-new-user" id="sessions-new-user" value=""
-                   placeholder="testUser1"/>
-        </td>
-    </tr>
-    <tr>
         <td><label for="sessions">Current Sessions</label></td>
         <td>
             <select name="sessions" id="sessions" onchange="selectSession();">
@@ -166,14 +158,25 @@
 </table>
 
 <H2>navigator.credentials</H2>
-<label for="operationName">Operation</label><select name="operationName" id="operationName"
-                                                    onchange="ShowTab('operationName','credential-','nav-cred-')">
-    <option value="credential-create">Create</option>
-    <option value="credential-get">Get</option>
-    <option value="credential-store">Store</option>
-    <option value="credential-prevent">Prevent silent access</option>
-</select>
-<div id="nav-cred-create" class="nav-creds">
+<div class="tab">
+    <button id='nav-cred-opsSectionLink-create' class="tablinks active"
+            onclick="ShowSection('nav-creds','tablinks','nav-cred-create', 'nav-cred-opsSectionLink-create')">
+        Create
+    </button>
+    <button id='nav-cred-opsSectionLink-Get' class="tablinks"
+            onclick="ShowSection('nav-creds','tablinks','nav-cred-get', 'nav-cred-opsSectionLink-Get')">
+        Get
+    </button>
+    <button id='nav-cred-opsSectionLink-Store' class="tablinks"
+            onclick="ShowSection('nav-creds','tablinks','nav-cred-store', 'nav-cred-opsSectionLink-Store')">
+        Store
+    </button>
+    <button id='nav-cred-opsSectionLink-Prevent' class="tablinks"
+            onclick="ShowSection('nav-creds','tablinks','nav-cred-prevent', 'nav-cred-opsSectionLink-Prevent')">
+        Prevent
+    </button>
+</div>
+<div id="nav-cred-create" class="nav-creds tabcontent" style="display: block">
     <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create"
            target="_blank"> Create</a></H3>
     <div class="tab">
@@ -255,7 +258,7 @@
                 </td>
             </tr>
         </table>
-        <table class="simpleTable">
+        <table class="simpleTable MobileLastColumnNoShow">
             <thead>
             <tr>
                 <th>Attribute</th>
@@ -288,14 +291,14 @@
             <tr class="nav-cred-createOptions-rp">
                 <td><label for="nav-cred-create-rp.id">
                     <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialrpentity-id"
-                       target="_blank">Relying Party ID (domain name e.g. www.acme.org, acme.org)</a></label>
+                       target="_blank">Relying Party ID</a></label>
                 </td>
                 <td>
                     <input type="text" id="nav-cred-create-rp.id" class="nav-cred-create"/>
                 </td>
                 <td>
                     <label for="nav-cred-create-rp.id-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-create-rp.id-set" name="nav-cred-create-rp.id-set" checked
+                    <input type="checkbox" id="nav-cred-create-rp.id-set" name="nav-cred-create-rp.id-set"
                            class="nav-cred-create" value="Set">
                 </td>
                 <td>
@@ -1293,7 +1296,7 @@
             <input type="button" name="nav-cred-create-ParseCredential" value="Parse Credential"
                    onclick="GetURL(API_ENDPOINTS.parseCredential, currentSession,'nav-cred-create-logging');">
         </p>
-        <table class="simpleTable">
+        <table class="simpleTable MobileLastColumnNoShow">
             <thead>
             <tr>
                 <th colspan="3">Attribute</th>
@@ -2144,7 +2147,7 @@
         </table>
     </div>
 </div>
-<div id="nav-cred-get" class="nav-creds">
+<div id="nav-cred-get" class="nav-creds tabcontent" style="display: none">
 
     <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get" target="_blank">Get
         Credential</a></H3>
@@ -2178,7 +2181,7 @@
                 </td>
             </tr>
         </table>
-        <table class="simpleTable">
+        <table class="simpleTable MobileLastColumnNoShow">
             <thead>
             <tr>
                 <th>Attribute</th>
@@ -2589,7 +2592,7 @@
 
             </tr>
         </table>
-        <table class="simpleTable">
+        <table class="simpleTable MobileLastColumnNoShow">
             <thead>
             <tr>
                 <th colspan="3">Attribute</th>
@@ -3405,10 +3408,10 @@
         </table>
     </div>
 </div>
-<div id="nav-cred-store" class="nav-creds">
+<div id="nav-cred-store" class="nav-creds tabcontent" style="display: none">
     Store
 </div>
-<div id="nav-cred-prevent" class="nav-creds">
+<div id="nav-cred-prevent" class="nav-creds tabcontent" style="display: none">
     Prevent
 </div>
 <H1>Log & Debug</H1>
@@ -3429,9 +3432,8 @@
 <script>
     SetupDefaultConfiguration()
     ShowCapabilities()
-    ShowTab('operationName', 'credential-', 'nav-cred-')
     TransformSelectHandlerRegister()
-    createSession("default", "default")
+    createSession("default")
 </script>
 
 </body>
