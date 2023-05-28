@@ -26,6 +26,41 @@
             border: none;
             padding: 5px;
         }
+
+        @media (max-width: 600px) {
+            .simpleTable table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .simpleTable thead {
+                display: none;
+            }
+
+            .simpleTable tbody {
+                display: block;
+            }
+
+            .simpleTable tr {
+                display: block;
+                border-bottom: 1px solid black;
+            }
+
+            .simpleTable tr:last-child {
+                border-bottom: none;
+            }
+
+            .simpleTable td {
+                display: block;
+                border: none;
+                padding: 5px;
+            }
+            .simpleTable td:last-child {
+                display: none;
+            }
+        }
+
     </style>
 </head>
 <body data-externalURL="{{ .ExternalURL }}">
