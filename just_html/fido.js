@@ -242,6 +242,20 @@ sessionEventListeners.push((currSession, eventType) => {
     }
 })
 
+function SelectOption(selectElementId, prefix, debugLocation) {
+    const element = document.getElementById(selectElementId)
+    if (element && 'value' in element) {
+        const selectedItem = element.value
+        if (selectedItem && selectedItem in CredentialOptionList) {
+            SetObject(CredentialOptionList[selectedItem](currentSession), prefix)
+        } else {
+            log('Failed to locate configuration for ' + selectedItem + " associated for " + selectElementId, 'error', debugLocation)
+        }
+    } else {
+        log('Failed to locate element for ' + selectElementId + " or missing value", 'error', debugLocation)
+    }
+}
+
 let CredentialOptionList = {
     Empty: (currSession) => {
         log("Returning empty credential options for the " + currSession)
@@ -249,12 +263,116 @@ let CredentialOptionList = {
     },
     Default: (currSession) => {
         log("Returning default credential options for the " + currSession)
-        return DefaultCredOptions
+        return {
+            "rp": {
+                "name": "ACME",
+            },
+            "user": {
+                "displayName": "testUserDisplayName",
+                "id": new TextEncoder().encode("testUserID"),
+                "name": "testUserName"
+            },
+            "challenge": new TextEncoder().encode("dsnkdksnsdkjndskjdnskn8e49898e9w89ewyhchchwchwe8che8cwc"),
+            "pubKeyCredParams": [
+                {
+                    "alg": -7,
+                    "type": "public-key"
+                },
+                {
+                    "alg": -257,
+                    "type": "public-key"
+                }
+
+            ],
+            "customFields": {
+                //"nav-cred-create-timeout-set": true,
+                //"nav-cred-createOptionBox-rp": function (objectValue, prefix, elementId) {
+                //    document.getElementById(elementId).checked = false
+                //    ShowSection('nav-cred-createOptions-rp','nav-cred-createOptionBox', 'nav-cred-createOptions-rp', 'nav-cred-createOptionBox-rp', true, 'checkbox', 'table')
+                //    return false
+                //}
+            }
+        }
     },
-    ServerSide: (currSession) => {
-        log("Returning default credential options for the " + currSession)
-        GetURL(API_ENDPOINTS.getRegisterRequest, currentSession, 'nav-cred-create-logging')
-    }
+    Platform: (currSession) => {
+        return {
+            "rp": {
+                "name": "ACMEonPlatform",
+            },
+            "user": {
+                "displayName": "tuPlatformVerifiedAttestedDName",
+                "id": new TextEncoder().encode("tuPlatformVerifiedAttested"),
+                "name": "tuPlatformVerifiedAttestedName"
+            },
+            "challenge": new TextEncoder().encode("longchallengefor-tuPlatformVerifiedAttestedDName"),
+            "pubKeyCredParams": [
+                {
+                    "alg": -7,
+                    "type": "public-key"
+                },
+                {
+                    "alg": -257,
+                    "type": "public-key"
+                }
+
+            ],
+            "authenticatorSelection": {
+                "authenticatorAttachment": "platform",
+                "residentKey": "required",
+                "requireResidentKey": true,
+                "userVerification": "required",
+            },
+            "attestation": "direct",
+            "customFields": {
+                "nav-cred-create-authenticatorSelection-set": true,
+                "nav-cred-create-authenticatorSelection.authenticatorAttachment-set": true,
+                "nav-cred-create-authenticatorSelection.residentKey-set": true,
+                "nav-cred-create-authenticatorSelection.requireResidentKey-set": true,
+                "nav-cred-create-authenticatorSelection.userVerification-set": true,
+                "nav-cred-create-attestation-set": true,
+                "nav-cred-create-attestationFormats-set": true,
+            }
+        }
+    },
+
+    CrossPlatform: (currSession) => {
+        return {
+            "rp": {
+                "name": "ACMEonPlatform",
+            },
+            "user": {
+                "displayName": "tuPlatformVerifiedAttestedDName",
+                "id": new TextEncoder().encode("tuPlatformVerifiedAttested"),
+                "name": "tuPlatformVerifiedAttestedName"
+            },
+            "challenge": new TextEncoder().encode("longchallengefor-tuPlatformVerifiedAttestedDName"),
+            "pubKeyCredParams": [
+                {
+                    "alg": -7,
+                    "type": "public-key"
+                },
+                {
+                    "alg": -257,
+                    "type": "public-key"
+                }
+
+            ],
+            "authenticatorSelection": {
+                "authenticatorAttachment": "cross-platform",
+                "residentKey": "required",
+                "requireResidentKey": true,
+                "userVerification": "required",
+            },
+            "attestation": "direct",
+            "customFields": {
+                "nav-cred-create-authenticatorSelection-set": true,
+                "nav-cred-create-authenticatorSelection.authenticatorAttachment-set": true,
+                "nav-cred-create-authenticatorSelection.requireResidentKey-set": true,
+                "nav-cred-create-authenticatorSelection.userVerification-set": true,
+                "nav-cred-create-attestation-set": true,
+            }
+        }
+    },
 }
 
 let EmptyCredOptions = {
@@ -279,29 +397,6 @@ let EmptyCredOptions = {
         "userVerification": "preferred",
     },
     "attestation": "invalidVal",
-}
-
-const DefaultCredOptions = {
-    "rp": {
-        "name": "ACME",
-    },
-    "user": {
-        "displayName": "testUserDisplayName",
-        "id": new TextEncoder().encode("testUserID"),
-        "name": "testUserName"
-    },
-    "challenge": new TextEncoder().encode("dsnkdksnsdkjndskjdnskn8e49898e9w89ewyhchchwchwe8che8cwc"),
-    "pubKeyCredParams": [
-        {
-            "alg": -7,
-            "type": "public-key"
-        },
-        {
-            "alg": -257,
-            "type": "public-key"
-        }
-
-    ]
 }
 
 const EmptyPublicKeyCredential = {

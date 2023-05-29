@@ -207,13 +207,14 @@
                     <input type="button"
                            name="nav-cred-create-fillOptions"
                            value="Load Credential Option"
-                           onclick="SetObject(DefaultCredOptions, 'nav-cred-create');"></label>
+                           onclick="SelectOption('nav-cred-create-fillOptions-Values','nav-cred-create')"></label>
                 </td>
                 <td><select name="nav-cred-create-fillOptions-Values"
                             id="nav-cred-create-fillOptions-Values">
                     <option value="Empty" selected>Empty</option>
                     <option value="Default">Default</option>
-                    <option value="ServerSide">From server</option>
+                    <option value="Platform">Platform (Verified & Attested)</option>
+                    <option value="CrossPlatform">Cross-Platform (Verified & Attested)</option>
                 </select>
                 </td>
             </tr>

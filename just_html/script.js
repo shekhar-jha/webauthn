@@ -538,7 +538,7 @@ function GenerateObject(prefix = "nav-creds-create",) {
 }
 
 
-function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
+function SetObject(objectValue, prefix = "nav-cred-obj") {
     if (!objectValue) {
         log("Failed to set object for prefix " + prefix, 'error')
         return
@@ -613,6 +613,37 @@ function SetObject(objectValue, prefix = "nav-cred-obj", base_prefix = "") {
             log(error.stack, 'debug')
         }
     })
+    if (objectValue.hasOwnProperty('customFields')) {
+        for (const [elementId, elementValue] of Object.entries(objectValue.customFields)) {
+            const elementObject = document.getElementById(elementId)
+            let applicableValue = elementValue
+            if (typeof elementValue === 'function') {
+                log("Executing function for " + elementId, 'debug')
+                applicableValue = elementValue(objectValue, prefix, elementId)
+                log("Applicable value " + applicableValue, 'debug')
+            }
+            if (!elementObject) {
+                log("Failed to locate the element for attribute " + elementId, 'error')
+            } else {
+                switch (elementObject.type.toLowerCase()) {
+                    case 'checkbox':
+                        if (typeof applicableValue == "boolean") {
+                            elementObject.checked = applicableValue
+                            log("Setting checkbox " + elementId + " to " + applicableValue, 'debug')
+                        } else {
+                            log("Can not set value of checkbox " + elementId + " to " + applicableValue, 'error')
+                        }
+                        break
+                    default:
+                        log("Setting value of element " + elementId + " to " + applicableValue, 'debug')
+                        elementObject.value = applicableValue
+                        break
+                }
+            }
+        }
+    } else {
+        log("No custom fields to be set", 'debug')
+    }
     log("Set object for " + prefix, 'info')
 }
 
