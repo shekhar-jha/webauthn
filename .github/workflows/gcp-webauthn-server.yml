@@ -1,6 +1,8 @@
-# This workflow creates docker image and deploys it to GCP as cloud run
+# This workflow
+# 1. Creates docker image and deploys it to GCP as cloud run service
+# 2. Deploy html assets to GitHub pages.
 
-name: GCP Webauthn server
+name: GCP Service and Github page deployment
 
 # trigger workflow
 on:
