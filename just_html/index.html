@@ -31,7 +31,6 @@
             .simpleTable table {
                 display: block;
                 overflow-x: auto;
-                white-space: nowrap;
             }
 
             .simpleTable thead {
@@ -44,7 +43,7 @@
 
             .simpleTable tr {
                 display: block;
-                border-bottom: 1px solid black;
+                border: 1px solid black;
             }
 
             .simpleTable tr:last-child {
@@ -159,20 +158,20 @@
 
 <H2>navigator.credentials</H2>
 <div class="tab">
-    <button id='nav-cred-opsSectionLink-create' class="tablinks active"
-            onclick="ShowSection('nav-creds','tablinks','nav-cred-create', 'nav-cred-opsSectionLink-create')">
+    <button id='nav-cred-opsSectionLink-create' class="credsTablinks active"
+            onclick="ShowSection('nav-creds','credsTablinks','nav-cred-create', 'nav-cred-opsSectionLink-create')">
         Create
     </button>
-    <button id='nav-cred-opsSectionLink-Get' class="tablinks"
-            onclick="ShowSection('nav-creds','tablinks','nav-cred-get', 'nav-cred-opsSectionLink-Get')">
+    <button id='nav-cred-opsSectionLink-Get' class="credsTablinks"
+            onclick="ShowSection('nav-creds','credsTablinks','nav-cred-get', 'nav-cred-opsSectionLink-Get')">
         Get
     </button>
-    <button id='nav-cred-opsSectionLink-Store' class="tablinks"
-            onclick="ShowSection('nav-creds','tablinks','nav-cred-store', 'nav-cred-opsSectionLink-Store')">
+    <button id='nav-cred-opsSectionLink-Store' class="credsTablinks"
+            onclick="ShowSection('nav-creds','credsTablinks','nav-cred-store', 'nav-cred-opsSectionLink-Store')">
         Store
     </button>
-    <button id='nav-cred-opsSectionLink-Prevent' class="tablinks"
-            onclick="ShowSection('nav-creds','tablinks','nav-cred-prevent', 'nav-cred-opsSectionLink-Prevent')">
+    <button id='nav-cred-opsSectionLink-Prevent' class="credsTablinks"
+            onclick="ShowSection('nav-creds','credsTablinks','nav-cred-prevent', 'nav-cred-opsSectionLink-Prevent')">
         Prevent
     </button>
 </div>
@@ -180,17 +179,17 @@
     <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-create"
            target="_blank"> Create</a></H3>
     <div class="tab">
-        <button id='nav-cred-createSectionLink-logging' class="tablinks"
-                onclick="ShowSection('nav-cred-createSections','tablinks','nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')">
+        <button id='nav-cred-createSectionLink-logging' class="credCreatetablinks"
+                onclick="ShowSection('nav-cred-createSections','credCreatetablinks','nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')">
             Logging
         </button>
-        <button id='nav-cred-createSectionLink-credOpts' class="tablinks active"
-                onclick="ShowSection('nav-cred-createSections','tablinks','nav-cred-createSection-credOpts', 'nav-cred-createSectionLink-credOpts')">
+        <button id='nav-cred-createSectionLink-credOpts' class="credCreatetablinks active"
+                onclick="ShowSection('nav-cred-createSections','credCreatetablinks','nav-cred-createSection-credOpts', 'nav-cred-createSectionLink-credOpts')">
             Credential
             Options
         </button>
-        <button id='nav-cred-createSectionLink-genCreds' class="tablinks"
-                onclick="ShowSection('nav-cred-createSections','tablinks', 'nav-cred-createSection-genCreds', 'nav-cred-createSectionLink-genCreds')">
+        <button id='nav-cred-createSectionLink-genCreds' class="credCreatetablinks"
+                onclick="ShowSection('nav-cred-createSections','credCreatetablinks', 'nav-cred-createSection-genCreds', 'nav-cred-createSectionLink-genCreds')">
             Credential
         </button>
     </div>
@@ -324,7 +323,7 @@
             <tr class="nav-cred-createOptions-rp">
                 <td><label for="nav-cred-create-rp.name">
                     <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
-                       target="_blank">Relying Party Name (human palatable name e.g. ACME Corp)</a></label></td>
+                       target="_blank">Relying Party Name</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-create-rp.name" class="nav-cred-create"/>
                 </td>
@@ -334,6 +333,7 @@
                            class="nav-cred-create" value="Set">
                 </td>
                 <td>
+                    Human palatable name e.g. ACME Corp
                     <h4>Validations</h4>
                     <ol>
                         <li>Required</li>
@@ -414,7 +414,6 @@
                 <td><label for="nav-cred-create-user.name">
                     <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name"
                        target="_blank">User Name</a></label>
-                    (may be chosen by user to differentiate with similar display name)
                 </td>
                 <td>
                     <input type="text" id="nav-cred-create-user.name" class="nav-cred-create"/>
@@ -425,6 +424,7 @@
                            checked class="nav-cred-create" value="Set">
                 </td>
                 <td>
+                    This may be chosen by user to differentiate with similar display name.
                     <h4>Validations</h4>
                     <ol>
                         <li>Required</li>
@@ -447,9 +447,7 @@
             <tr class="nav-cred-createOptions-user">
                 <td><label for="nav-cred-create-user.displayName">
                     <a href="https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname"
-                       target="_blank">User Display Name</a></label>
-                    (User must choose it)
-                </td>
+                       target="_blank">User Display Name</a></label></td>
                 <td>
                     <input type="text" id="nav-cred-create-user.displayName" class="nav-cred-create"/>
                 </td>
@@ -459,6 +457,7 @@
                            name="nav-cred-create-user.displayName-set" checked value="Set">
                 </td>
                 <td>
+                    User must choose it
                     <h4>Validations</h4>
                     <ol>
                         <li>Required</li>
@@ -609,10 +608,7 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials"
                         target="_blank">Exclude credentials </a></td>
                 <td>
-                    <div id="nav-cred-create-excludeCredentials-list">Generate once another session with credential has
-                        been
-                        registered.
-                    </div>
+                    <div id="nav-cred-create-excludeCredentials-list">Click to generate</div>
                 </td>
                 <td><label for="nav-cred-create-excludeCredentials-set">Set value</label>
                     <input type="checkbox" id="nav-cred-create-excludeCredentials-set"
@@ -1213,8 +1209,7 @@
             </tr>
             <tr class="nav-cred-createOptions-ext">
                 <td><label for="nav-cred-create-extensions.uvm"><a
-                        href="https://www.w3.org/TR/webauthn-1/#sctn-uvm-extension" target="_blank">User Verification
-                    Method extensions (Webauthn 1 & 2)</a></label></td>
+                        href="https://www.w3.org/TR/webauthn-1/#sctn-uvm-extension" target="_blank">User Verification Method extensions (Webauthn 1 & 2)</a></label></td>
                 <td>
                     <input type="checkbox" id="nav-cred-create-extensions.uvm"
                            name="nav-cred-create-extensions.uvm"
@@ -1971,14 +1966,15 @@
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-0"></div>
                 </td>
-                <td rowspan="7"></td>
-                <td rowspan="7"></td>
+                <td rowspan="8"></td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 1: Reserved for future use</td>
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-1"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 2: <a href="https://w3c.github.io/webauthn/#concept-user-verified" target="_blank">User
@@ -1987,6 +1983,7 @@
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-2"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 3: <a href="https://w3c.github.io/webauthn/#backup-eligibility" target="_blank">Backup
@@ -1995,6 +1992,7 @@
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-3"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 4: <a href="https://w3c.github.io/webauthn/#backup-state" target="_blank">Backup state</a>
@@ -2003,12 +2001,14 @@
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-4"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 5: Reserved for future use</td>
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-5"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 6: <a href="https://w3c.github.io/webauthn/#attested-credential-data" target="_blank">Attested
@@ -2016,6 +2016,7 @@
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-6"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td>Bit 7: <a href="https://w3c.github.io/webauthn/#authdata-extensions" target="_blank">Extension
@@ -2023,6 +2024,7 @@
                 <td>
                     <div id="nav-cred-obj-parse-Response.AttestationObject.AuthData.flags-7"></div>
                 </td>
+                <td></td>
             </tr>
             <tr>
                 <td colspan="2"><label for="nav-cred-obj-parse-Response.AttestationObject.AuthData.sign_count"><a
@@ -2153,17 +2155,17 @@
     <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get" target="_blank">Get
         Credential</a></H3>
     <div class="tab">
-        <button id='nav-cred-getSectionLink-logging' class="tablinks"
-                onclick="ShowSection('nav-cred-getSections','tablinks','nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')">
+        <button id='nav-cred-getSectionLink-logging' class="credGettablinks"
+                onclick="ShowSection('nav-cred-getSections','credGettablinks','nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')">
             Logging
         </button>
-        <button id='nav-cred-getSectionLink-reqOpts' class="tablinks active"
-                onclick="ShowSection('nav-cred-getSections','tablinks','nav-cred-getSection-reqOpts', 'nav-cred-getSectionLink-reqOpts')">
+        <button id='nav-cred-getSectionLink-reqOpts' class="credGettablinks active"
+                onclick="ShowSection('nav-cred-getSections','credGettablinks','nav-cred-getSection-reqOpts', 'nav-cred-getSectionLink-reqOpts')">
             Credential Request
             Options
         </button>
-        <button id='nav-cred-getSectionLink-reqCreds' class="tablinks"
-                onclick="ShowSection('nav-cred-getSections','tablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
+        <button id='nav-cred-getSectionLink-reqCreds' class="credGettablinks"
+                onclick="ShowSection('nav-cred-getSections','credGettablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
             Credential
         </button>
     </div>
@@ -2929,13 +2931,14 @@
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-0"></div>
                 </td>
                 <td rowspan="8"></td>
-                <td rowspan="8"></td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 1: Reserved for future use</td>
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-1"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 2: <a href="https://w3c.github.io/webauthn/#concept-user-verified" target="_blank">User
@@ -2944,6 +2947,7 @@
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-2"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 3: <a href="https://w3c.github.io/webauthn/#backup-eligibility" target="_blank">Backup
@@ -2952,6 +2956,7 @@
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-3"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 4: <a href="https://w3c.github.io/webauthn/#backup-state" target="_blank">Backup state</a>
@@ -2960,12 +2965,14 @@
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-4"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 5: Reserved for future use</td>
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-5"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 6: <a href="https://w3c.github.io/webauthn/#attested-credential-data" target="_blank">Attested
@@ -2973,6 +2980,7 @@
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-6"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td>Bit 7: <a href="https://w3c.github.io/webauthn/#authdata-extensions" target="_blank">Extension
@@ -2980,6 +2988,7 @@
                 <td>
                     <div id="nav-cred-req-parse-Response.AuthenticatorData.flags-7"></div>
                 </td>
+                <td></td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-authData">
                 <td colspan="3"><label for="nav-cred-req-parse-Response.AuthenticatorData.sign_count"><a
@@ -3192,8 +3201,8 @@
                 </td>
             </tr>
             <tr class="nav-cred-getCred-response nav-cred-getCred-attStmt">
-                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.alg">Algorithm to
-                    generate signature (alg) TODO: show all algos.</label></td>
+                <td colspan="2"><label for="nav-cred-req-parse-Response.AttestationObject.attStmt.alg">Signature
+                    Algorithm</label></td>
                 <td>
                     <input type="text" id="nav-cred-req-parse-Response.AttestationObject.attStmt.alg"
                            class="nav-cred-req-parse"/>
