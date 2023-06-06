@@ -20,7 +20,7 @@ The following requirements are needed to build the project:
 The following steps allow you to run the project (tested on Mac):
 
 - Create a copy of `config.example.yaml` to `config.yaml` and update the configuration
-- Run `build.sh` to build code, create and run image.
+- Run `build.sh` or `make local`  to build code, create and run image.
 - Setup HTTPS Access.
     - Configure HTTPS proxy to answer requests on your desired domain
     - If SSL needs to be enabled on the server
