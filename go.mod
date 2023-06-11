@@ -4,13 +4,11 @@ go 1.20
 
 require (
 	github.com/fasthttp/router v1.4.6
-	github.com/fasthttp/session/v2 v2.4.7
 	github.com/go-webauthn/webauthn v0.2.1
 	github.com/google/uuid v1.3.0
 	github.com/knadh/koanf v1.4.0
 	github.com/mitchellh/mapstructure v1.4.3
 	github.com/spf13/pflag v1.0.5
-	github.com/tstranex/u2f v1.0.0
 	github.com/valyala/fasthttp v1.34.0
 	go.uber.org/zap v1.21.0
 )
@@ -27,10 +25,7 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
-	github.com/philhofer/fwd v1.1.1 // indirect
-	github.com/savsgio/dictpool v0.0.0-20220201165159-a5d561a1a2c9 // indirect
 	github.com/savsgio/gotils v0.0.0-20220201163454-d252f0a44d5b // indirect
-	github.com/tinylib/msgp v1.1.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.uber.org/atomic v1.9.0 // indirect

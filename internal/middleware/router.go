@@ -6,9 +6,9 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func NewRouter(config *configuration.Config, providers *Providers, middlewares ...Middleware) (r *Router) {
+func NewRouter(config *configuration.Config, middlewares ...Middleware) (r *Router) {
 	r = &Router{
-		middleware:  NewRequestHandlerCtxMiddleware(config, providers),
+		middleware:  NewRequestHandlerCtxMiddleware(config),
 		middlewares: middlewares,
 		router:      router.New(),
 	}
