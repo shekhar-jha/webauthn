@@ -132,6 +132,13 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
   gcloud config set run/region "${REGION}"
   PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format "value(projectNumber)")
 
+  BETA_INSTALLED=$(gcloud components list --filter=name:beta --format="value(state.name)" 2>/dev/null)
+  HandleExit $? 31
+  if [[ "${BETA_INSTALLED}" != "Installed" ]]; then
+    echo "Run 'gcloud components install beta' to install beta component before proceeding"
+    exit 32
+  fi
+
   POOL_CREATED=$(gcloud iam workload-identity-pools list --location=global --filter="name:${POOL_NAME}" --format="value(name)")
   if [[ "${POOL_CREATED}" == "" ]]; then
     echo "Creating pool"
@@ -254,8 +261,14 @@ if [[ "${GCP_EXECUTE}" == "yes" ]]; then
     --member "serviceAccount:${DEPLOY_SERVICE_ACCT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role "roles/iam.serviceAccountUser"
   HandleExit $? 28
-  RUN_SERVICE_URL=$(gcloud run services describe webauthn-service --format="value(status.address.url)")
-  HandleExit $? 29
+  RUN_ALT_URL=$(gcloud beta run domain-mappings list --filter=webauthn-service --format="value(DOMAIN)" --region="${REGION}" --project="${PROJECT_ID}" )
+  HandleExit $? 30
+  if [[ "${RUN_ALT_URL}" == "" ]]; then
+    RUN_SERVICE_URL=$(gcloud run services describe webauthn-service --format="value(status.address.url)")
+    HandleExit $? 29
+  else
+    RUN_SERVICE_URL="https://${RUN_ALT_URL}"
+  fi
   EXTERNAL_URL=$(echo "${RUN_SERVICE_URL}"| sed 's/\//\\\//g')
 
 else
