@@ -300,11 +300,14 @@ const objectProcessingGuidance = {
                         case 'timeout':
                             return AbortSignal.timeout(timeOutValue)
                         case 'reason':
-                            const ctrlr = new AbortController()
-                            setTimeout(() => {
-                                ctrlr.abort(reasonValue)
-                            }, timeOutValue)
-                            return ctrlr.signal
+                            const abrtCntrlr = new AbortController()
+                            abrtCntrlr.signal.__proto__.GetController = function () {
+                                return abrtCntrlr
+                            }
+                            abrtCntrlr.signal.__proto__.GetReason = function () {
+                                return reasonValue
+                            }
+                            return abrtCntrlr.signal
                         default:
                             log("Failed to get AbortSignal for " + prefix + "-" + attributeName + " using value " + input + " since value is not in formal type.value", 'error')
 
@@ -533,7 +536,7 @@ function GenerateObject(prefix = "nav-creds-create",) {
             }
         }
     }
-    log("Generated object for " + prefix + " as " + JSON.stringify(generatedObject), 'info')
+    log("Generated object for " + prefix + " as " + JSON.stringify(generatedObject), 'debug')
     return generatedObject
 }
 
@@ -544,7 +547,7 @@ function SetObject(objectValue, prefix = "nav-cred-obj") {
         return
     }
     let elements = document.getElementsByClassName(prefix)
-    log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'info')
+    log("Setting object for " + prefix + " from " + JSON.stringify(objectValue), 'debug')
     let keyNames = TransformationDefinition[prefix].availableKeys
     keyNames.forEach((keyName) => {
         try {
@@ -765,7 +768,7 @@ function enableLog() {
 }
 
 function log(content, level = "debug", debugLocation = DefaultLoggingLocation) {
-    if (!logEnabled && level != "error") {
+    if (!logEnabled && (level === "debug")) {
         return
     }
     let applicableDebugLocation = debugLocation

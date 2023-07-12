@@ -14,26 +14,80 @@ function CredentialCreate(session) {
         log("Failed to create credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-create-logging')
         log("Stack: " + err.stack, 'debug', 'nav-cred-create-logging')
         session['nav-cred-create-error'] = err
-        ShowSection('nav-cred-createSections', 'tablinks', 'nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')
+        ShowSection('nav-cred-createSections', 'credCreatetablinks', 'nav-cred-createSection-logging', 'nav-cred-createSectionLink-logging')
     });
     log("Started credential creation", 'info', 'nav-cred-create-logging')
 }
 
-function CredentialRequest(session) {
+function CredentialRequest(session, successFunction = (credInfo, session) => {
+}, errorHandler = (err, session) => {
+}) {
     log("Requesting credential", 'info', 'nav-cred-get-logging')
-    navigator.credentials.get({publicKey: session['nav-cred-get-options']})
+    navigator.credentials.get(session['nav-cred-get-options'])
         .then(function (newCredentialInfo) {
             log("Requested credential successfully. ", 'info', LoggingPrefixMapping['nav-cred-req'])
             session['nav-cred-get-credential'] = newCredentialInfo
             const userId = textDecoder.decode((newCredentialInfo.response.userHandle))
             SaveCredential(userId, newCredentialInfo, LoggingPrefixMapping['nav-cred-req'])
+            successFunction(newCredentialInfo, session)
         }).catch(function (err) {
-        log("Failed to request credential. Error: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-get-logging')
-        log("Stack: " + err.stack, 'debug', 'nav-cred-get-logging')
+        log("Failed to request credential. Error: " + err + " Message: " + err.message + "(" + err.name + ")", 'error', 'nav-cred-get-logging')
+        log("Stack: " + err.stack, 'error', 'nav-cred-get-logging')
         session['nav-cred-get-error'] = err
-        ShowSection('nav-cred-getSections', 'tablinks', 'nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')
+        ShowSection('nav-cred-getSections', 'credGettablinks', 'nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')
+        errorHandler(err, session)
     });
     log("Started credential request", 'info', 'nav-cred-get-logging')
+}
+
+function BeginConditional(userNameTextBox, session) {
+    let errorOccurred = false
+    if (session.hasOwnProperty('nav-cred-get-conditional') && session['nav-cred-get-conditional']) {
+        log("A conditional assertion has already being started. Please cancel before starting another one.", 'error', 'nav-cred-get-logging')
+        document.getElementById(userNameTextBox).removeAttribute("disabled");
+        errorOccurred = true
+    } else if (session.hasOwnProperty('nav-cred-get-options') && session['nav-cred-get-options'].hasOwnProperty('mediation')
+        && session['nav-cred-get-options']['mediation'] === 'conditional') {
+        document.getElementById(userNameTextBox).removeAttribute("disabled");
+        CredentialRequest(session, (credInfo, session) => {
+            document.getElementById(userNameTextBox).setAttribute("disabled", "disabled");
+            session['nav-cred-get-conditional'] = false
+            session['nav-cred-get-conditional-signal'] = null
+        }, (err, session) => {
+            document.getElementById(userNameTextBox).setAttribute("disabled", "disabled");
+            session['nav-cred-get-conditional'] = false
+            session['nav-cred-get-conditional-signal'] = null
+        })
+        session['nav-cred-get-conditional'] = true
+        session['nav-cred-get-conditional-signal'] = session['nav-cred-get-options']['signal']
+    } else {
+        log("Failed to begin conditional since option has not been set or mediation is not set to conditional. Please setup get options and ensure mediation is conditional.", 'error', 'nav-cred-get-logging')
+        errorOccurred = true
+    }
+    if (errorOccurred) {
+        ShowSection('nav-cred-getSections', 'credGettablinks', 'nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')
+    }
+}
+
+function CancelConditional(userNameTextBox, session) {
+    let errorOccurred = false
+    if (session.hasOwnProperty('nav-cred-get-conditional') && session['nav-cred-get-conditional']) {
+        if (session.hasOwnProperty('nav-cred-get-conditional-signal') &&
+            session['nav-cred-get-conditional-signal'] !== null && session['nav-cred-get-conditional-signal'] !== undefined) {
+            const signalValue = session['nav-cred-get-conditional-signal']
+            log("Triggering conditional mediation abort with reason " + signalValue.GetReason(), 'info', 'nav-cred-get-logging')
+            signalValue.GetController().abort(signalValue.GetReason())
+            document.getElementById(userNameTextBox).setAttribute("disabled", "disabled");
+        } else {
+            log("No abort signal is associated with conditional mediation. Can not cancel.", 'warn', 'nav-cred-get-logging')
+            errorOccurred = true
+        }
+    } else {
+        log("There is no ongoing conditional mediation to cancel", 'info', 'nav-cred-get-logging')
+    }
+    if (errorOccurred) {
+        ShowSection('nav-cred-getSections', 'credGettablinks', 'nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')
+    }
 }
 
 function GenerateExcludedCredential(allSessions, divNameToProcess, optionType = 'create') {
@@ -443,14 +497,15 @@ const TransformationDefinition = {
 
     },
     "nav-cred-get": {
-        "availableKeys": ["challenge", "mediation", "signal", "timeout", "rpid", "allowCredentials", "userVerification",
-            "attestation", "attestationFormats"],
+        "availableKeys": ["mediation", "signal", "publicKey.challenge", "publicKey.timeout", "publicKey.rpid", "publicKey.allowCredentials", "publicKey.userVerification",
+            "publicKey.attestation", "publicKey.attestationFormats"],
         "default": "text-noChange",
-        "challenge": "text-ArrayBuffer",
         "signal": "text-AbortSignal",
-        "timeout": "text-number",
-        "allowCredentials": "options-sessionMap",
-        "attestationFormats": "options-noChange"
+        "publicKey": "object-noChange",
+        "publicKey.challenge": "text-ArrayBuffer",
+        "publicKey.timeout": "text-number",
+        "publicKey.allowCredentials": "options-sessionMap",
+        "publicKey.attestationFormats": "options-noChange"
     },
     "nav-cred-obj": {
         "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",

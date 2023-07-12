@@ -123,7 +123,7 @@
         <td><input type="text" id="externalURL" name="externalURL" value=""></td>
     </tr>
     <tr>
-        <td><label for="logging-setting">Logging Enabled</label></td>
+        <td><label for="logging-setting">Debug enabled</label></td>
         <td><input type="checkbox" id="logging-setting" name="logging-setting"
                    onchange="enableLog()"></td>
     </tr>
@@ -1209,7 +1209,8 @@
             </tr>
             <tr class="nav-cred-createOptions-ext">
                 <td><label for="nav-cred-create-extensions.uvm"><a
-                        href="https://www.w3.org/TR/webauthn-1/#sctn-uvm-extension" target="_blank">User Verification Method extensions (Webauthn 1 & 2)</a></label></td>
+                        href="https://www.w3.org/TR/webauthn-1/#sctn-uvm-extension" target="_blank">User Verification
+                    Method extensions (Webauthn 1 & 2)</a></label></td>
                 <td>
                     <input type="checkbox" id="nav-cred-create-extensions.uvm"
                            name="nav-cred-create-extensions.uvm"
@@ -2154,6 +2155,29 @@
 
     <H3><a href="https://w3c.github.io/webappsec-credential-management/#dom-credentialscontainer-get" target="_blank">Get
         Credential</a></H3>
+    <!-- need to add text within a form tag to trigger autofill -->
+    <form onsubmit="return false">
+        <table class="emptyTable">
+            <tbody>
+            <tr>
+                <td><label for="nav-cred-getCommon-userName">Username</label></td>
+                <td><input type="text" id="nav-cred-getCommon-userName" autoComplete="username webauthn" disabled/></td>
+            </tr>
+            <tr>
+                <td>
+                    <Button onClick="BeginConditional('nav-cred-getCommon-userName', currentSession); return false;">
+                        Begin autofill authentication
+                    </Button>
+                </td>
+                <td>
+                    <Button onClick="CancelConditional('nav-cred-getCommon-userName', currentSession); return false;">
+                        Cancel autofill authentication
+                    </Button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
     <div class="tab">
         <button id='nav-cred-getSectionLink-logging' class="credGettablinks"
                 onclick="ShowSection('nav-cred-getSections','credGettablinks','nav-cred-getSection-logging', 'nav-cred-getSectionLink-logging')">
@@ -2180,7 +2204,7 @@
             <tr>
                 <td colspan="2"><input type="button" name="nav-cred-get-generateObject"
                                        value="Generate Request Credential Option"
-                                       onclick="currentSession['nav-cred-get-options'] = GenerateObject('nav-cred-get');ShowSection('nav-cred-getSections','tablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
+                                       onclick="currentSession['nav-cred-get-options'] = GenerateObject('nav-cred-get');ShowSection('nav-cred-getSections','credGettablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
                 </td>
             </tr>
         </table>
@@ -2195,21 +2219,22 @@
             </thead>
             <tbody>
             <tr class="nav-cred-getOptions-basic">
-                <td><label for="nav-cred-get-challenge"><a
+                <td><label for="nav-cred-get-publicKey.challenge"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-challenge"
                         target="_blank">Challenge</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-get-challenge" class="nav-cred-get"/>
+                    <input type="text" id="nav-cred-get-publicKey.challenge" class="nav-cred-get"/>
                 </td>
                 <td>
-                    <label for="nav-cred-get-challenge-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-challenge-set" name="nav-cred-get-challenge-set"
+                    <label for="nav-cred-get-publicKey.challenge-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.challenge-set"
+                           name="nav-cred-get-publicKey.challenge-set"
                            checked class="nav-cred-get" value="Set">
-                    <label for="nav-cred-get-challenge-Transform">
+                    <label for="nav-cred-get-publicKey.challenge-Transform">
                         Format</label>
                     <!-- Event handler added through TransformSelectHandlerRegister()-->
-                    <select name="nav-cred-get-challenge-Transform"
-                            id="nav-cred-get-challenge-Transform"
+                    <select name="nav-cred-get-publicKey.challenge-Transform"
+                            id="nav-cred-get-publicKey.challenge-Transform"
                             class="Transformers">
                         <option value="Hex">Hex</option>
                         <option value="Base64">Base64</option>
@@ -2314,15 +2339,16 @@
                 </td>
             </tr>
             <tr class="nav-cred-getOptions-basic">
-                <td><label for="nav-cred-get-timeout"><a
+                <td><label for="nav-cred-get-publicKey.timeout"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-timeout"
                         target="_blank">Timeout (milliseconds)</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-get-timeout" name="nav-cred-get-timeout"/>
+                    <input type="text" id="nav-cred-get-publicKey.timeout" name="nav-cred-get-publicKey.timeout"/>
                 </td>
                 <td>
-                    <label for="nav-cred-get-timeout-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-timeout-set" name="nav-cred-get-timeout-set"
+                    <label for="nav-cred-get-publicKey.timeout-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.timeout-set"
+                           name="nav-cred-get-publicKey.timeout-set"
                            class="nav-cred-get" value="Set">
                 </td>
                 <td>
@@ -2339,15 +2365,15 @@
                 </td>
             </tr>
             <tr class="nav-cred-getOptions-rp">
-                <td><label for="nav-cred-get-rpid"><a
+                <td><label for="nav-cred-get-publicKey.rpid"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid"
                         target="_blank">Relying Party ID (domain)</a></label></td>
                 <td>
-                    <input type="text" id="nav-cred-get-rpid" name="nav-cred-get-rpid"/>
+                    <input type="text" id="nav-cred-get-publicKey.rpid" name="nav-cred-get-publicKey.rpid"/>
                 </td>
                 <td>
-                    <label for="nav-cred-get-rpid-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-rpid-set" name="nav-cred-get-rpid-set"
+                    <label for="nav-cred-get-publicKey.rpid-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.rpid-set" name="nav-cred-get-publicKey.rpid-set"
                            class="nav-cred-get" value="Set">
                 </td>
                 <td>
@@ -2368,14 +2394,14 @@
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-allowcredentials"
                         target="_blank">Allow credentials </a></td>
                 <td>
-                    <div id="nav-cred-get-allowCredentials-list">Generate by clicking on Generate button</div>
+                    <div id="nav-cred-get-publicKey.allowCredentials-list">Generate by clicking on Generate button</div>
                 </td>
-                <td><label for="nav-cred-get-allowCredentials-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-allowCredentials-set"
-                           name="nav-cred-get-allowCredentials-set" class="nav-cred-get" value="Set">
-                    <input type="button" id="nav-cred-get-allowCredentials-generate"
-                           name="nav-cred-get-allowCredentials-generate" class="nav-cred-get" value="Generate"
-                           onclick="GenerateExcludedCredential(sessions, 'nav-cred-get-allowCredentials-list', 'get')">
+                <td><label for="nav-cred-get-publicKey.allowCredentials-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.allowCredentials-set"
+                           name="nav-cred-get-publicKey.allowCredentials-set" class="nav-cred-get" value="Set">
+                    <input type="button" id="nav-cred-get-publicKey.allowCredentials-generate"
+                           name="nav-cred-get-publicKey.allowCredentials-generate" class="nav-cred-get" value="Generate"
+                           onclick="GenerateExcludedCredential(sessions, 'nav-cred-get-publicKey.allowCredentials-list', 'get')">
                 </td>
                 <td>
                     <h4>Validation</h4>
@@ -2408,12 +2434,12 @@
                 </td>
             </tr>
             <tr class="nav-cred-getOptions-attest">
-                <td><label for="nav-cred-get-userVerification"><a
+                <td><label for="nav-cred-get-publicKey.userVerification"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-userverification"
                         target="_blank">User Verification</a></label></td>
                 <td>
-                    <select name="nav-cred-get-userVerification"
-                            id="nav-cred-get-userVerification" class="nav-cred-get">
+                    <select name="nav-cred-get-publicKey.userVerification"
+                            id="nav-cred-get-publicKey.userVerification" class="nav-cred-get">
                         <option value="required">Required</option>
                         <option value="preferred" selected>Preferred</option>
                         <option value="discouraged">Discouraged</option>
@@ -2421,9 +2447,9 @@
                     </select>
                 </td>
                 <td>
-                    <label for="nav-cred-get-userVerification-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-userVerification-set"
-                           name="nav-cred-get-userVerification-set"
+                    <label for="nav-cred-get-publicKey.userVerification-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.userVerification-set"
+                           name="nav-cred-get-publicKey.userVerification-set"
                            class="nav-cred-get" value="Set">
                 </td>
                 <td>
@@ -2444,12 +2470,12 @@
                 </td>
             </tr>
             <tr class="nav-cred-getOptions-attest">
-                <td><label for="nav-cred-get-attestation"><a
+                <td><label for="nav-cred-get-publicKey.attestation"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-attestation"
                         target="_blank">Attestation</a></label></td>
                 <td>
-                    <select name="nav-cred-get-attestation"
-                            id="nav-cred-get-attestation" class="nav-cred-get">
+                    <select name="nav-cred-get-publicKey.attestation"
+                            id="nav-cred-get-publicKey.attestation" class="nav-cred-get">
                         <option value="direct">Direct</option>
                         <option value="none" selected>None</option>
                         <option value="indirect">Indirect</option>
@@ -2457,9 +2483,9 @@
                     </select>
                 </td>
                 <td>
-                    <label for="nav-cred-get-attestation-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-attestation-set"
-                           name="nav-cred-get-attestation-set"
+                    <label for="nav-cred-get-publicKey.attestation-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestation-set"
+                           name="nav-cred-get-publicKey.attestation-set"
                            class="nav-cred-get" value="Set">
                 </td>
                 <td>
@@ -2484,47 +2510,47 @@
                 <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-attestationformats"
                        target="_blank">Attestation format</a></td>
                 <td>
-                    <label for="nav-cred-get-attestationFormats-options-packed">Packed</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-packed"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-packed"
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-packed">Packed</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-packed"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-packed"
                            checked value='packed'>
-                    <label for="nav-cred-get-attestationFormats-options-tpm">TPM</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-tpm"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-tpm"
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-tpm">TPM</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-tpm"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-tpm"
                            checked value='tpm'>
-                    <label for="nav-cred-get-attestationFormats-options-android_key">Android key</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-android_key"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-android_key"
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-android_key">Android key</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-android_key"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-android_key"
                            checked value='android-key'>
-                    <label for="nav-cred-get-attestationFormats-options-android_safetynet">Android Safetynet
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-android_safetynet">Android Safetynet
                         API</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-android_safetynet"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-android_safetynet"
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-android_safetynet"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-android_safetynet"
                            checked value='android-safetynet'>
-                    <label for="nav-cred-get-attestationFormats-options-fido_u2f">FIDO U2F</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-fido_u2f"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-fido_u2f"
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-fido_u2f">FIDO U2F</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-fido_u2f"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-fido_u2f"
                            checked value='fido-u2f'>
-                    <label for="nav-cred-get-attestationFormats-options-apple">Apple</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-apple"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-apple"
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-apple">Apple</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-apple"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-apple"
                            checked value='apple'>
-                    <label for="nav-cred-get-attestationFormats-options-none">None</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-options-none"
-                           class="nav-cred-get nav-cred-get-attestationFormats-options"
-                           name="nav-cred-get-attestationFormats-options-none"
+                    <label for="nav-cred-get-publicKey.attestationFormats-options-none">None</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-options-none"
+                           class="nav-cred-get nav-cred-get-publicKey.attestationFormats-options"
+                           name="nav-cred-get-publicKey.attestationFormats-options-none"
                            value='none'>
                 </td>
                 <td>
-                    <label for="nav-cred-get-attestationFormats-set">Set value</label>
-                    <input type="checkbox" id="nav-cred-get-attestationFormats-set"
-                           name="nav-cred-get-attestationFormats-set"
+                    <label for="nav-cred-get-publicKey.attestationFormats-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.attestationFormats-set"
+                           name="nav-cred-get-publicKey.attestationFormats-set"
                            class="nav-cred-get" value="Set">
                 </td>
                 <td>
