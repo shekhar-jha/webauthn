@@ -173,10 +173,12 @@ function SaveCredential(userId, credential, debugLocation = 'common-debug') {
             const storeCred = {}
             storeCred['type'] = 'public-key'
             storeCred['id'] = Transform(credential.rawId, 'Array', 'Base64', debugLocation)
-            if (typeof credential.authenticatorAttachment === 'string') {
-                storeCred['transports'] = [credential.authenticatorAttachment]
-            } else {
-                storeCred['transports'] = [...credential.authenticatorAttachment]
+            if (credential.authenticatorAttachment !== null) {
+                if (typeof credential.authenticatorAttachment === 'string') {
+                    storeCred['transports'] = [credential.authenticatorAttachment]
+                } else {
+                    storeCred['transports'] = [...credential.authenticatorAttachment]
+                }
             }
             storedCredentials.credentials[userId] = storeCred
         }
