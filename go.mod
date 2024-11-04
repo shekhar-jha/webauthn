@@ -18,7 +18,7 @@ require (
 	github.com/cloudflare/cfssl v1.5.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.3.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/google/certificate-transparency-go v1.0.21 // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
