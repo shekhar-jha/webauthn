@@ -33,8 +33,35 @@ function ShowCapabilities() {
         } else {
             document.getElementById("userVerifyPlatformAuthn").innerHTML = "function isConditionalMediationAvailable is not supported."
         }
+
+        if (typeof window.PublicKeyCredential.getClientCapabilities === 'function') {
+            window.PublicKeyCredential.getClientCapabilities().then(function (result) {
+                document.getElementById("clientCapabilities").innerHTML = JSON.stringify(result)
+            }, function (error) {
+                document.getElementById("clientCapabilities").innerHTML = error
+            })
+        } else {
+            document.getElementById("clientCapabilities").innerHTML = "function getClientCapabilities is not supported."
+        }
+
+        if (typeof window.PublicKeyCredential.parseCreationOptionsFromJSON === 'function') {
+            document.getElementById("parseCreateFromJSONSupport").innerHTML = "Yes"
+        } else {
+            document.getElementById("parseCreateFromJSONSupport").innerHTML = "No"
+        }
+
+        if (typeof window.PublicKeyCredential.parseRequestOptionsFromJSON === 'function') {
+            document.getElementById("parseRequestFromJSONSupport").innerHTML = "Yes"
+        } else {
+            document.getElementById("parseRequestFromJSONSupport").innerHTML = "No"
+        }
     } else {
         webAuthnStatus = "No"
+        document.getElementById("mediation").innerHTML = "Webauthn is not supported"
+        document.getElementById("userVerifyPlatformAuthn").innerHTML = "Webauthn is not supported"
+        document.getElementById("clientCapabilities").innerHTML = "Webauthn is not supported"
+        document.getElementById("parseCreateFromJSONSupport").innerHTML = "No"
+        document.getElementById("parseRequestFromJSONSupport").innerHTML = "No"
     }
     document.getElementById("HasWebAuthn").innerHTML = webAuthnStatus
     document.getElementById("externalURL").value = GetConfiguration("externalURL")
@@ -85,6 +112,19 @@ function ShowSection(sectionClass, linkClass, sectionId, linkId, useClassToDispl
         tabLinks[tabIndex].classList.remove('active')
     }
     document.getElementById(linkId).classList.add('active')
+}
+
+function ToggleRowsByClass(toggleElementId, sectionClass, sectionType = 'table') {
+    const toggleElement = document.getElementById(toggleElementId)
+    if (!toggleElement) {
+        log("Toggle element " + toggleElementId + " not found", "error")
+        return
+    }
+    const displayValue = sectionType === 'table' ? "" : "block"
+    const rowElements = document.getElementsByClassName(sectionClass)
+    for (let rowCounter = 0; rowCounter < rowElements.length; rowCounter++) {
+        rowElements[rowCounter].style.display = toggleElement.checked ? displayValue : "none"
+    }
 }
 
 let DefaultInvalidUser = "InvalidUser"

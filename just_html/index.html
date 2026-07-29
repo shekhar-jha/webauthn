@@ -106,6 +106,27 @@
             <div id="userVerifyPlatformAuthn"></div>
         </td>
     </tr>
+    <tr>
+        <td><a href="https://w3c.github.io/webauthn/#sctn-public-key-credential-client-capabilities" target="_blank">Webauthn.getClientCapabilities()</a>
+        </td>
+        <td>
+            <div id="clientCapabilities"></div>
+        </td>
+    </tr>
+    <tr>
+        <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredential-parsecreationoptionsfromjson" target="_blank">Webauthn.parseCreationOptionsFromJSON()</a>
+        </td>
+        <td>
+            <div id="parseCreateFromJSONSupport"></div>
+        </td>
+    </tr>
+    <tr>
+        <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredential-parserequestoptionsfromjson" target="_blank">Webauthn.parseRequestOptionsFromJSON()</a>
+        </td>
+        <td>
+            <div id="parseRequestFromJSONSupport"></div>
+        </td>
+    </tr>
     </tbody>
 </table>
 <H1>Configuration</H1>
@@ -221,6 +242,12 @@
                 <td colspan="2"><input type="button" name="nav-cred-create-generateObject"
                                        value="Generate Create Credential Option"
                                        onclick="currentSession['nav-cred-create-options'] = GenerateObject('nav-cred-create');ShowSection('nav-cred-createSections','tablinks', 'nav-cred-createSection-genCreds', 'nav-cred-createSectionLink-genCreds')">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="button" name="nav-cred-create-parseCreationOptionsFromJSON"
+                                       value="Demo parseCreationOptionsFromJSON"
+                                       onclick="ParseCreationOptionsFromJSONDemo(currentSession)">
                 </td>
             </tr>
             <tr>
@@ -603,6 +630,40 @@
                     </ol>
                 </td>
             </tr>
+            <tr class="nav-cred-createOptions-others">
+                <td><label for="nav-cred-create-hints"><a
+                        href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialhint"
+                        target="_blank">Hints</a></label></td>
+                <td>
+                    <label for="nav-cred-create-hints-options-security-key">Security key</label>
+                    <input type="checkbox" id="nav-cred-create-hints-options-security-key"
+                           class="nav-cred-create nav-cred-create-hints-options"
+                           name="nav-cred-create-hints-options-security-key"
+                           value='security-key'>
+                    <label for="nav-cred-create-hints-options-client-device">Client device</label>
+                    <input type="checkbox" id="nav-cred-create-hints-options-client-device"
+                           class="nav-cred-create nav-cred-create-hints-options"
+                           name="nav-cred-create-hints-options-client-device"
+                           value='client-device'>
+                    <label for="nav-cred-create-hints-options-hybrid">Hybrid</label>
+                    <input type="checkbox" id="nav-cred-create-hints-options-hybrid"
+                           class="nav-cred-create nav-cred-create-hints-options"
+                           name="nav-cred-create-hints-options-hybrid"
+                           value='hybrid'>
+                </td>
+                <td><label for="nav-cred-create-hints-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-hints-set"
+                           name="nav-cred-create-hints-set" class="nav-cred-create" value="Set">
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>sequence&lt;DOMString&gt;</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialhint" target="_blank">PublicKeyCredentialHint</a></li>
+                    </ol>
+                </td>
+            </tr>
             <tr class="nav-cred-createOptions-exclude">
                 <td><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials"
@@ -633,7 +694,7 @@
                             of PublicKeyCredential),
                             transports ([]DOMString/Optional): Applicable <a
                                     href="https://w3c.github.io/webauthn/#enumdef-authenticatortransport">AuthenticatorTransport</a>
-                            (usb/nfc/ble/hybrid/internal)
+                            (usb/nfc/ble/hybrid/internal/smart-card)
                             }
                         </li>
                     </ol>
@@ -1046,6 +1107,26 @@
                 </td>
             </tr>
             <tr class="nav-cred-createOptions-ext">
+                <td><label for="nav-cred-create-extensions.remoteClientDataJSON"><a
+                        href="https://w3c.github.io/webauthn/#sctn-remote-desktop-support"
+                        target="_blank">Remote client data JSON extension input (remoteClientDataJSON)</a></label></td>
+                <td>
+                    <input type="text" id="nav-cred-create-extensions.remoteClientDataJSON" class="nav-cred-create"
+                           placeholder='{"origin":"https://example.com"}'/>
+                </td>
+                <td><label for="nav-cred-create-extensions.remoteClientDataJSON-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-create-extensions.remoteClientDataJSON-set"
+                           name="nav-cred-create-extensions.remoteClientDataJSON-set" class="nav-cred-create"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>JSON object encoded as text</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext">
                 <td><label for="nav-cred-create-extensions.credProps"><a
                         href="https://w3c.github.io/webauthn/#credprops"
                         target="_blank">Credential Properties (credProps)</a></label></td>
@@ -1132,6 +1213,11 @@
                 </td>
             </tr>
             <tr class="nav-cred-createOptions-ext">
+                <td colspan="4"><label for="nav-cred-create-legacyExtensions-toggle">Show legacy (non-L3) extension options (exts/uvi/loc/uvm)</label>
+                    <input type="checkbox" id="nav-cred-create-legacyExtensions-toggle"
+                           onchange="ToggleRowsByClass('nav-cred-create-legacyExtensions-toggle','nav-cred-createOptions-ext-legacy','table')"></td>
+            </tr>
+            <tr class="nav-cred-createOptions-ext-legacy" style="display: none;">
                 <td><label for="nav-cred-create-extensions.exts"><a
                         href="https://www.w3.org/TR/webauthn-1/#sctn-supported-extensions-extension" target="_blank">Supported
                     extensions (Webauthn 1)</a></label></td>
@@ -1155,7 +1241,7 @@
                     </ol>
                 </td>
             </tr>
-            <tr class="nav-cred-createOptions-ext">
+            <tr class="nav-cred-createOptions-ext-legacy" style="display: none;">
                 <td><label for="nav-cred-create-extensions.uvi"><a
                         href="https://www.w3.org/TR/webauthn-1/#sctn-uvi-extension" target="_blank">User Verification
                     Index extensions (Webauthn 1)</a></label></td>
@@ -1181,7 +1267,7 @@
                     </ol>
                 </td>
             </tr>
-            <tr class="nav-cred-createOptions-ext">
+            <tr class="nav-cred-createOptions-ext-legacy" style="display: none;">
                 <td><label for="nav-cred-create-extensions.loc"><a
                         href="https://www.w3.org/TR/webauthn-1/#sctn-location-extension" target="_blank">Location
                     extensions (Webauthn 1)</a></label></td>
@@ -1207,7 +1293,7 @@
                     </ol>
                 </td>
             </tr>
-            <tr class="nav-cred-createOptions-ext">
+            <tr class="nav-cred-createOptions-ext-legacy" style="display: none;">
                 <td><label for="nav-cred-create-extensions.uvm"><a
                         href="https://www.w3.org/TR/webauthn-1/#sctn-uvm-extension" target="_blank">User Verification
                     Method extensions (Webauthn 1 & 2)</a></label></td>
@@ -1362,6 +1448,20 @@
                         <li>Generated</li>
                         <li><a href="https://w3c.github.io/webauthn/#dictdef-registrationresponsejson" target="_blank">RegistrationResponseJSON</a>
                         </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3"><label for="nav-cred-obj-clientExtensionResults">Client extension results</label></td>
+                <td>
+                    <input type="text" id="nav-cred-obj-clientExtensionResults" class="nav-cred-obj"/>
+                </td>
+                <td></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Generated</li>
+                        <li>JSON object</li>
                     </ol>
                 </td>
             </tr>
@@ -2207,6 +2307,12 @@
                                        onclick="currentSession['nav-cred-get-options'] = GenerateObject('nav-cred-get');ShowSection('nav-cred-getSections','credGettablinks', 'nav-cred-getSection-reqCreds', 'nav-cred-getSectionLink-reqCreds')">
                 </td>
             </tr>
+            <tr>
+                <td colspan="2"><input type="button" name="nav-cred-get-parseRequestOptionsFromJSON"
+                                       value="Demo parseRequestOptionsFromJSON"
+                                       onclick="ParseRequestOptionsFromJSONDemo(currentSession)">
+                </td>
+            </tr>
         </table>
         <table class="simpleTable MobileLastColumnNoShow">
             <thead>
@@ -2364,6 +2470,42 @@
                     </ol>
                 </td>
             </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-publicKey.hints"><a
+                        href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialhint"
+                        target="_blank">Hints</a></label></td>
+                <td>
+                    <label for="nav-cred-get-publicKey.hints-options-security-key">Security key</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.hints-options-security-key"
+                           class="nav-cred-get nav-cred-get-publicKey.hints-options"
+                           name="nav-cred-get-publicKey.hints-options-security-key"
+                           value='security-key'>
+                    <label for="nav-cred-get-publicKey.hints-options-client-device">Client device</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.hints-options-client-device"
+                           class="nav-cred-get nav-cred-get-publicKey.hints-options"
+                           name="nav-cred-get-publicKey.hints-options-client-device"
+                           value='client-device'>
+                    <label for="nav-cred-get-publicKey.hints-options-hybrid">Hybrid</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.hints-options-hybrid"
+                           class="nav-cred-get nav-cred-get-publicKey.hints-options"
+                           name="nav-cred-get-publicKey.hints-options-hybrid"
+                           value='hybrid'>
+                </td>
+                <td>
+                    <label for="nav-cred-get-publicKey.hints-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.hints-set"
+                           name="nav-cred-get-publicKey.hints-set"
+                           class="nav-cred-get" value="Set">
+                </td>
+                <td>
+                    <h4>Validations</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>sequence&lt;DOMString&gt;</li>
+                        <li><a href="https://w3c.github.io/webauthn/#enumdef-publickeycredentialhint" target="_blank">PublicKeyCredentialHint</a></li>
+                    </ol>
+                </td>
+            </tr>
             <tr class="nav-cred-getOptions-rp">
                 <td><label for="nav-cred-get-publicKey.rpid"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid"
@@ -2419,7 +2561,7 @@
                             of PublicKeyCredential),
                             transports ([]DOMString/Optional): Applicable <a
                                     href="https://w3c.github.io/webauthn/#enumdef-authenticatortransport">AuthenticatorTransport</a>
-                            (usb/nfc/ble/hybrid/internal)
+                            (usb/nfc/ble/hybrid/internal/smart-card)
                             }
                         </li>
                     </ol>
@@ -2430,6 +2572,107 @@
                         </li>
                         <li>No check for user verification is needed. Client will automatically enforce it.</li>
                         <li>Non-empty client MUST return error if none could be used</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td colspan="2"><a href="https://w3c.github.io/webauthn/#sctn-extensions"
+                       target="_blank">Request extensions</a></td>
+                <td colspan="2">PRF and LargeBlob request-side demo inputs.</td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td colspan="2"><a href="https://w3c.github.io/webauthn/#prf-extension" target="_blank">Pseudo-random function (prf)</a></td>
+                <td><label for="nav-cred-get-publicKey.extensions.prf-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.prf-set"
+                           name="nav-cred-get-publicKey.extensions.prf-set" class="nav-cred-get"
+                           value="Set"></td>
+                <td></td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-publicKey.extensions.prf.eval.first">PRF first</label></td>
+                <td>
+                    <input type="text" id="nav-cred-get-publicKey.extensions.prf.eval.first" class="nav-cred-get"/>
+                </td>
+                <td><label for="nav-cred-get-publicKey.extensions.prf.eval.first-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.prf.eval.first-set"
+                           name="nav-cred-get-publicKey.extensions.prf.eval.first-set" class="nav-cred-get"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>BufferSource</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-publicKey.extensions.prf.eval.second">PRF second</label></td>
+                <td>
+                    <input type="text" id="nav-cred-get-publicKey.extensions.prf.eval.second" class="nav-cred-get"/>
+                </td>
+                <td><label for="nav-cred-get-publicKey.extensions.prf.eval.second-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.prf.eval.second-set"
+                           name="nav-cred-get-publicKey.extensions.prf.eval.second-set" class="nav-cred-get"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>BufferSource</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td colspan="2"><a href="https://w3c.github.io/webauthn/#sctn-large-blob-extension" target="_blank">Large Blob extension</a></td>
+                <td><label for="nav-cred-get-publicKey.extensions.largeBlob-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.largeBlob-set"
+                           name="nav-cred-get-publicKey.extensions.largeBlob-set" class="nav-cred-get"
+                           value="Set"></td>
+                <td></td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-publicKey.extensions.largeBlob.read">Large Blob read</label></td>
+                <td>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.largeBlob.read"
+                           name="nav-cred-get-publicKey.extensions.largeBlob.read"
+                           class="nav-cred-get nav-cred-get-publicKey.extensions.largeBlob.read-options" value="true"/>
+                </td>
+                <td><label for="nav-cred-get-publicKey.extensions.largeBlob.read-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.largeBlob.read-set"
+                           name="nav-cred-get-publicKey.extensions.largeBlob.read-set" class="nav-cred-get"
+                           value="Set"></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>Boolean</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getOptions-basic">
+                <td><label for="nav-cred-get-publicKey.extensions.largeBlob.write">Large Blob write</label></td>
+                <td>
+                    <input type="text" id="nav-cred-get-publicKey.extensions.largeBlob.write" class="nav-cred-get"/>
+                </td>
+                <td><label for="nav-cred-get-publicKey.extensions.largeBlob.write-set">Set value</label>
+                    <input type="checkbox" id="nav-cred-get-publicKey.extensions.largeBlob.write-set"
+                           name="nav-cred-get-publicKey.extensions.largeBlob.write-set" class="nav-cred-get"
+                           value="Set">
+                    <label for="nav-cred-get-publicKey.extensions.largeBlob.write-Transform">
+                        Format</label>
+                    <select name="nav-cred-get-publicKey.extensions.largeBlob.write-Transform"
+                            id="nav-cred-get-publicKey.extensions.largeBlob.write-Transform"
+                            class="Transformers">
+                        <option value="Hex">Hex</option>
+                        <option value="Base64">Base64</option>
+                        <option value="Text" selected>Text</option>
+                    </select>
+                </td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Optional</li>
+                        <li>BufferSource</li>
                     </ol>
                 </td>
             </tr>
@@ -2470,6 +2713,11 @@
                 </td>
             </tr>
             <tr class="nav-cred-getOptions-attest">
+                <td colspan="4"><label for="nav-cred-get-legacyRequestAttestation-toggle">Show legacy/non-L3 request fields (publicKey.attestation/publicKey.attestationFormats)</label>
+                    <input type="checkbox" id="nav-cred-get-legacyRequestAttestation-toggle"
+                           onchange="ToggleRowsByClass('nav-cred-get-legacyRequestAttestation-toggle','nav-cred-getOptions-attest-legacy','table')"></td>
+            </tr>
+            <tr class="nav-cred-getOptions-attest-legacy" style="display: none;">
                 <td><label for="nav-cred-get-publicKey.attestation"><a
                         href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-attestation"
                         target="_blank">Attestation</a></label></td>
@@ -2506,7 +2754,7 @@
                     </ol>
                 </td>
             </tr>
-            <tr class="nav-cred-getOptions-attest">
+            <tr class="nav-cred-getOptions-attest-legacy" style="display: none;">
                 <td><a href="https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-attestationformats"
                        target="_blank">Attestation format</a></td>
                 <td>
@@ -2699,6 +2947,20 @@
                         <li>Required</li>
                         <li><a href="https://webidl.spec.whatwg.org/#idl-USVString" target="_blank">USVString</a>
                         </li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="nav-cred-getCred-basic">
+                <td colspan="3"><label for="nav-cred-req-clientExtensionResults">Client extension results</label></td>
+                <td>
+                    <input type="text" id="nav-cred-req-clientExtensionResults" class="nav-cred-req"/>
+                </td>
+                <td></td>
+                <td>
+                    <h4>Validation</h4>
+                    <ol>
+                        <li>Generated</li>
+                        <li>JSON object</li>
                     </ol>
                 </td>
             </tr>

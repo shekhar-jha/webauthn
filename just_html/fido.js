@@ -69,6 +69,82 @@ function BeginConditional(userNameTextBox, session) {
     }
 }
 
+function ToJSONCompatibleValue(inputValue, debugLocation = DefaultLoggingLocation) {
+    if (inputValue === null || inputValue === undefined) {
+        return inputValue
+    }
+    if (ArrayBuffer.isView(inputValue)) {
+        return EscapeBase64EncodedString(Transform(inputValue, 'Array', 'Base64', debugLocation))
+    }
+    if (inputValue.toString && inputValue.toString() === '[object ArrayBuffer]') {
+        return EscapeBase64EncodedString(Transform(inputValue, 'Array', 'Base64', debugLocation))
+    }
+    if (Array.isArray(inputValue)) {
+        return inputValue.reduce((collectedValues, currentValue) => {
+            collectedValues.push(ToJSONCompatibleValue(currentValue, debugLocation))
+            return collectedValues
+        }, [])
+    }
+    if (typeof inputValue === 'object') {
+        const convertedObject = {}
+        Object.keys(inputValue).forEach((keyName) => {
+            convertedObject[keyName] = ToJSONCompatibleValue(inputValue[keyName], debugLocation)
+        })
+        return convertedObject
+    }
+    return inputValue
+}
+
+function ParseCreationOptionsFromJSONDemo(session) {
+    const debugLocation = LoggingPrefixMapping['nav-cred-create']
+    if (!(window?.PublicKeyCredential) || typeof window.PublicKeyCredential.parseCreationOptionsFromJSON !== 'function') {
+        log("parseCreationOptionsFromJSON is not supported on this browser", 'warn', debugLocation)
+        return
+    }
+    let creationOptions = session['nav-cred-create-options']
+    if (!creationOptions) {
+        creationOptions = GenerateObject('nav-cred-create')
+        session['nav-cred-create-options'] = creationOptions
+    }
+    try {
+        const creationOptionsJSON = ToJSONCompatibleValue(creationOptions, debugLocation)
+        const parsedCreationOptions = window.PublicKeyCredential.parseCreationOptionsFromJSON(creationOptionsJSON)
+        session['nav-cred-create-options'] = parsedCreationOptions
+        SetObject(parsedCreationOptions, 'nav-cred-create')
+        log("parseCreationOptionsFromJSON demo completed successfully", 'info', debugLocation)
+    } catch (error) {
+        log("parseCreationOptionsFromJSON demo failed: " + error.message + "(" + error.name + ")", 'error', debugLocation)
+        log(error.stack, 'debug', debugLocation)
+    }
+}
+
+function ParseRequestOptionsFromJSONDemo(session) {
+    const debugLocation = LoggingPrefixMapping['nav-cred-get']
+    if (!(window?.PublicKeyCredential) || typeof window.PublicKeyCredential.parseRequestOptionsFromJSON !== 'function') {
+        log("parseRequestOptionsFromJSON is not supported on this browser", 'warn', debugLocation)
+        return
+    }
+    let requestContainer = session['nav-cred-get-options']
+    if (!requestContainer) {
+        requestContainer = GenerateObject('nav-cred-get')
+        session['nav-cred-get-options'] = requestContainer
+    }
+    if (!requestContainer.publicKey) {
+        log("publicKey request options are not available for parseRequestOptionsFromJSON demo", 'error', debugLocation)
+        return
+    }
+    try {
+        const requestOptionsJSON = ToJSONCompatibleValue(requestContainer.publicKey, debugLocation)
+        const parsedRequestOptions = window.PublicKeyCredential.parseRequestOptionsFromJSON(requestOptionsJSON)
+        session['nav-cred-get-options']['publicKey'] = parsedRequestOptions
+        SetObject(session['nav-cred-get-options'], 'nav-cred-get')
+        log("parseRequestOptionsFromJSON demo completed successfully", 'info', debugLocation)
+    } catch (error) {
+        log("parseRequestOptionsFromJSON demo failed: " + error.message + "(" + error.name + ")", 'error', debugLocation)
+        log(error.stack, 'debug', debugLocation)
+    }
+}
+
 function CancelConditional(userNameTextBox, session) {
     let errorOccurred = false
     if (session.hasOwnProperty('nav-cred-get-conditional') && session['nav-cred-get-conditional']) {
@@ -173,7 +249,20 @@ function SaveCredential(userId, credential, debugLocation = 'common-debug') {
             const storeCred = {}
             storeCred['type'] = 'public-key'
             storeCred['id'] = Transform(credential.rawId, 'Array', 'Base64', debugLocation)
-            if (credential.authenticatorAttachment !== null) {
+            let transports = []
+            if (credential.response && typeof credential.response.getTransports === 'function') {
+                try {
+                    const discoveredTransports = credential.response.getTransports()
+                    if (Array.isArray(discoveredTransports)) {
+                        transports = discoveredTransports
+                    }
+                } catch (error) {
+                    log("Failed to retrieve transports using response.getTransports: " + error.message + "(" + error.name + ")", 'warn', debugLocation)
+                }
+            }
+            if (transports.length > 0) {
+                storeCred['transports'] = transports
+            } else if (credential.authenticatorAttachment !== null) {
                 if (typeof credential.authenticatorAttachment === 'string') {
                     storeCred['transports'] = [credential.authenticatorAttachment]
                 } else {
@@ -474,7 +563,7 @@ const TransformationDefinition = {
     "nav-cred-create": {
         "availableKeys": ["attestation", "attestationFormats", "authenticatorSelection.authenticatorAttachment",
             "authenticatorSelection.residentKey", "authenticatorSelection.userVerification", "authenticatorSelection.requireResidentKey",
-            "challenge", "pubKeyCredParams", "timeout", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
+            "challenge", "pubKeyCredParams", "timeout", "hints", "rp.name", "rp.id", "user.id", "user.name", "user.displayName"],
         "default": "text-noChange",
         "rp": "object-noChange",
         "user": "object-noChange",
@@ -482,11 +571,13 @@ const TransformationDefinition = {
         "challenge": "text-ArrayBuffer",
         "pubKeyCredParams": "options-sessionMap/alg",
         "timeout": "text-number",
+        "hints": "options-noChange",
         "authenticatorSelection": "object-noChange",
         "authenticatorSelection.requireResidentKey": "options-bool-oneValue",
         "excludeCredentials": "options-sessionMap",
         "attestationFormats": "options-noChange",
         "extensions": "object-noChange",
+        "extensions.remoteClientDataJSON": "text-stoj",
         "extensions.credProps": "options-bool-oneValue",
         "extensions.prf": "object-noChange",
         "extensions.prf.eval": "object-noChange",
@@ -495,11 +586,14 @@ const TransformationDefinition = {
         "extensions.exts": "options-bool-oneValue",
         "extensions.uvi": "options-bool-oneValue",
         "extensions.loc": "options-bool-oneValue",
+        "extensions.uvm": "options-bool-oneValue",
         "extensions.largeBlob": "object-noChange",
 
     },
     "nav-cred-get": {
         "availableKeys": ["mediation", "signal", "publicKey.challenge", "publicKey.timeout", "publicKey.rpid", "publicKey.allowCredentials", "publicKey.userVerification",
+            "publicKey.hints", "publicKey.extensions.prf.eval.first", "publicKey.extensions.prf.eval.second",
+            "publicKey.extensions.largeBlob.read", "publicKey.extensions.largeBlob.write",
             "publicKey.attestation", "publicKey.attestationFormats"],
         "default": "text-noChange",
         "signal": "text-AbortSignal",
@@ -507,25 +601,36 @@ const TransformationDefinition = {
         "publicKey.challenge": "text-ArrayBuffer",
         "publicKey.timeout": "text-number",
         "publicKey.allowCredentials": "options-sessionMap",
+        "publicKey.hints": "options-noChange",
+        "publicKey.extensions": "object-noChange",
+        "publicKey.extensions.prf": "object-noChange",
+        "publicKey.extensions.prf.eval": "object-noChange",
+        "publicKey.extensions.prf.eval.first": "text-ArrayBuffer",
+        "publicKey.extensions.prf.eval.second": "text-ArrayBuffer",
+        "publicKey.extensions.largeBlob": "object-noChange",
+        "publicKey.extensions.largeBlob.read": "options-bool-oneValue",
+        "publicKey.extensions.largeBlob.write": "text-ArrayBuffer",
         "publicKey.attestationFormats": "options-noChange"
     },
     "nav-cred-obj": {
-        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
+        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type", "clientExtensionResults",
             "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
             "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
         "default": "text-noChange",
         "rawId": "text-ArrayBuffer",
+        "clientExtensionResults": "text-stoj",
         "response.clientDataJSON": "text-ArrayBuffer",
         "response.attestationObject": "text-ArrayBuffer",
         "response.getAuthenticatorData": "text-ArrayBuffer",
         "response.getPublicKey": "text-ArrayBuffer",
     },
     "nav-cred-req": {
-        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type",
+        "availableKeys": ["authenticatorAttachment", "id", "rawId", "type", "clientExtensionResults",
             "response.attestationObject", "response.clientDataJSON", "response.type", "response.getAuthenticatorData",
             "response.getPublicKey", "response.getPublicKeyAlgorithm", "response.getTransports", "toJSON"],
         "default": "text-noChange",
         "rawId": "text-ArrayBuffer",
+        "clientExtensionResults": "text-stoj",
         "response.clientDataJSON": "text-ArrayBuffer",
         "response.attestationObject": "text-ArrayBuffer",
         "response.getAuthenticatorData": "text-ArrayBuffer",
